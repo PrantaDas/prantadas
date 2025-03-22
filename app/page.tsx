@@ -178,7 +178,7 @@ export default function Home() {
           <div className="md:w-2/3 text-center md:text-left">
             <Badge className="mb-4">Available for hire</Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Hi, I'm Pranta Das</h1>
-            <h2 className="text-2xl md:text-3xl text-muted-foreground mb-6">Node.js Developer</h2>
+            <h2 className="text-2xl md:text-3xl text-muted-foreground mb-6">Backend Developer</h2>
             <p className="text-muted-foreground mb-6 max-w-2xl">
               An edacious programming enthusiast who loves the art of coding. Always looking for perfection in my craft,
               but never satisfied with what I have done, so I bring improvisation every day.

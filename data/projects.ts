@@ -232,7 +232,7 @@ const professionalProject = [
     is_private: false,
   },
   {
-    name: "Hola Football",
+    name: "Kala Football",
     category: "Web App",
     description: "A web-based streaming platform for soccer",
     details:
