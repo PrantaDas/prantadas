@@ -347,7 +347,7 @@ export default function Home() {
                               </div>
                             </div>
                             <CardDescription className="truncate">
-                              {repo.description || "No description available"}
+                              {/* {repo.description || "No description available"} */}
                             </CardDescription>
                           </CardHeader>
                           <CardContent>
