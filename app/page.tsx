@@ -572,7 +572,7 @@ export default function Home() {
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                   <div>
-                    <CardTitle>Junior Software Engineer</CardTitle>
+                    <CardTitle>Software Engineer</CardTitle>
                     <CardDescription>Root Devs, Asad Avenue, Mohammadpur, Dhaka</CardDescription>
                   </div>
                   <div className="flex items-center text-muted-foreground">
