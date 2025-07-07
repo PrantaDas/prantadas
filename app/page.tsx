@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Github, Linkedin, Mail, MapPin, ExternalLink, Calendar, Phone, Star, GitFork, Eye } from "lucide-react"
+import { Github, Linkedin, Mail, MapPin, ExternalLink, Calendar, Phone, Star, GitFork, Eye, Award, Shield } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { professionalProject, projectsData } from "@/data/projects"
 import { skillsData } from "@/data/skills"
+import { certifications } from "@/data/certification"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 // GitHub repository type
 interface Repository {
@@ -115,6 +117,17 @@ export default function Home() {
     }
   }
 
+  // Function to get certificate level badge color
+  const getCertificateLevel = (name: string) => {
+    if (name.includes("Basic"))
+      return { level: "Basic", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" }
+    if (name.includes("Intermediate"))
+      return { level: "Intermediate", color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300" }
+    if (name.includes("Advanced"))
+      return { level: "Advanced", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300" }
+    return { level: "Certified", color: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300" }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted">
       {/* Header/Navigation */}
@@ -135,6 +148,12 @@ export default function Home() {
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               Projects
+            </button>
+            <button
+              onClick={() => scrollToSection("certifications")}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Certifications
             </button>
             <button
               onClick={() => scrollToSection("skills")}
@@ -427,6 +446,99 @@ export default function Home() {
               </div>
             </TabsContent>
           </Tabs>
+        </section>
+
+
+{/* certification section */}
+        <section id="certifications" className="py-12 md:py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Certifications</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Professional certifications from HackerRank demonstrating technical expertise
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {certifications.map((cert, index) => {
+              const { level, color } = getCertificateLevel(cert.name)
+              return (
+                <Card key={index} className="overflow-hidden transition-all hover:shadow-lg group">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-primary/10">
+                          <Award className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg leading-tight">{cert.name}</CardTitle>
+                          <CardDescription className="text-sm">HackerRank</CardDescription>
+                        </div>
+                      </div>
+                      <Badge className={`${color} border-0 text-xs font-medium`}>{level}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="aspect-video bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg mb-4 flex items-center justify-center border-2 border-dashed border-primary/20 group-hover:border-primary/40 transition-colors">
+                      <Link href={cert.iframeUrl} target="_blank" rel="noopener noreferrer" className="text-center">
+                        <Shield className="h-12 w-12 text-primary/60 mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground font-medium">HackerRank Certificate</p>
+                        <p className="text-xs text-muted-foreground mt-1">Click to view on HackerRank</p>
+                      </Link>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                        <span>Verified Certificate</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                        <span>Industry Recognized</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-4">
+                    <Button asChild className="w-full group-hover:bg-primary/90 transition-colors">
+                      <Link href={cert.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        View Certificate on HackerRank
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              )
+            })}
+          </div>
+
+          {/* Certification Summary */}
+          <div className="mt-12 text-center">
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="p-8">
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <Award className="h-8 w-8 text-primary hidden lg:block md:block" />
+                  <h3 className="text-2xl font-bold">Technical Expertise Verified</h3>
+                </div>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  These certifications demonstrate proficiency in JavaScript, Node.js, and REST API development,
+                  validated through rigorous testing on HackerRank's platform. Each certificate represents hands-on
+                  coding skills and problem-solving abilities in real-world scenarios.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4 mt-6">
+                  <Badge variant="outline" className="px-4 py-2">
+                    <span className="mr-2">🟢</span>
+                    JavaScript Proficiency
+                  </Badge>
+                  <Badge variant="outline" className="px-4 py-2">
+                    <span className="mr-2">🔵</span>
+                    Node.js Development
+                  </Badge>
+                  <Badge variant="outline" className="px-4 py-2">
+                    <span className="mr-2">🟡</span>
+                    REST API Design
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </section>
 
         {/* Skills Section */}

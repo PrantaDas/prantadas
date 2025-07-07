@@ -12,6 +12,13 @@ export const metadata: Metadata = {
     "Portfolio of Pranta Das, a Node.js developer specializing in backend development, bots, and APIs. Experienced in JavaScript, TypeScript, React, and more.",
   keywords: [
     "Node.js Developer",
+    "Web Developer",
+    "developer",
+    "programmer",
+    "react developer",
+    "dev",
+    "rest api",
+    "nodejs",
     "Backend Developer",
     "JavaScript",
     "TypeScript",
