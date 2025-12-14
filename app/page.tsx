@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Github, Linkedin, Mail, MapPin, ExternalLink, Calendar, Phone, Star, GitFork, Eye, Award, Shield } from "lucide-react"
@@ -43,7 +43,9 @@ export default function Home() {
     const fetchRepositories = async () => {
       try {
         // Fetch all repositories from GitHub API
-        const response = await fetch("https://api.github.com/users/Prantadas/repos?per_page=100")
+        const response = await fetch("https://api.github.com/users/Prantadas/repos?per_page=100",{
+          next: {revalidate: 24 * 60 * 60 } // revalidate every 24 hours
+        })
         if (!response.ok) {
           throw new Error("Failed to fetch repositories")
         }
@@ -594,7 +596,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center text-muted-foreground">
                     <Calendar className="mr-2 h-4 w-4" />
-                    <span>April 2025 - September 2025</span>
+                    <span>June 2025 - September 2025</span>
                   </div>
                 </div>
               </CardHeader>
@@ -839,7 +841,9 @@ export default function Home() {
         <div className="container flex flex-col items-center justify-between gap-4 py-10 md:h-24 md:flex-row md:py-0">
           <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
             <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-              © {new Date().getFullYear()} Pranta Das. All rights reserved.
+              <Suspense fallback='Loading...'>
+                © {new Date().getFullYear()} Pranta Das. All rights reserved.
+              </Suspense>
             </p>
           </div>
           <div className="flex gap-4">

@@ -1,14 +1,15 @@
 let userConfig = undefined;
 try {
-  userConfig = await import('./v0-user-next.config');
+  userConfig = await import("./v0-user-next.config");
 } catch (e) {
   // ignore error
 }
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // Enables static export
-  distDir: 'out', // Output directory for static files
+  output: "export", // Enables static export
+  distDir: "out", // Output directory for static files
+  cacheComponents: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -34,7 +35,7 @@ function mergeConfig(nextConfig, userConfig) {
 
   for (const key in userConfig) {
     if (
-      typeof nextConfig[key] === 'object' &&
+      typeof nextConfig[key] === "object" &&
       !Array.isArray(nextConfig[key])
     ) {
       nextConfig[key] = {
