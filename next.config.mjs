@@ -7,17 +7,19 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  distDir: "out", // Output directory for static files
   cacheComponents: true,
+
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
+
   images: {
-    unoptimized: true, // Required for GitHub Pages
+    unoptimized: false, // or remove entirely
   },
+
   experimental: {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
