@@ -572,17 +572,51 @@ export default function Home() {
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                   <div>
+                    <CardTitle>Senior Software Engineer</CardTitle>
+                    <CardDescription>Root Devs, Asad Avenue, Mohammadpur, Dhaka</CardDescription>
+                  </div>
+                  <div className="flex items-center text-muted-foreground">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>October 2025 - Present</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Backend Development</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                  <div>
                     <CardTitle>Software Engineer</CardTitle>
                     <CardDescription>Root Devs, Asad Avenue, Mohammadpur, Dhaka</CardDescription>
                   </div>
                   <div className="flex items-center text-muted-foreground">
                     <Calendar className="mr-2 h-4 w-4" />
-                    <span>April 2024 - Present</span>
+                    <span>April 2025 - September 2025</span>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Backend Development & web automation.</p>
+                <p className="text-muted-foreground">Backend Development</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                  <div>
+                    <CardTitle>Junior Software Engineer</CardTitle>
+                    <CardDescription>Root Devs, Asad Avenue, Mohammadpur, Dhaka</CardDescription>
+                  </div>
+                  <div className="flex items-center text-muted-foreground">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>April 2024 - May 2025</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Backend Development</p>
               </CardContent>
             </Card>
 

@@ -20,10 +20,10 @@ import {
   SiDiscord,
   SiRabbitmq,
   SiApachekafka,
-  SiTailwindcss,
   SiSelenium,
   SiPuppeteer,
   SiOpensea,
+  SiNestjs,
 } from "react-icons/si";
 
 export const skillsData = [
@@ -50,6 +50,11 @@ export const skillsData = [
   {
     name: "Express.js",
     logo: SiExpress,
+    category: "Backend",
+  },
+    {
+    name: "Nest.js",
+    logo: SiNestjs,
     category: "Backend",
   },
   {
@@ -116,11 +121,6 @@ export const skillsData = [
     name: "Kafka",
     logo: SiApachekafka,
     category: "Message Queue",
-  },
-  {
-    name: "Tailwind CSS",
-    logo: SiTailwindcss,
-    category: "CSS",
   },
   {
     name: "Socket.io",
