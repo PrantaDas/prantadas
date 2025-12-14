@@ -15,6 +15,11 @@ import { ContactForm } from "@/components/shared/contact-form"
 import { Footer } from "@/components/shared/footer"
 
 
+async function getCurrentYear() {
+  'use cache'
+  return new Date().getFullYear()
+}
+
 // Metadata for SEO
 export const metadata: Metadata = {
   title: "Pranta Das - Backend Developer | Portfolio",
@@ -541,7 +546,7 @@ export default async function Home() {
         </section>
       </main>
 
-      <Footer/>
+      <Footer year={await getCurrentYear()} />
     </div>
   )
 }

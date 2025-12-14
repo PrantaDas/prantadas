@@ -7,7 +7,6 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export", // Enables static export
   distDir: "out", // Output directory for static files
   cacheComponents: true,
   eslint: {
