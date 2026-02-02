@@ -348,12 +348,29 @@ export default async function Home() {
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                   <div>
+                    <CardTitle>Team Leadd (Backend)</CardTitle>
+                    <CardDescription>Root Devs, Asad Avenue, Mohammadpur, Dhaka</CardDescription>
+                  </div>
+                  <div className="flex items-center text-muted-foreground">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>January 2026 - Present</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Backend Development</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                  <div>
                     <CardTitle>Senior Software Engineer</CardTitle>
                     <CardDescription>Root Devs, Asad Avenue, Mohammadpur, Dhaka</CardDescription>
                   </div>
                   <div className="flex items-center text-muted-foreground">
                     <Calendar className="mr-2 h-4 w-4" />
-                    <span>October 2025 - Present</span>
+                    <span>July 2025 - December 2025</span>
                   </div>
                 </div>
               </CardHeader>
@@ -370,23 +387,6 @@ export default async function Home() {
                   </div>
                   <div className="flex items-center text-muted-foreground">
                     <Calendar className="mr-2 h-4 w-4" />
-                    <span>June 2025 - September 2025</span>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Backend Development</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                  <div>
-                    <CardTitle>Junior Software Engineer</CardTitle>
-                    <CardDescription>Root Devs, Asad Avenue, Mohammadpur, Dhaka</CardDescription>
-                  </div>
-                  <div className="flex items-center text-muted-foreground">
-                    <Calendar className="mr-2 h-4 w-4" />
                     <span>April 2024 - May 2025</span>
                   </div>
                 </div>
@@ -395,7 +395,6 @@ export default async function Home() {
                 <p className="text-muted-foreground">Backend Development</p>
               </CardContent>
             </Card>
-
             <Card>
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
