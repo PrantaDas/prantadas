@@ -1,26 +1,32 @@
-import type React from "react"
-import "@/app/globals.css"
-import { Inter } from "next/font/google"
-import { ThemeProvider } from "@/components/theme-provider"
-import type { Metadata } from "next"
+import type React from "react";
+import "@/app/globals.css";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import type { Metadata } from "next";
 
-const inter = Inter({ subsets: ["latin"] })
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
-  title: "Pranta Das - Backend Developer | Backend Specialist",
+  title: "Pranta Das — Backend Developer",
   description:
-    "Portfolio of Pranta Das, a Node.js developer specializing in backend development, bots, and APIs. Experienced in JavaScript, TypeScript, React, and more.",
+    "Backend Developer specializing in Node.js, TypeScript, REST APIs, and scalable distributed systems. Team Lead at Root Devs.",
   keywords: [
     "Node.js Developer",
-    "Web Developer",
-    "developer",
-    "programmer",
-    "react developer",
-    "dev",
-    "rest api",
-    "nodejs",
     "Backend Developer",
-    "JavaScript",
     "TypeScript",
     "API Development",
     "Bot Development",
@@ -34,38 +40,37 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://prantadas.vercel.app",
-    title: "Pranta Das - Node.js Developer | Backend Specialist",
-    description: "Portfolio of Pranta Das, a Node.js developer specializing in backend development, bots, and APIs.",
-    siteName: "Pranta Das Portfolio",
+    title: "Pranta Das — Backend Developer",
+    description:
+      "Backend Developer specializing in Node.js, TypeScript, and scalable distributed systems.",
+    siteName: "Pranta Das",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pranta Das - Node.js Developer | Backend Specialist",
-    description: "Portfolio of Pranta Das, a Node.js developer specializing in backend development, bots, and APIs.",
+    title: "Pranta Das — Backend Developer",
+    description:
+      "Backend Developer specializing in Node.js, TypeScript, and scalable distributed systems.",
     creator: "@prantadas",
   },
-    generator: 'v0.dev'
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="canonical" href="https://prantadas.vercel.app" />
       </head>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+      <body
+        className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans bg-background text-foreground antialiased`}
+      >
+        {children}
       </body>
     </html>
-  )
+  );
 }
 
-
-
-import './globals.css'
+import "./globals.css";
