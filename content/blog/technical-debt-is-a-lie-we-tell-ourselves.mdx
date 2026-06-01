@@ -1,0 +1,156 @@
+---
+title: "Technical Debt Is a Lie We Tell Ourselves"
+description: "Ward Cunningham invented the term in 1992. He has spent years since clarifying that almost nobody uses it the way he meant it. What most teams call technical debt is not debt. It is damage — and calling it debt is how engineering organizations avoid accountability for the decisions that caused it."
+date: "2026-06-01"
+updatedAt: "2026-06-01"
+tags:
+  ["Engineering", "Architecture", "Career", "Mindset", "Backend", "Leadership"]
+featured: true
+excerpt: "Technical debt is the most overused, most misunderstood, and most conveniently abused concept in software engineering. It was invented to describe intentional trade-offs made with clear awareness. It has become the universal excuse for poor decisions, accumulated negligence, and the consequences of years of shipping without thinking. There is a difference between debt and damage, and most codebases have the second one."
+---
+
+Ward Cunningham introduced the technical debt metaphor in 1992 to explain something specific to non-technical stakeholders. The explanation went roughly like this: we could ship this faster now by taking a shortcut, but we will need to revisit and fix that shortcut later. It is like borrowing money — you get the benefit now and pay interest until you repay the principal.
+
+It was a communication tool. A way of making the trade-off legible to people who did not work in code. The debt metaphor worked because it conveyed something real: there is a cost to moving fast that is not visible in the immediate output but accumulates over time.
+
+Cunningham has spent years since then clarifying, in interviews and talks, that the metaphor was being misused. That people were calling things technical debt that were not intentional trade-offs at all. That the phrase had been adopted as a blanket term for the consequences of poor engineering decisions, rushed timelines, insufficient understanding, and organizational dysfunction — none of which is what the metaphor was designed to describe.
+
+He was right. And the misuse has become so pervasive, so normalized, and so useful to so many people in so many different situations that I think it is worth being blunt about what is actually happening when the phrase gets used.
+
+Most of what the industry calls technical debt is not debt. It is damage. And the difference matters more than most engineering organizations are willing to acknowledge.
+
+---
+
+## What Actual Technical Debt Looks Like
+
+Genuine technical debt has three characteristics that distinguish it from the thing it is usually confused with.
+
+First, it was a conscious decision. Someone looked at two options — the faster path and the more correct path — understood the trade-offs of each, and chose the faster one deliberately. Not because they did not know about the trade-off, but because they understood it and decided the speed was worth the future cost.
+
+Second, it was documented. Not necessarily in a formal document, but in some form. The person who made the decision knew they made it, could explain why, and understood what "repaying" it would require.
+
+Third, it was proportionate to a real benefit. The speed gained by taking the shortcut was genuinely necessary — to hit a deadline that mattered, to validate a hypothesis before investing further, to ship something that needed to exist before it could be refined.
+
+Real technical debt looks like: "We hardcoded these configuration values to ship before the conference demo. After the demo, if the product continues, we will build the configuration system properly. Estimated cost: two days of engineering time."
+
+That is borrowing against the future with clear awareness. The debt is real, it is bounded, and there is a plan to repay it.
+
+---
+
+## What Most Teams Actually Have
+
+Now let me describe what most engineering teams have when they talk about their technical debt.
+
+A service was built three years ago by engineers who are no longer at the company, under requirements that have since changed significantly, using a library that has since been deprecated, with a data model that does not reflect how the data is actually used, with zero test coverage, with business logic spread across six layers of the application without clear separation, with configuration that requires three environment variables to interact in a specific undocumented way, and with a deployment process that one engineer at the company understands and that person is planning to leave next quarter.
+
+Nobody decided this. Nobody documented a trade-off. Nobody calculated that this configuration would be worth the future cost. This is the accumulated consequence of many separate decisions, each made under pressure, many made without sufficient understanding of the system, some made by people who were not skilled enough for the complexity they were dealing with.
+
+This is not debt. Debt has a creditor. Debt has a principal. Debt has terms. Debt, in the financial metaphor, implies that someone lent you something valuable and you owe them the equivalent back.
+
+What most teams have is damage. The system was harmed by decisions made without adequate care, knowledge, or time. It will cost significant engineering effort to repair — not because you borrowed against the future, but because the past was poorly done.
+
+---
+
+## Why the Lie Is So Useful
+
+If calling it debt is inaccurate, why does everyone do it?
+
+Because debt sounds like a rational financial decision. Debt sounds like something that was weighed and chosen by people who understood what they were doing. Debt sounds like a trade-off between two legitimate options. Debt, crucially, sounds like something that happens to every serious business and is not a reflection of anyone's competence or judgment.
+
+Damage sounds like something that could have been avoided. Damage implies that the people responsible for the system made choices that harmed it. Damage sounds like a failure of engineering discipline, technical leadership, or organizational prioritization.
+
+Both can be true simultaneously on any given team. But the framing changes what questions get asked.
+
+When you call it debt, the question is: when are we going to pay it down? What is the repayment schedule? How do we allocate capacity for debt reduction?
+
+When you call it damage, the questions are harder: how did this happen? What decisions, practices, or organizational conditions produced this? Who was responsible for those decisions? What has to change to prevent more damage from accumulating?
+
+The debt framing is comfortable for everyone in the room. The damage framing requires accountability.
+
+This is why the metaphor has been so thoroughly adopted and so thoroughly divorced from its original meaning. It is extraordinarily useful for discussing serious engineering problems without anyone having to take ownership of having caused them.
+
+---
+
+## The Retrospective Where Nobody Learns Anything
+
+There is a specific meeting that happens in every engineering organization that has significant "technical debt." It is called a technical debt review, or a debt reduction session, or sometimes a health check. Engineers gather, open a spreadsheet or a Jira board, look at the items labeled as technical debt, estimate the effort required to address them, and discuss whether to allocate time.
+
+Nothing changes. The same items appear in the next session. The same discussion happens. The same capacity constraints are cited.
+
+This is not because the engineers do not care. It is because the meeting is structured around the wrong question.
+
+The question being asked is: given our current constraints, how much debt can we repay?
+
+The question that would actually change anything is: what organizational, engineering, or process conditions caused this, and which of those conditions still exist today, actively producing more of the same?
+
+The second question is not asked because answering it requires naming specific decisions, specific decision-makers, and specific systemic failures — and that conversation is considered out of scope for a technical debt session.
+
+As a result, teams repay a small portion of their "debt" each quarter while simultaneously generating more of it at a rate that exceeds the repayment. The backlog grows. The sessions continue. Nothing changes structurally. The metaphor has successfully laundered a set of systemic problems into a set of individual line items that can be scheduled, estimated, and deprioritized indefinitely.
+
+---
+
+## The "We'll Refactor Later" Promise Is Almost Always a Lie
+
+This deserves its own section because it is the mechanism through which most damage is created.
+
+"We'll refactor this after launch."
+
+"We'll clean it up once the pressure eases."
+
+"This is a temporary solution — we'll replace it properly next quarter."
+
+"We know it's messy. Technical debt sprint is coming up."
+
+Every engineer has said one of these things. I have said them. Most of the time they are not lies in the moment — the person saying them genuinely intends to follow through. The intention is real.
+
+The follow-through rarely is.
+
+After launch, there is a new feature. After the new feature, there is a bug. After the bug, there is a new requirement. The "later" that was promised never arrives because software development is a continuous stream of present urgency that always outcompetes past obligations.
+
+The refactor that was promised becomes a Jira ticket. The ticket sits in the backlog. The backlog grows. The technical debt review schedules the ticket for next quarter. Next quarter arrives and the same urgency is present. The ticket moves to the following quarter. Eventually it is so old and the code has changed so much around it that the ticket is no longer even accurate. It gets closed with the note "no longer relevant" or "superseded by new architecture" and the damage it was supposed to address has either been forgotten or has compounded into something larger.
+
+The honest thing to say, when you are about to take a shortcut under pressure, is not "we'll fix it later." The honest thing is "we are accepting that this may never be fixed, and we are choosing to ship anyway because the alternative cost is higher than the long-term cost of leaving this as it is." That is a legitimate engineering decision. It is just a harder sentence to say out loud.
+
+---
+
+## What High-Functioning Teams Do Instead
+
+I have worked with teams that have genuinely low levels of accumulated damage in their codebases. Not because they never shipped under pressure. Not because they never made imperfect decisions. But because they did a small number of things differently.
+
+They distinguished between intentional shortcuts and unintentional ones. When they took a shortcut deliberately, they noted it immediately, explained the trade-off, and kept the note close to the code it affected. When something was discovered to be inadequate, they addressed it as part of the work that touched it rather than logging it for a future sprint that might not come.
+
+They treated the question "why did this get this way" as a legitimate engineering question rather than a political one. When a system was found to be damaged, understanding how it got that way was considered part of fixing it — because the same conditions would produce the same result again otherwise.
+
+They were honest about the refactor promise. If something was genuinely going to be addressed later, it had a specific owner, a specific timeframe, and a specific definition of done. If it did not have those three things, it was acknowledged as "this will probably stay this way" rather than dressed up as a commitment that would not be kept.
+
+These are not sophisticated practices. They are honest ones. The gap between teams that accumulate damage and teams that contain it is often not a gap in technical skill. It is a gap in organizational willingness to be honest about trade-offs, decisions, and consequences.
+
+---
+
+## The Hardest Admission
+
+The hardest admission in this conversation is the one that the debt metaphor most effectively prevents.
+
+Some codebases are in their current state not because of sophisticated trade-off decisions made under genuine constraints, but because the engineers who built them were not good enough for the complexity they were dealing with, or were not given enough time to do the work properly, or were not supported by organizational practices that would have produced better outcomes, or all three simultaneously.
+
+This is not a comfortable thing to say. It implies that specific people made decisions that harmed the systems they were responsible for. That specific organizations created conditions under which poor quality was the rational outcome. That the problem is not just a backlog item — it is a people problem, or a culture problem, or a process problem, or a leadership problem.
+
+The debt metaphor exists partly to make this conversation unnecessary. If it is all just debt — rational trade-offs accumulated over time — then nobody is specifically responsible and the solution is purely resource allocation.
+
+But most of the time, it is not just debt. It is damage. It has specific causes. Those causes are still present. And until they are named and addressed, no amount of technical debt sprints will produce a system that stops accumulating them.
+
+---
+
+## Closing
+
+The next time you are in a meeting where someone talks about paying down technical debt, ask yourself: is this actually debt — a conscious trade-off made with clear awareness that is now being repaid — or is this damage from decisions that were not made consciously, not documented, and not proportionate to any benefit that was actually realized?
+
+If it is debt, the repayment conversation is the right conversation.
+
+If it is damage, the right conversation is harder: how did this happen, what conditions allowed it, and what would have to change for those conditions to be different?
+
+The second conversation is less comfortable. It is also the only one that changes anything.
+
+---
+
+*I have used the technical debt metaphor myself, in situations where "damage" would have been more accurate. It is a comfortable phrase in uncomfortable situations and I understand exactly why it is so widely used. That does not make it true. And the engineering organizations I have seen operate most effectively are the ones that can have the uncomfortable conversation instead of the comfortable one.*

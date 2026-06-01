@@ -1,0 +1,162 @@
+---
+title: "Autopilot Didn't Replace Pilots: What AI Hype Gets Wrong About Human Expertise"
+description: "Modern aircraft spend most of a flight on autopilot. Airlines still employ rigorously trained pilots. Understanding why tells us almost everything we need to know about AI's real relationship with software engineering."
+date: "2026-06-01"
+updatedAt: "2026-06-01"
+tags:
+  ["AI", "Engineering", "Career", "Architecture", "Mindset", "System Design"]
+featured: true
+excerpt: "Autopilot has existed in commercial aviation for decades. Airlines still employ highly trained pilots. The reason why is one of the clearest explanations I know for what AI will and won't do to software engineering — and why the most important skill you can develop right now is not prompting."
+---
+
+On a routine commercial flight, the autopilot engages shortly after takeoff and typically remains engaged until a few hundred feet above the runway on approach. The flight management system is calculating optimal altitude and routing. Navigation systems are cross-referencing GPS, inertial reference, and radio data. Automated warning systems are monitoring engine parameters, cabin pressure, terrain proximity, and airspeed — continuously, simultaneously, with more consistency than any human could sustain over hours.
+
+The aircraft, for much of the flight, is flying itself.
+
+And yet, in the cockpit, there are two pilots. Both highly trained. Both actively monitoring. Both ready to act. Airlines have not replaced them with cheaper alternatives. Regulators have not reduced the training requirements. If anything, as automation has become more sophisticated, the cognitive demands on pilots have increased — because the job has shifted from executing routine tasks to understanding, supervising, and overriding complex automated systems under pressure.
+
+This is not a coincidence. It is a design principle. And it is, I think, the most useful analogy available for understanding what AI will actually do to software engineering — and what it won't.
+
+---
+
+## What Autopilot Actually Does
+
+It is worth being precise about what modern flight automation handles, because the capabilities are genuinely impressive.
+
+A Flight Management System processes navigation data, fuel calculations, weather routing, and performance parameters. It can fly the aircraft along a planned route with far greater precision and efficiency than manual control. Autopilot systems can execute smooth climbs, precise descents, and runway approaches in low visibility conditions that would challenge even experienced pilots flying manually. Automated safety systems can detect and respond to stall conditions, wind shear, terrain proximity, and traffic conflicts faster than human reaction time allows.
+
+If you described these capabilities in the abstract — a system that can navigate across continents, optimize fuel consumption in real time, maintain altitude within feet for hours, and respond to many emergencies faster than a human — you might reasonably conclude that the humans in the cockpit are redundant.
+
+And you would be wrong.
+
+---
+
+## What Autopilot Cannot Do
+
+In June 2009, Air France Flight 447 entered a region of severe weather over the Atlantic Ocean. The aircraft's pitot tubes — sensors that measure airspeed — iced over. The automated systems received conflicting, unreliable data. The autopilot disconnected, as designed, handing control to the crew.
+
+What followed was a tragic sequence of confusion, contradictory inputs, and ultimately a loss of control. The aircraft entered a stall from which it did not recover. All 228 people on board were lost.
+
+The automation worked exactly as it was designed to work. When it encountered a situation it could not reliably handle, it handed the situation to the humans. The problem was not the automation. The problem was the complexity of what the humans were suddenly asked to do — in the dark, in turbulence, with unreliable instruments, under extreme time pressure — and whether their training had fully prepared them for that specific scenario.
+
+This event, and others like it, has driven significant changes in how aviation thinks about automation. The concern is not that automation fails. It is that automation succeeds so reliably, for so long, that pilots can lose what professionals call *situational awareness* — the continuous, active mental model of what is happening, why, and what would need to happen next if the automated systems handed control back.
+
+The most dangerous failure mode of automation is not the machine breaking down. It is the human forgetting how to fly.
+
+---
+
+## The Parallel to Software Engineering
+
+AI coding tools can generate syntactically correct code from a description. They can refactor functions, write documentation, suggest test cases, explain error messages, and produce boilerplate at speeds that would have seemed impossible five years ago.
+
+These are real capabilities. The productivity gains for engineers who use them well are real. I use them. Most engineers I know use them.
+
+And yet, the parallel to aviation becomes difficult to ignore once you start looking for it.
+
+AI tools are extraordinarily capable at what I would call *execution in familiar territory* — generating code for patterns that appear frequently in their training data, applying known solutions to known problem shapes, producing outputs that are statistically likely to be correct.
+
+They are considerably less reliable at what experienced engineers provide: *judgment in unfamiliar territory*.
+
+What are the actual business requirements behind this feature, and how might they conflict with each other in edge cases the specification didn't anticipate? What are the failure modes of this architecture under load patterns we haven't seen yet? Is this third-party dependency safe to introduce given our security posture and compliance requirements? How should we communicate the technical constraints to stakeholders who will make business decisions based on them? What is the right trade-off between delivery speed and technical debt given where this product is in its lifecycle?
+
+These are not questions that have statistically likely answers. They are questions that require understanding the specific context, the specific constraints, the specific history of the system, and the specific consequences of being wrong. They require the kind of judgment that comes from having been wrong before, having seen systems fail in specific ways, and having developed an intuition for where risk hides.
+
+AI tools currently provide little of this. In some cases, they actively obscure the need for it — which is where the autopilot analogy becomes most instructive.
+
+---
+
+## Execution Versus Judgment
+
+This distinction deserves to be the central idea of this article, because I think it explains almost everything about where AI is genuinely useful and where over-reliance on it becomes dangerous.
+
+**Execution** involves applying known patterns to predictable inputs. Given a clear specification of what needs to be built, using established technologies, in familiar domains, execution can often be automated or significantly accelerated. Code generation, refactoring, documentation, test scaffolding — these are execution tasks. AI tools are increasingly capable here.
+
+**Judgment** involves making decisions in conditions of uncertainty, ambiguity, and incomplete information. Deciding what to build and why. Assessing risk. Identifying when something that looks correct is actually wrong in a way the specification didn't capture. Recognizing when a technically valid solution has downstream consequences that will create serious problems. Knowing when to push back on a requirement, when to escalate an issue, and how to communicate technical reality to people who need to make decisions based on it.
+
+Judgment is not a checklist. It cannot be extracted from context and fed to a language model. It is the product of experience — specifically, the experience of operating under uncertainty and learning from the consequences.
+
+A pilot who has spent thousands of hours flying develops an instinct for when something feels wrong before any alarm sounds. An experienced engineer develops an instinct for when a codebase has hidden debt, when an architecture decision will create pain at scale, or when a deployment is riskier than the test results suggest.
+
+This instinct is not mystical. It is a pattern-matching capability built from accumulated, contextualized experience — and it is exactly the kind of capability that current AI systems do not possess in the way that humans who have genuinely *done the work* possess it.
+
+---
+
+## The Danger of Automation Bias
+
+Aviation has a term for a specific failure mode that emerges when humans work alongside highly capable automation: *automation bias*. It refers to the tendency to defer to automated systems, to reduce personal monitoring, and to accept automated outputs without the level of scrutiny you would apply to manual work.
+
+Automation bias is not irrational. When a system is correct 99% of the time, treating every output with deep skepticism is inefficient. The problem is that the 1% of cases where automation is wrong are often the consequential cases — the edge conditions, the unexpected inputs, the scenarios the system was not designed to handle.
+
+In software engineering, automation bias toward AI tools looks like this:
+
+A developer generates code, reviews it superficially, and ships it — because it looks correct and the AI seemed confident. The code is syntactically valid and passes tests. The bug is a subtle logical error in an edge case the tests don't cover, in a path that the business logic matters most.
+
+A team uses an AI tool to design an architecture, accepts the recommendations with minor modifications, and builds a system around it. The architecture is reasonable for the use case described in the prompt. It is poorly suited to the actual production traffic patterns, the regulatory constraints, or the operational reality of the team that will maintain it.
+
+An engineer asks an AI tool whether a particular implementation has security implications. The tool says it looks fine. The engineer ships it. The vulnerability is real but subtle — the kind that requires understanding both the specific framework internals and the specific threat model of the application, neither of which the AI tool had full context for.
+
+In each of these cases, the automation did not fail dramatically. It produced output that was plausible. The failure was the human's reduced scrutiny — the autopilot problem applied to software.
+
+The most dangerous AI-generated output is not the output that is obviously wrong. It is the output that is almost right.
+
+---
+
+## What the Next Decade Probably Looks Like
+
+I want to be honest about where this is heading, because I think the aviation analogy holds here too.
+
+AI tools will continue to improve substantially. Code generation will become more accurate, more context-aware, and more capable of handling complex specifications. Tasks that currently require significant engineering time will be compressed. Teams that use these tools effectively will be able to produce more with fewer people.
+
+This is probably going to mean smaller engineering teams producing what previously required larger ones. It is going to mean increased expectations for individual engineers — more surface area, more systems, more responsibility per person. It is going to mean that engineers who are not using these tools effectively will be at a significant productivity disadvantage.
+
+This is the productivity transformation that autopilot brought to aviation. Flights that previously required flight engineers as a third cockpit crew member now operate with two pilots. The remaining two pilots are, if anything, expected to handle a wider range of situations than flight crews of earlier eras.
+
+What it is not going to mean — based on everything we understand about how these systems actually work — is that human judgment, accountability, and decision-making become less important. The evidence from aviation suggests the opposite: as automation handles more of the routine execution, the premium on human judgment in non-routine situations increases.
+
+The pilot who can manage a complex emergency after hours of routine autopilot-managed flight is more valuable than the one who cannot. The engineer who can diagnose a production incident that AI tooling didn't anticipate, architect a system whose requirements are ambiguous and contested, or make a security call whose implications extend beyond the immediate code — that engineer becomes more valuable, not less, as AI handles more of the predictable work.
+
+---
+
+## What This Means for How You Develop as an Engineer
+
+If the autopilot analogy holds — and I think it does more than most analogies do — then there are some practical implications for how engineers should think about their own development:
+
+**Do not let AI tools atrophy your ability to reason without them.** Pilots who rely too heavily on automation can lose the manual flying skills that matter most in emergencies. Engineers who rely too heavily on AI generation can lose the ability to reason deeply about code — to read it carefully, to trace through it mentally, to understand *why* it works, not just that it appears to. That depth of understanding is exactly what you need when the generated output is subtly wrong.
+
+**Invest in the skills that are hardest to automate.** System design. Production operations. Security reasoning. Stakeholder communication. Understanding business context deeply enough to make technical trade-offs that serve the product. These are judgment skills. They develop through experience and deliberate practice, not through prompting.
+
+**Develop situational awareness about your systems.** Know your production environment. Know your failure modes. Know the business logic well enough that you can recognize when AI-generated code is technically valid but semantically wrong. The pilot who is flying with autopilot engaged is still actively monitoring — still building and maintaining that mental model of the flight. Engineers using AI tools should still be actively understanding the systems they are responsible for.
+
+**Treat AI output as a first draft from a capable but context-free collaborator.** Not as a correct answer. Not as something to ship without scrutiny. As a starting point that requires your judgment, your context, and your ownership.
+
+---
+
+## The Accountable Human
+
+There is one more dimension of the aviation analogy that I think matters most.
+
+When an aircraft lands safely in a difficult situation — when a crew manages a system failure, deals with unexpected weather, or handles a medical emergency — the pilots are responsible. When something goes wrong, the pilots are accountable. The autopilot's contribution to the safe outcome is noted. The crew's judgment, training, and execution are what the investigation examines, what the professional community learns from, and what the passengers on that flight were ultimately depending on.
+
+Accountability cannot be delegated to automation. This is not a philosophical point — it is a practical one. Automated systems do not bear consequences. They do not learn from specific incidents in the way that humans do. They cannot be held responsible for outcomes in the way that professional judgment and human decision-making can.
+
+In software engineering, as AI tools become more capable, the humans who use them remain accountable for what gets built, how it performs, and what happens when it fails. The code an AI generates that you ship is your code. The architecture an AI suggested that you approved is your architecture. The security decision you made based partly on an AI recommendation is your security decision.
+
+Accountability is not something that can be outsourced to the tool. And where accountability lives, judgment must live with it.
+
+---
+
+## Closing
+
+Autopilot did not make aviation less safe. It made it dramatically safer. It freed pilots from the cognitive load of continuous manual control, allowing them to focus on monitoring, decision-making, and managing the situations that automation cannot handle alone.
+
+But it did not make pilots obsolete. It changed what pilots need to be excellent at. And decades of operating experience suggest that the most consequential situations in aviation — the ones that determine whether flights end safely or catastrophically — are almost always the ones where human judgment is the deciding factor.
+
+AI will likely transform software development in a similar way. The engineers who thrive in that transformation will be the ones who use these tools to handle more execution, while deepening the judgment, accountability, and situational awareness that automation cannot replicate.
+
+Autopilot transformed aviation, but it did not replace pilots. The automation made the routine safer and more efficient. The humans made the exceptional possible.
+
+That is probably the most accurate preview available of what comes next.
+
+---
+
+*I've been thinking about this analogy for a while because I think it is more precise than most of the discourse around AI and engineering. The pilots are not fighting the autopilot. They are working with it, overseeing it, and being ready for the moment it hands the controls back. That seems like a reasonable model for how to approach the next decade of building software.*

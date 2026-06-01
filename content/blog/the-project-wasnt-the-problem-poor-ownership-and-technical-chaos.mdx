@@ -1,0 +1,234 @@
+---
+title: "The Project Wasn't the Problem: When Poor Ownership Creates Technical Chaos"
+description: "Many troubled software projects don't fail because of the technology. They fail because the people building them never fully understood what problem they were solving, why it existed, or what success looked like — and nobody was willing to admit it."
+date: "2026-06-01"
+updatedAt: "2026-06-01"
+tags:
+  ["Engineering", "Career", "Leadership", "Architecture", "Mindset", "Growth"]
+featured: false
+excerpt: "A project accumulates months of development, dozens of features, and significant complexity. Deadlines are missed. The client is dissatisfied. The project changes hands. And the original team spends more energy defending their decisions than helping the new team succeed. This pattern is common. It is also entirely avoidable."
+---
+
+There is a specific kind of project failure that is harder to talk about than the others.
+
+Not the failure caused by an unreasonable client, or the project that was underfunded from the start, or the system that collapsed under a technical constraint nobody anticipated. Those failures are difficult, but they are at least straightforward to describe. The cause is external, or structural, or genuinely unforeseeable.
+
+The failure I want to discuss is the one that begins with confident engineers in a kick-off meeting, proceeds through months of active development, and ends with a system that is structurally confused, difficult to maintain, and largely disconnected from the problem it was supposed to solve. The failure where, when the project changes hands, the former contributors spend more energy defending their decisions than helping the new team succeed. The failure that everyone involved experienced but nobody involved will fully own.
+
+This failure is common. More common than the engineering industry typically acknowledges. And it is almost always the product of the same underlying causes.
+
+---
+
+## The Overconfidence Trap
+
+Most troubled projects begin not with incompetence, but with confidence.
+
+The initial meeting goes smoothly. The requirements are discussed, and they sound familiar — a CRUD application, an integration with a few services, a dashboard, some scheduled jobs. The team has built things like this before. The timeline gets discussed and someone says "this should take about six weeks" and nobody in the room pushes back, because pushing back would require explaining what you don't know yet, and at this stage you haven't done the analysis that would surface what you don't know.
+
+This is the overconfidence trap, and it is so pervasive in software development that it is almost a rite of passage. You will hear it in the language that surrounds it:
+
+*"This is pretty straightforward."*
+
+*"We've done something similar before."*
+
+*"We don't need a discovery phase — the requirements are clear."*
+
+*"We'll figure out the details as we go."*
+
+Each of these statements is a form of confidence substituting for understanding. They are not lies, exactly — the speaker usually believes them. But confidence at the beginning of a project is not the same as understanding of the project, and conflating the two is where the trouble starts.
+
+What is interesting about this pattern is how it inverts with experience. Junior engineers are often the most confident about timelines. Senior engineers who have spent years on real projects tend to become more cautious over time — not because they are less capable, but because they have developed an accurate sense of how many unknowns exist inside an apparently simple requirement. They have lived through the third-party API that turns out to have undocumented limitations. The legacy system that the integration depends on and that nobody fully understands. The edge cases in user behavior that the requirements never mentioned because the person writing the requirements had not yet discovered them. The production environment that behaves differently from any environment the code was tested in.
+
+The most dangerous engineer in a planning discussion is not the one who does not know enough. It is the one who is certain they already know everything the project requires before the real discovery work has begun.
+
+---
+
+## Coding Before Understanding
+
+A predictable consequence of the overconfidence trap is that development begins before the problem is understood.
+
+This sounds like a simple mistake, and in retrospect it is. But in the forward direction — when you are confident and the client is eager and the team is motivated — starting to write code feels like progress. Starting to understand the requirements in depth feels like delay.
+
+So the architecture gets designed based on the first description of the requirements. The technology choices get made to fit that architecture. The database schema gets created around the initial data model. Abstractions get built to support the features that were discussed in the first meeting.
+
+Weeks later, the understanding of the requirements deepens. Some of the initial assumptions turn out to be wrong. The feature that was described one way in the kickoff is actually more complex than it appeared. The integration that seemed straightforward has a specific constraint that changes the data model. The user workflow that the design was built around is not how users actually behave.
+
+At this point the team faces a choice: refactor the work that was built on incorrect assumptions, or continue building on top of a foundation that was designed for a different understanding of the problem. The second option is almost always chosen, because the first requires admitting that the early progress was partially misdirected — and because there are now deadlines, and the deadlines feel more urgent than the correctness of the foundation.
+
+This is how systems accumulate structural confusion. Not through negligence, exactly. Through building the wrong thing confidently and then building on top of it rather than going back.
+
+---
+
+## The Feature Factory
+
+There is a related pattern that often runs alongside premature development: building features that nobody asked for.
+
+Software development is genuinely creative work, and engineers are genuinely curious people. When you are deep inside a system, you see opportunities that the requirements did not anticipate. A more sophisticated caching strategy that would make this faster. An abstraction layer that would make this more flexible. A configuration system that would allow non-technical users to customize behavior. An integration with a related service that would add value.
+
+Some of these observations are correct and valuable. The problem is not the ideas themselves. The problem is that implementing them — before the core requirements are complete, before the system is validated with real users, before the actual constraints of scale and usage are understood — often produces complexity without corresponding value.
+
+The engineering term for this is premature optimization or, in its broader form, overengineering. But the underlying dynamic is worth naming more plainly: the developer is solving problems they find interesting rather than the problem the project actually requires them to solve.
+
+There is a difference between building value and building complexity, and they look similar from the inside. Building value means the system does what users need it to do, reliably and maintainably. Building complexity means the system does things that are technically interesting or architecturally sophisticated but that do not correspond to what users need, and that make the system harder for other people to understand and maintain.
+
+A large percentage of the systems I have seen that were described as "technical debt problems" were not actually technical debt in the conventional sense — accumulated quick fixes that needed cleanup. They were complexity that was never necessary in the first place, introduced by developers solving hypothetical future problems before the present ones were solved.
+
+---
+
+## Activity Is Not Progress
+
+One of the most disorienting aspects of a troubled project is how much activity there can be while genuine progress stalls.
+
+Code continues to be written. New features continue to appear. The repository accumulates commits. Sprint ceremonies happen on schedule. Status reports indicate that development is ongoing. From the outside — and sometimes from the inside — it looks like the project is moving.
+
+But the core requirements remain incomplete. The fundamental user flows do not work reliably. The performance under realistic load has not been measured. The integration with the third-party system that the entire product depends on is partially implemented and poorly understood. The data model has accumulated inconsistencies that make future development progressively more difficult.
+
+Activity has replaced progress. Motion has substituted for direction.
+
+The reason this happens is that measuring real progress — asking whether the system is actually solving the problem it was built to solve, whether users can accomplish what they need to accomplish, whether the fundamental value proposition of the product is working — is harder and more uncomfortable than measuring activity. Activity is visible. Real progress requires confronting the gap between what was built and what was needed, which is a confrontation most teams prefer to defer.
+
+---
+
+## Unrealistic Estimates and the Chain They Create
+
+Many project failures begin before a line of code is written, in a conversation where timelines were committed to without the analysis that would make those timelines credible.
+
+Consider what a realistic project estimate actually requires: a clear understanding of the requirements, including the edge cases and integration constraints. An assessment of technical dependencies and their unknowns. An honest evaluation of the team's capacity and the other commitments competing for that capacity. A risk assessment that accounts for the things that are likely to go wrong. A margin for the discovery that will occur during development and change the shape of what needs to be built.
+
+Most project estimates are made without any of this. They are made based on a brief description of the requirements and the estimator's feeling about how long "something like this" usually takes. They are then committed to — sometimes in writing — before any of the analysis that would validate or refute them has occurred.
+
+What follows is predictable and follows a consistent sequence.
+
+The initial estimate is too optimistic. Development reveals complexity that was not anticipated. The team works under increasing pressure to meet a timeline that was never realistic. Corners are cut. The review processes that would catch problems are skipped. Documentation that would make the system maintainable is deprioritized. Testing that would catch regressions is deferred. "We'll fix it after launch" becomes the operational philosophy.
+
+After launch — if the project reaches launch — the fixes that were deferred have multiplied. The technical debt that accumulated under deadline pressure is now blocking further development. The system that was built to meet an unrealistic timeline is now too fragile to develop safely. And the deadline was missed anyway.
+
+The six-month project that was estimated as six weeks did not fail because the engineers were incompetent. It failed because assumptions were made in place of analysis, and commitments were made before reality was understood.
+
+---
+
+## The "We'll Fix It Later" Culture
+
+The response to unrealistic deadlines almost always includes some version of this: we will clean it up later, refactor after launch, document it once the pressure eases, address the technical debt in the next cycle.
+
+This is not dishonest. In the moment, it usually feels true. The deadline is real and present. The cleanup feels manageable and future. The math of trading quality now for speed now seems reasonable when the deadline feels existential and the future feels spacious.
+
+The future is never spacious. After launch, there is another deadline. After that, another. The cleanup that was deferred accumulates. The refactoring that was promised gets superseded by new requirements. The documentation that was going to happen "once things settle down" never happens, because things do not settle down.
+
+The result is a system with growing technical debt, increasing fragility, and diminishing developer confidence. Every change carries greater risk than the last because the foundation is less understood and less reliable. Incidents in production become more frequent. Features that should take days take weeks because the system resists change. Developer frustration increases as the gap between what the system should be and what it actually is becomes more visible.
+
+None of this was inevitable. It was the predictable outcome of a series of decisions — each individually defensible under the pressure that existed at the time — that collectively created a system too fragile to develop sustainably.
+
+---
+
+## When Reality Arrives
+
+Eventually the project reaches a point of reckoning. A deadline that cannot be pushed. A client review that surfaces the gap between what was promised and what was delivered. A production incident that exposes the quality problems that were deferred. A stakeholder conversation where the business value delivered is measured against the investment made.
+
+At this point, accountability becomes unavoidable.
+
+Unhealthy teams respond to this moment in a characteristic way: they look outward for the cause. The client changed their requirements. The product owner was unclear. Management set an unrealistic deadline. A previous developer made a decision that constrained what was possible. The technology chosen was the wrong choice. The scope was always too large for the timeline.
+
+Some of these things may be true. Requirements do change. Stakeholders are sometimes unclear. Deadlines are sometimes set by people who do not understand what the work requires. Prior decisions do constrain future work.
+
+But healthy retrospection asks whether these external factors fully explain the outcome, or whether engineering decisions, communication failures, and accountability gaps contributed alongside them. The answer is almost always that both internal and external factors are present — and the internal ones are the ones that the team can actually change.
+
+---
+
+## Confidence vs Competence
+
+There is a useful distinction here that I want to be precise about.
+
+Confidence is believing that something can be done. Competence is understanding what is required to do it successfully. Healthy engineering requires both, and the two are different in important ways.
+
+An engineer who is confident but not yet competent in a given area will often underestimate the complexity of a problem — not maliciously, but because they do not yet know what they do not know. They will commit to timelines that assume the path is smoother than it will prove to be. They will build solutions that address the problem as they initially understood it and struggle when the problem turns out to be different.
+
+An engineer who is competent but not confident will understand the risks clearly and fail to advocate for the time, resources, or process changes needed to address them. Their knowledge becomes passive rather than actionable.
+
+The strongest engineers combine genuine competence — built from experience with real systems, real failures, and real complexity — with the kind of disciplined optimism that allows them to take on ambitious work while maintaining an accurate model of the risks involved. They are not pessimistic about what can be built. They are realistic about what building it requires.
+
+The trouble in many troubled projects is that confidence was present from the beginning and competence — specifically, the competence to understand the full scope of what was being undertaken — was developed too slowly and too late.
+
+---
+
+## The Handover
+
+At some point, troubled projects often change hands.
+
+The new team arrives — another group within the same organization, external consultants, an internal rescue team — with a mandate to stabilize, deliver, or sometimes salvage whatever can be salvaged. They inherit a codebase that was built under different assumptions, under significant pressure, with deferred maintenance and accumulated complexity.
+
+How the original team responds to this transition is, I think, one of the clearest tests of engineering maturity.
+
+The professional response is straightforward in principle, though not always easy in practice. Document what exists. Explain the decisions that were made — including the ones that turned out to be wrong, and why they seemed reasonable at the time. Transfer context generously: the history of specific technical choices, the constraints that shaped the architecture, the known problems and the workarounds that exist for them. Support the new team's understanding without defending the outcomes. Be honest about what worked, what did not, and what would be done differently.
+
+This approach is valuable not because it protects the original team's reputation. It is valuable because it gives the new team the best possible chance of succeeding where the original team struggled — and project success is, ultimately, the goal that should matter most.
+
+The alternative is more common than it should be. The former contributors defend their decisions rather than explaining them. They criticize the new team's approach rather than providing context that would inform it. They interpret changes to the architecture as criticism of their engineering judgment and respond accordingly. They withhold information that would be useful to the new team because sharing it would require acknowledging difficulties.
+
+This behavior is almost always driven by ego rather than engineering reasoning. The system is no longer yours to own. Your relationship to it now is as a source of context for the people who are trying to help it succeed. The metric that should matter — does the product serve its users effectively — does not change based on whether the architecture that enables it is the one you designed.
+
+---
+
+## Ownership vs Attachment
+
+This distinction is worth naming precisely, because engineers sometimes confuse them.
+
+Ownership means taking responsibility for outcomes. It means caring whether the product works, advocating for decisions you believe are right, accepting accountability when things go wrong, and genuinely wanting the project to succeed. Ownership is a professional virtue.
+
+Attachment means something different. It means identifying personally with specific decisions, treating criticism of your code as criticism of you, defending implementations not because they are better but because they are yours, and measuring your professional value by whether your past decisions are validated rather than whether the product succeeds.
+
+Attachment is understandable — we invest significant effort and judgment in the systems we build, and it is natural to feel connected to them. But attachment is also what produces the defensive, friction-generating behavior that makes project transitions worse than they need to be.
+
+The ability to separate yourself from your implementations — to look at code you wrote and evaluate it honestly, to hear a different approach described without experiencing it as an attack, to support a project direction you would not have chosen without treating that as a personal defeat — is one of the harder skills to develop in engineering and one of the more important ones.
+
+It develops, like most important skills, through deliberate practice. The practice of asking not "was I right?" but "is the product better?" The practice of treating a decision being changed as new information rather than a verdict. The practice of understanding that the goal is collective success, not personal validation.
+
+---
+
+## Mature Planning Is Not Slow Planning
+
+I want to address a misconception that I encounter regularly, because it is often the reason that discovery sessions, architecture discussions, and requirement analysis phases get skipped.
+
+The misconception is that thorough planning slows projects down.
+
+What thorough planning actually does is front-load the understanding that will be required regardless. The questions that a discovery session surfaces — about edge cases, integration constraints, user expectations, technical limitations, business rules — do not disappear because you skipped the discovery session. They surface later, after decisions have been built on top of incorrect assumptions, when changing course is considerably more expensive.
+
+The choice is not between planning time and development time. It is between spending time on understanding before you build, when it is cheap to change course, and spending time on understanding after you have built, when course corrections require rework, refactoring, and in some cases starting again.
+
+Teams that invest seriously in requirement analysis, architecture discussion, and risk assessment before significant development begins tend to produce systems that are more aligned with what was actually needed, more maintainable over time, and more deliverable within something approaching the initial estimate.
+
+The planning is not in competition with the work. The planning is how you ensure the work you do is the work that needed to be done.
+
+---
+
+## What Mature Engineers Actually Do
+
+I want to describe what mature engineering practice looks like in the context of the patterns this article has described — not as an idealized checklist, but as a set of behaviors I have seen consistently in the engineers whose projects tend to go well.
+
+They ask clarifying questions before making technical commitments. Not to delay, but because they understand that an incorrect assumption made early produces significantly more work than a delayed start with better understanding.
+
+They push back on timeline estimates that are not grounded in analysis. This is uncomfortable, because timeline discussions often involve people who have business pressures that engineering analysis does not fully account for. But engineers who consistently accept estimates they know to be unrealistic contribute to the chain of deferred quality and missed deadlines as surely as any other cause.
+
+They build for the problem that currently exists, not for hypothetical future scale. They add complexity when the requirement for it is demonstrated, not when it is anticipated.
+
+They document decisions as they make them — not in exhaustive architecture documents that nobody reads, but in the brief, contextual explanations that allow future developers to understand why something is the way it is, rather than only that it is.
+
+When projects transition, they focus their energy on making the transition successful rather than on protecting their professional legacy. They share context generously, acknowledge limitations honestly, and support the new team's ability to understand and improve the system.
+
+None of this is extraordinary. It is professional engineering practice. But it is practice that requires maturity that is not developed automatically — it is developed by working through projects that struggled, understanding honestly why they struggled, and adjusting accordingly.
+
+---
+
+## Closing
+
+A project's success is not measured by how much code was written, how many features were added, how sophisticated the architecture is, or who receives credit for the work. It is measured by whether the product solves the problem it was built to solve and delivers genuine value to the people who use it.
+
+Many projects do not fail because the engineers were incapable. They fail because assumptions replaced discovery, confidence replaced understanding, and commitments were made before reality was fully understood. The technical complexity that accumulated was not the cause of failure — it was the symptom of building without adequate understanding of the problem.
+
+Great engineers are not remembered for defending every past decision. They are remembered for helping projects succeed — even when success requires change, collaboration, and the admission that a better approach exists. They are optimistic enough to take on ambitious work and disciplined enough to understand what that work actually requires before they commit to it.
+
+The project was rarely the problem. The habits, assumptions, and accountability failures that surrounded it usually were. And those are things that every engineer, at every level of experience, can choose to address.
+
+---
+
+*Every troubled project I have worked on — or observed closely — had warning signs that were visible early and not acted on. The missed requirement question. The timeline commitment that nobody believed but nobody challenged. The complexity that was interesting but not necessary. Understanding these patterns is, I think, one of the more valuable things experience can provide — if the experience is examined honestly rather than defended.*

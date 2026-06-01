@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAllBlogPosts, getAllTags, getFeaturedPost } from "@/lib/blog";
 import { BlogClient } from "@/components/blog/blog-client";
 import { getAllPostViews } from "@/app/actions/views";
+import { getAllPostRatings } from "@/app/actions/ratings";
 
 const BASE_URL = "https://prantadas.vercel.app";
 
@@ -33,16 +34,17 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const [posts, tags, featuredPost, viewCounts] = await Promise.all([
+  const [posts, tags, featuredPost, viewCounts, ratings] = await Promise.all([
     getAllBlogPosts(),
     getAllTags(),
     getFeaturedPost(),
     getAllPostViews(),
+    getAllPostRatings(),
   ]);
 
   return (
     <main className="min-h-screen bg-background noise-overlay">
-      <BlogClient posts={posts} tags={tags} featuredPost={featuredPost} viewCounts={viewCounts} />
+      <BlogClient posts={posts} tags={tags} featuredPost={featuredPost} viewCounts={viewCounts} ratings={ratings} />
     </main>
   );
 }

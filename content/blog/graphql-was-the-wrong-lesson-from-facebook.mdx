@@ -1,0 +1,114 @@
+---
+title: "GraphQL Was the Wrong Lesson Learned From Facebook"
+description: "GraphQL is an excellent solution to a specific problem at a specific scale. Most teams that adopted it did not have that problem. What they got instead was N+1 complexity, schema maintenance overhead, and a client API that over-fetches because it technically can."
+date: "2026-06-01"
+updatedAt: "2026-06-01"
+tags:
+  ["Backend", "API", "Architecture", "Node.js", "Engineering", "System Design"]
+featured: false
+excerpt: "Facebook built GraphQL to solve a real problem at genuine scale. The engineering community looked at the solution and adopted it without fully understanding the problem it was built for. Years later, many teams are maintaining schema complexity, DataLoader infrastructure, and N+1 query patterns that two well-designed REST endpoints would have prevented."
+---
+
+In 2012, Facebook had a problem.
+
+They were building a mobile application serving hundreds of millions of users across devices with varying capabilities, network conditions, and screen sizes. Their existing APIs were designed for desktop web and did not map cleanly onto what mobile clients actually needed. A single news feed render required multiple round trips to multiple endpoints. Some endpoints returned far more data than any given client needed. Others returned too little, requiring additional requests. The mismatch between what the API provided and what the clients needed was creating real performance problems at genuine scale.
+
+GraphQL was the internal solution Facebook built for this problem. It allowed clients to declare exactly what data they needed in a single request and receive exactly that — no more, no less. It addressed over-fetching and under-fetching simultaneously. It provided a typed schema that clients and servers could reason about together. For Facebook's specific situation — massive client diversity, extreme scale, teams working across many surfaces against a shared data graph — it was an elegant and well-considered solution.
+
+In 2015, Facebook open-sourced it. The engineering community saw a new technology from a well-respected engineering organization, read the technical description, and began adopting it.
+
+Most of them did not have Facebook's problem. Many of them now have problems they did not have before.
+
+---
+
+## What Problem GraphQL Actually Solved
+
+To understand why GraphQL has been the wrong choice for many teams that adopted it, you need to understand the specific conditions it was designed for.
+
+Facebook's engineering organization has hundreds of teams building across web, iOS, Android, and internal tooling — all against overlapping data models. A notification feature, a profile page, a news feed, a marketplace listing — these surfaces need different shapes of largely overlapping data. Under a traditional REST model, you face a choice: build generic endpoints that return everything any client might need (over-fetching), build surface-specific endpoints for each use case (proliferation of endpoints), or make multiple requests and assemble the result on the client (under-fetching and latency).
+
+At Facebook's scale and team structure, all three options have meaningful costs. GraphQL solved them by inverting the model: instead of servers deciding what data to return, clients declare what they need. The server's job becomes resolving those declarations against the underlying data graph.
+
+This is genuinely powerful for the problem it addresses. The question is whether you have that problem.
+
+Most teams that adopted GraphQL had an API with a manageable number of endpoints, a small number of client surfaces, and a team structure where the frontend and backend engineers could talk to each other. Their over-fetching problem, if they had one, was two fields on a JSON response that the client didn't use. Their under-fetching problem, if they had one, was one additional endpoint.
+
+---
+
+## What They Got Instead
+
+When a team without Facebook's problem adopts GraphQL, they typically get a set of new problems in exchange for the ones they thought they were solving.
+
+**The N+1 query problem.** GraphQL resolvers are called independently for each field. If you fetch a list of twenty posts and each post has an author, and the author resolver fetches from the database individually, you have made twenty-one database queries where one would have been sufficient. This is the N+1 problem and it is not a GraphQL bug — it is the natural consequence of how field resolution works. The standard solution is DataLoader: a batching and caching utility that defers field resolution until after the parent query completes, then batches the child queries. DataLoader is not trivial to implement correctly, and every team that adopts GraphQL eventually rebuilds some version of it.
+
+**Schema design as ongoing maintenance.** A REST endpoint has an implicit contract: this endpoint, these parameters, this response shape. A GraphQL schema is an explicit, versioned, typed contract that spans the entire API surface. This is genuinely useful at Facebook's scale where schema drift across hundreds of endpoints is a real coordination problem. At a team of six engineers with a single primary client, it is overhead. Schema changes require migration planning. Deprecated fields accumulate because removing them might break clients. The schema becomes a document that represents not what the API does but what it has ever done.
+
+**Clients that over-fetch because they can.** One of the theoretical benefits of GraphQL is that clients request only what they need. In practice, frontend developers working with a flexible schema often request more than they strictly need because it is easy and convenient to do so. The query that started as five fields expands gradually to fifteen as new requirements appear and nobody goes back to trim the old ones. The supposed solution to over-fetching has, in many teams, simply moved where over-fetching happens — from the server controlling response size to the client controlling query breadth.
+
+**Authorization complexity pushed to the wrong layer.** In a REST API, authorization logic sits naturally in middleware: this endpoint requires this permission. In GraphQL, authorization becomes a per-field or per-resolver concern because the flexible query model means clients can ask for any combination of data. Teams that adopt GraphQL without accounting for this end up with authorization logic scattered across resolvers, or a permission-checking mechanism bolted onto the schema, or — in the worst cases — data exposure vulnerabilities because the authorization model was designed for a specific set of endpoints and the flexible query model created combinations nobody anticipated.
+
+---
+
+## The Two REST Endpoints You Didn't Write
+
+When I look at GraphQL implementations in teams that did not have Facebook's problem, I often find that the underlying need was simple and could have been addressed simply.
+
+A mobile client needs a slightly different shape of user data than the web client. The REST solution: a query parameter, or a dedicated mobile endpoint, or a response transformation in the existing endpoint based on a header. Three approaches, any of which takes less than a day to implement and requires no additional infrastructure.
+
+A dashboard page needs data from three different resources. The REST solution: a dedicated endpoint that aggregates those three resources for exactly the purpose the dashboard requires. One endpoint, one query, returns exactly what the dashboard needs. The "three separate requests" problem that GraphQL is often proposed to solve was always solvable — it just required writing one more server-side endpoint rather than moving the composition responsibility to the client.
+
+These solutions feel less sophisticated than implementing a typed query language with a schema explorer and automatic documentation. They are less sophisticated. They are also significantly less complex to operate, debug, and maintain over time — and they solve the problem.
+
+Sophistication is not the same as fit. A technical solution can be genuinely impressive engineering and still be wrong for the problem at hand.
+
+---
+
+## When GraphQL Is Actually the Right Choice
+
+I want to be precise about this, because GraphQL is not a bad technology. It is a technology with specific strengths that are relevant in specific contexts.
+
+GraphQL is well-suited to situations where: multiple client surfaces need meaningfully different data shapes from overlapping data models; the teams building those surfaces are large enough that coordinating REST endpoint changes creates friction; the underlying data model is genuinely graph-like, with many interconnected entities; and the engineering organization has the operational maturity to manage schema evolution, DataLoader patterns, and authorization complexity correctly.
+
+Public APIs where you do not control the clients are another legitimate use case. Giving external developers a typed, self-documenting query interface is genuinely more flexible than a fixed set of REST endpoints.
+
+Developer tooling, internal portals, and platforms where flexibility is explicitly valued over performance predictability can also be appropriate.
+
+What GraphQL is not suited to is a team of four engineers building a SaaS with a web client and a mobile client who looked at what Netflix or Shopify was doing and decided their API should work the same way because they admired the engineering.
+
+---
+
+## The Real Lesson From Facebook
+
+The mistake was not learning from Facebook. Learning from organizations with genuine engineering scale is valuable. The mistake was learning the wrong thing.
+
+The lesson people took: GraphQL is how sophisticated teams build APIs.
+
+The lesson that was actually there: Facebook had a genuine problem with data fetching at scale across massive client diversity, investigated the problem carefully, and built a purpose-specific solution. The solution was appropriate to the problem.
+
+The transferable lesson is the second part: investigate your actual problem carefully and build or adopt solutions appropriate to it. Not the first part: adopt the solution Facebook adopted regardless of whether your problem resembles theirs.
+
+This is the pattern that causes a significant proportion of unnecessary engineering complexity: looking at what well-resourced engineering organizations built for their specific problems and adopting the outputs without the analysis of whether the inputs match. Facebook's scale, team structure, and client diversity are not yours. Their solutions are calibrated to conditions you probably do not have.
+
+---
+
+## What This Means for Existing GraphQL Implementations
+
+If your team has a GraphQL implementation that is working well — that your frontend developers find genuinely productive, that your performance is acceptable, that your schema is manageable — there is no argument for ripping it out. Working software that serves its purpose is the goal, and migration has real costs.
+
+But if your team is maintaining DataLoader complexity for performance you are not achieving, managing schema migrations for schema evolution that provides no real benefit at your team size, or debugging authorization edge cases created by the flexibility of the query model — it is worth asking honestly whether the complexity is serving you or whether it is legacy of an adoption decision made because the technology was exciting and well-regarded.
+
+The question is not whether GraphQL is good engineering. It is. The question is whether it is engineering that fits the problem you actually have.
+
+---
+
+## Closing
+
+Facebook built GraphQL for Facebook's problem. It is excellent at that problem. The engineering community saw a sophisticated solution from a respected source and adopted it broadly, often without fully understanding what problem it was built for or whether their situation resembled it.
+
+The result, for many teams, has been additional complexity — N+1 queries, DataLoader infrastructure, schema maintenance, authorization edge cases — in exchange for solving problems that could have been addressed more simply.
+
+The lesson from Facebook's engineering is not the specific technology they produced. It is the practice of understanding your actual problem clearly before designing or adopting a solution. That practice is harder to copy than a technology, and considerably more valuable.
+
+---
+
+*GraphQL is genuinely useful for the problem it was designed for. If you are building a public API, a developer platform, or a product with genuine client diversity at scale, it may be exactly right. The point is not that it is bad — it is that most teams adopted it without asking whether their situation matched the conditions it was designed for.*

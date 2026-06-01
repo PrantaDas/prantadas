@@ -27,20 +27,25 @@ import { LikeButton } from "@/components/blog/like-button";
 import { CommentSection } from "@/components/blog/comment-section";
 import { getComments } from "@/app/actions/comments";
 import { getPostViews } from "@/app/actions/views";
+import { getPostRating, getRatingDistribution } from "@/app/actions/ratings";
 import { BookmarkButton } from "@/components/blog/bookmark-button";
 import { ReadCompletion } from "@/components/blog/read-completion";
 import { FloatingCommentButton } from "@/components/blog/floating-comment-button";
+import { ScrollToTop } from "@/components/blog/scroll-to-top";
+import { EngagementModal } from "@/components/blog/engagement-modal";
+import { RatingDistribution } from "@/components/blog/rating-distribution";
+import { ViewCountDisplay } from "@/components/blog/view-count-display";
 import { format } from "date-fns";
 import {
   ArrowLeft,
   ArrowRight,
   Calendar,
   Clock,
-  Eye,
   Github,
   Linkedin,
   Mail,
   MessageSquare,
+  Star,
   Tag,
   RefreshCw,
 } from "lucide-react";
@@ -144,11 +149,13 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getBlogPost(slug);
   if (!post) notFound();
 
-  const [related, { prev, next }, comments, viewCount] = await Promise.all([
+  const [related, { prev, next }, comments, viewCount, rating, distribution] = await Promise.all([
     getRelatedPosts(slug, post.tags, 3),
     getAdjacentPosts(slug),
     getComments(slug),
     getPostViews(slug),
+    getPostRating(slug),
+    getRatingDistribution(slug),
   ]);
 
   const formattedDate = post.date
@@ -239,10 +246,12 @@ export default async function BlogPostPage({ params }: Props) {
         <ReadingProgress />
         <ReadCompletion slug={post.slug} title={post.title} />
         <FloatingCommentButton commentCount={comments.length} />
+        <ScrollToTop />
+        <EngagementModal slug={post.slug} title={post.title} />
         <div className="max-w-5xl mx-auto px-6 py-16 md:py-20">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="mb-8">
-            <ol className="flex items-center gap-2 text-sm font-mono text-white/30">
+            <ol className="flex items-center gap-2 text-sm font-mono text-white/50">
               <li>
                 <Link
                   href="/"
@@ -274,32 +283,16 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Main column */}
             <div>
               <header className="mb-10">
-                <div
-                  className="flex flex-wrap gap-2 mb-5"
-                  role="list"
-                  aria-label="Post tags"
-                >
-                  {post.tags.map((tag) => (
-                    <Link
-                      key={tag}
-                      href={`/blog/tag/${encodeURIComponent(tag)}`}
-                      role="listitem"
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/8 border border-primary/15 text-primary/70 text-xs font-mono hover:bg-primary/15 hover:text-primary transition-colors"
-                    >
-                      <Tag className="w-2.5 h-2.5" aria-hidden="true" />
-                      {tag}
-                    </Link>
-                  ))}
-                </div>
-
-                <h1 className="font-display text-3xl sm:text-4xl md:text-[2.6rem] font-bold text-white leading-tight mb-5">
+                {/* Title first — most important thing on the page */}
+                <h1 className="font-display text-3xl sm:text-4xl md:text-[2.6rem] font-bold text-white leading-tight mb-4">
                   {post.title}
                 </h1>
-                <p className="text-white/55 text-base md:text-lg leading-relaxed mb-7">
+                <p className="text-white/50 text-base md:text-lg leading-relaxed mb-6">
                   {post.description}
                 </p>
 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 py-4 border-y border-white/6">
+                {/* Author + meta row */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 py-4 border-y border-white/6 mb-4">
                   <div className="flex items-center gap-3 shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -318,7 +311,7 @@ export default async function BlogPostPage({ params }: Props) {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 sm:ml-auto text-xs font-mono text-white/30">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 sm:ml-auto text-xs font-mono text-white/50">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
                       <time dateTime={new Date(post.date).toISOString()}>
@@ -335,11 +328,19 @@ export default async function BlogPostPage({ params }: Props) {
                       <Clock className="w-3.5 h-3.5" aria-hidden="true" />
                       {post.readingTime}
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <Eye className="w-3.5 h-3.5" aria-hidden="true" />
-                      {viewCount.toLocaleString()}{" "}
-                      {viewCount === 1 ? "view" : "views"}
-                    </span>
+                    <ViewCountDisplay initialCount={viewCount} />
+                    {rating.count > 0 && (
+                      <span
+                        className="flex items-center gap-1.5"
+                        title={`${rating.avg.toFixed(1)} / 5 from ${rating.count} rating${rating.count !== 1 ? "s" : ""}`}
+                      >
+                        <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+                        <span className="text-yellow-400/80">
+                          {rating.avg.toFixed(1)}
+                        </span>
+                        <span className="text-white/40">({rating.count})</span>
+                      </span>
+                    )}
                     {comments.length > 0 && (
                       <a
                         href="#comments"
@@ -355,6 +356,25 @@ export default async function BlogPostPage({ params }: Props) {
                       </a>
                     )}
                   </div>
+                </div>
+
+                {/* Tags — after metadata so title is the first thing readers see */}
+                <div
+                  className="flex flex-wrap gap-2"
+                  role="list"
+                  aria-label="Post tags"
+                >
+                  {post.tags.map((tag) => (
+                    <Link
+                      key={tag}
+                      href={`/blog/tag/${encodeURIComponent(tag)}`}
+                      role="listitem"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/4 border border-white/8 text-white/40 text-xs font-mono hover:bg-primary/8 hover:border-primary/20 hover:text-primary/80 transition-colors"
+                    >
+                      <Tag className="w-2.5 h-2.5" aria-hidden="true" />
+                      {tag}
+                    </Link>
+                  ))}
                 </div>
               </header>
 
@@ -415,7 +435,7 @@ export default async function BlogPostPage({ params }: Props) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Pranta Das on GitHub"
-                      className="text-white/30 hover:text-white/70 transition-colors"
+                      className="text-white/50 hover:text-white/70 transition-colors"
                     >
                       <Github className="w-4 h-4" aria-hidden="true" />
                     </a>
@@ -424,20 +444,23 @@ export default async function BlogPostPage({ params }: Props) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Pranta Das on LinkedIn"
-                      className="text-white/30 hover:text-white/70 transition-colors"
+                      className="text-white/50 hover:text-white/70 transition-colors"
                     >
                       <Linkedin className="w-4 h-4" aria-hidden="true" />
                     </a>
                     <a
                       href="mailto:prantodas043@gmail.com"
                       aria-label="Email Pranta Das"
-                      className="text-white/30 hover:text-white/70 transition-colors"
+                      className="text-white/50 hover:text-white/70 transition-colors"
                     >
                       <Mail className="w-4 h-4" aria-hidden="true" />
                     </a>
                   </nav>
                 </div>
               </div>
+
+              {/* Rating distribution */}
+              {rating.count > 0 && <RatingDistribution rating={rating} distribution={distribution} />}
 
               {/* Comments — placed here so readers can react without scrolling past "more reading" */}
               <CommentSection slug={post.slug} initialComments={comments} />
@@ -446,35 +469,32 @@ export default async function BlogPostPage({ params }: Props) {
               {(prev || next) && (
                 <nav
                   aria-label="Article navigation"
-                  className="mt-10 grid sm:grid-cols-2 gap-4"
+                  className="mt-10 grid sm:grid-cols-2 gap-3"
                 >
-                  {prev && (
+                  {prev ? (
                     <Link
                       href={`/blog/${prev.slug}`}
-                      className="group flex flex-col gap-2 p-4 rounded-xl border border-white/6 hover:border-white/12 transition-colors"
+                      className="group flex flex-col gap-2 p-4 rounded-xl border border-white/10 bg-white/2 hover:border-primary/25 hover:bg-primary/4 transition-all duration-200"
                     >
-                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/30 group-hover:text-white/50 transition-colors">
+                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/35 group-hover:text-primary/60 transition-colors">
                         <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
                         Previous
                       </span>
-                      <span className="text-sm font-medium text-white/70 group-hover:text-white/90 transition-colors line-clamp-2 leading-snug">
+                      <span className="text-sm font-medium text-white/65 group-hover:text-white/90 transition-colors line-clamp-2 leading-snug">
                         {prev.title}
                       </span>
                     </Link>
-                  )}
+                  ) : <div />}
                   {next && (
                     <Link
                       href={`/blog/${next.slug}`}
-                      className="group flex flex-col gap-2 p-4 rounded-xl border border-white/6 hover:border-white/12 transition-colors sm:ml-auto sm:text-right"
+                      className="group flex flex-col gap-2 p-4 rounded-xl border border-white/10 bg-white/2 hover:border-primary/25 hover:bg-primary/4 transition-all duration-200 sm:text-right"
                     >
-                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/30 group-hover:text-white/50 transition-colors sm:justify-end">
+                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/35 group-hover:text-primary/60 transition-colors sm:justify-end">
                         Next
-                        <ArrowRight
-                          className="w-3.5 h-3.5"
-                          aria-hidden="true"
-                        />
+                        <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                       </span>
-                      <span className="text-sm font-medium text-white/70 group-hover:text-white/90 transition-colors line-clamp-2 leading-snug">
+                      <span className="text-sm font-medium text-white/65 group-hover:text-white/90 transition-colors line-clamp-2 leading-snug">
                         {next.title}
                       </span>
                     </Link>
@@ -484,7 +504,7 @@ export default async function BlogPostPage({ params }: Props) {
 
               {/* Related posts */}
               {related.length > 0 && (
-                <section aria-label="Related articles" className="mt-12">
+                <section aria-label="Related articles" className="mt-14 pt-10 border-t border-white/6">
                   <h2 className="font-display text-lg font-semibold text-white/70 mb-5">
                     Related Articles
                   </h2>
@@ -499,7 +519,7 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* Sticky ToC sidebar */}
             <aside className="hidden lg:block">
-              <div className="sticky top-20">
+              <div className="sticky top-20 max-h-[calc(100vh-5rem)] flex flex-col">
                 <TableOfContents
                   content={post.content}
                   commentCount={comments.length}

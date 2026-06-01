@@ -7,10 +7,10 @@ import { generateCommentAvatar } from "@/lib/avatar";
 import { revalidatePath } from "next/cache";
 
 const commentSchema = z.object({
-  name:    z.string().min(2, "Name must be at least 2 characters").max(50, "Name is too long"),
+  name:    z.string().min(2, "Name must be at least 2 characters").max(50),
   email:   z.string().email("Enter a valid email address"),
-  message: z.string().min(10, "Comment must be at least 10 characters").max(1000, "Comment is too long"),
-  rating:  z.number().int().min(1, "Please select a rating").max(5, "Rating cannot exceed 5"),
+  message: z.string().min(10, "Comment must be at least 10 characters").max(1000),
+  rating:  z.number().int().min(1, "Please select a rating").max(5),
 });
 
 export type CommentInput = z.infer<typeof commentSchema>;
@@ -38,7 +38,6 @@ export async function submitComment(
   visitorId?: string,
 ): Promise<ActionResult> {
   const parsed = commentSchema.safeParse(input);
-
   if (!parsed.success) {
     const fieldErrors: ActionResult["fieldErrors"] = {};
     for (const [field, messages] of Object.entries(parsed.error.flatten().fieldErrors)) {
@@ -49,27 +48,22 @@ export async function submitComment(
 
   await connectDB();
 
-  // Block duplicate: one comment per visitor per post
   if (visitorId) {
     const existing = await Comment.exists({ slug, visitorId });
-    if (existing) {
-      return { success: false, duplicate: true, error: "You've already commented on this post." };
-    }
+    if (existing) return { success: false, duplicate: true, error: "You've already commented on this post." };
   }
 
-  const [avatar] = await Promise.all([
-    generateCommentAvatar(parsed.data.name),
-  ]);
+  const avatarResult = await generateCommentAvatar(parsed.data.name);
 
   try {
     await Comment.create({
       slug,
       ...parsed.data,
-      ...(avatar     ? { avatar }     : {}),
-      ...(visitorId  ? { visitorId }  : {}),
+      ...(avatarResult  ? { avatar: avatarResult.url, avatarId: avatarResult.imageId } : {}),
+      ...(visitorId     ? { visitorId } : {}),
     });
     revalidatePath(`/blog/${slug}`);
-    return { success: true, avatar: avatar ?? undefined };
+    return { success: true, avatar: avatarResult?.url };
   } catch {
     return { success: false, error: "Failed to save comment. Please try again." };
   }

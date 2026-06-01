@@ -190,6 +190,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans bg-background text-foreground antialiased`}
+        suppressHydrationWarning={true}
       >
         <TrackVisit />
         {children}

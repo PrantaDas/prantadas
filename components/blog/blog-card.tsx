@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, Calendar, ArrowUpRight, Eye } from "lucide-react";
+import { Clock, Calendar, ArrowUpRight, Eye, Star } from "lucide-react";
 import { format } from "date-fns";
 import type { BlogPost } from "@/lib/blog";
 import { cn } from "@/lib/utils";
@@ -25,10 +25,11 @@ interface BlogCardProps {
   post: BlogPost;
   featured?: boolean;
   viewCount?: number;
+  rating?: { avg: number; count: number };
   className?: string;
 }
 
-export function BlogCard({ post, featured = false, viewCount, className }: BlogCardProps) {
+export function BlogCard({ post, featured = false, viewCount, rating, className }: BlogCardProps) {
   const formattedDate = post.date
     ? format(new Date(post.date), "MMM d, yyyy")
     : "";
@@ -56,7 +57,7 @@ export function BlogCard({ post, featured = false, viewCount, className }: BlogC
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-mono">
             ★ Featured
           </span>
-          <div className="flex items-center gap-3 text-xs font-mono text-white/30">
+          <div className="flex items-center gap-3 text-xs font-mono text-white/50">
             {viewCount !== undefined && (
               <span className="flex items-center gap-1">
                 <Eye className="w-3 h-3" aria-hidden="true" />
@@ -67,6 +68,12 @@ export function BlogCard({ post, featured = false, viewCount, className }: BlogC
               <Clock className="w-3 h-3" aria-hidden="true" />
               {post.readingTime}
             </span>
+            {rating && rating.count > 0 && (
+              <span className="flex items-center gap-1" title={`${rating.avg.toFixed(1)} / 5 from ${rating.count} ratings`}>
+                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+                <span className="text-yellow-400/80">{rating.avg.toFixed(1)}</span>
+              </span>
+            )}
           </div>
         </div>
 
@@ -113,7 +120,7 @@ export function BlogCard({ post, featured = false, viewCount, className }: BlogC
           {post.title}
         </h3>
         <ArrowUpRight
-          className="w-4 h-4 text-white/20 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5"
+          className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5"
           aria-hidden="true"
         />
       </div>
@@ -128,7 +135,11 @@ export function BlogCard({ post, featured = false, viewCount, className }: BlogC
             <TagPill key={tag} tag={tag} />
           ))}
         </div>
-        <div className="flex items-center gap-3 text-xs text-white/30 font-mono">
+        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-white/40 font-mono">
+          <span className="flex items-center gap-1">
+            <Calendar className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+            {formattedDate}
+          </span>
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
             {post.readingTime}
@@ -137,6 +148,12 @@ export function BlogCard({ post, featured = false, viewCount, className }: BlogC
             <span className="flex items-center gap-1">
               <Eye className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
               {fmt(viewCount)}
+            </span>
+          )}
+          {rating && rating.count > 0 && (
+            <span className="flex items-center gap-1" title={`${rating.avg.toFixed(1)} / 5`}>
+              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+              <span className="text-yellow-400/80">{rating.avg.toFixed(1)}</span>
             </span>
           )}
         </div>

@@ -4,9 +4,19 @@ const multiavatar = require("@multiavatar/multiavatar");
 const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
 
 /** Generate a unique SVG avatar for a name and upload it to imgbb. Returns the hosted URL or null on failure. */
+export async function deleteImgbbImage(imageId: string): Promise<void> {
+  try {
+    await fetch(`https://api.imgbb.com/1/image/${imageId}?key=${IMGBB_API_KEY}`, {
+      method: "DELETE",
+    });
+  } catch {
+    // best-effort deletion — don't throw
+  }
+}
+
 export async function generateCommentAvatar(
   name: string,
-): Promise<string | null> {
+): Promise<{ url: string; imageId: string } | null> {
   if (!IMGBB_API_KEY) {
     console.warn(
       "IMGBB_API_KEY is not set. Comment avatars will not be generated.",
@@ -40,12 +50,11 @@ export async function generateCommentAvatar(
 
     const data = (await res.json()) as {
       success: boolean;
-      data?: { display_url: string };
+      data?: { id: string; display_url: string };
     };
 
-    return data.success && data.data?.display_url
-      ? data.data.display_url
-      : null;
+    if (!data.success || !data.data) return null;
+    return { url: data.data.display_url, imageId: data.data.id };
   } catch {
     return null;
   }

@@ -75,9 +75,14 @@ export default async function DashboardPage() {
       </div>
 
       {/* Recent comments */}
-      {recent.length > 0 && (
-        <div>
-          <h2 className="text-xs font-mono text-white/30 uppercase tracking-widest mb-3">Recent Comments</h2>
+      <div>
+        <h2 className="text-xs font-mono text-white/30 uppercase tracking-widest mb-3">Recent Comments</h2>
+        {recent.length === 0 ? (
+          <div className="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/2 text-white/25">
+            <MessageSquare className="w-4 h-4 flex-shrink-0" />
+            <span className="text-sm font-mono">No comments yet — they'll appear here once readers engage.</span>
+          </div>
+        ) : (
           <div className="space-y-2">
             {recent.map((c) => (
               <div key={c.id} className="flex items-start gap-3 p-3.5 rounded-xl border border-white/5 bg-white/2">
@@ -102,8 +107,8 @@ export default async function DashboardPage() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ export interface IComment extends Document {
   message: string;
   rating: number;
   avatar?: string;
+  avatarId?: string;   // imgbb image ID for deletion
   visitorId?: string;
   createdAt: Date;
 }
@@ -19,12 +20,12 @@ const CommentSchema = new Schema<IComment>(
     message:   { type: String, required: true, trim: true, maxlength: 1000 },
     rating:    { type: Number, required: true, min: 1, max: 5 },
     avatar:    { type: String },
+    avatarId:  { type: String },
     visitorId: { type: String, index: true },
   },
   { timestamps: true },
 );
 
-// Prevent one visitor from posting twice on the same post
 CommentSchema.index({ slug: 1, visitorId: 1 });
 
 export const Comment: Model<IComment> =

@@ -1,0 +1,206 @@
+---
+title: "Tutorial Addiction: Why Some Developers Keep Learning but Never Truly Grow"
+description: "The software industry has never had more learning resources. Yet many developers spend years consuming courses and tutorials and still feel stuck. Consuming information and developing engineering ability are not the same thing."
+date: "2026-06-01"
+updatedAt: "2026-06-01"
+tags:
+  ["Career", "Engineering", "Mindset", "Growth", "Junior Developer", "Learning"]
+featured: false
+excerpt: "Many developers complete dozens of courses, collect certificates, and watch hundreds of hours of tutorials — and still freeze when asked to solve a real problem independently. This is not a knowledge problem. It is a practice problem. Here is the honest difference between learning about engineering and becoming an engineer."
+---
+
+There is a developer I want you to picture. They have been coding for two years. In that time they have completed three bootcamp curricula, eight Udemy courses, two full roadmaps from a popular learning platform, and roughly two hundred hours of YouTube tutorials. Their GitHub has twelve repositories — all of them are "build a Netflix clone with React," "build a Twitter clone with Node.js," or variations on that pattern.
+
+Ask them to explain what a closure is and they can explain it clearly. Ask them to describe the difference between REST and GraphQL and they will give you a textbook answer. Ask them to build something from scratch — a small tool for a real use case, a simple API for an actual problem, anything where the requirements aren't already defined for them — and they freeze.
+
+Not because they are not smart. Not because they haven't put in the hours. But because they have optimized for a skill that does not transfer directly to engineering: the skill of following along.
+
+---
+
+## Why Courses Feel Like Progress
+
+Structured learning is genuinely appealing, and for good reasons.
+
+A well-designed course gives you a clear starting point and a defined endpoint. It sequences the material so that each concept builds on the previous one. It provides worked examples with predictable outcomes. It removes the most paralyzing part of learning something new — the uncertainty about whether you are even approaching the right things in the right order.
+
+For someone new to programming, this scaffolding is valuable. Courses are excellent for learning fundamentals, building initial mental models, and getting from zero to functional quickly. The first course a developer takes often teaches them more per hour than almost any other resource they will encounter, because the distance from knowing nothing to knowing something is steep and courses help you cover it efficiently.
+
+The problem is not the courses. The problem is what happens when the scaffolding becomes a permanent fixture rather than a temporary support.
+
+When you are inside a course, progress feels continuous and measurable. You complete a section. A checkmark appears. The percentage climbs. There is something neurologically satisfying about this — a sense of forward movement, of accumulation, of competence being built. It is a reliable hit of progress that the messy, ambiguous, frequently frustrating experience of building something real does not easily replicate.
+
+And so some developers chase that feeling indefinitely. Another course. Another certificate. Another guided project. Each one provides the sensation of learning without requiring the confrontation with uncertainty that genuine skill development demands.
+
+---
+
+## The Hidden Shape of the Trap
+
+Tutorial dependency does not announce itself as a problem. It disguises itself as diligence.
+
+The developer working through their fifth course believes they are investing in their skills. The developer rebuilding a guided project for the third time believes they are reinforcing their understanding. From the outside — and from the inside — this looks like serious, committed learning.
+
+The trap reveals itself only when the scaffolding is removed.
+
+The canonical symptom is this: the developer can follow a tutorial perfectly and produce working code. Remove the tutorial, give them the same task with a blank editor and no guidance, and they cannot start. Not because they forgot the syntax. Because the tutorial was not teaching them to build — it was teaching them to follow. Following and building look identical while the tutorial is present. They diverge completely the moment it is absent.
+
+Other symptoms are subtler:
+
+**Documentation paralysis.** The developer has learned exclusively through explanations written for beginners. Official documentation — which is typically written for practitioners — feels overwhelming. They search for a tutorial about the documentation rather than reading it directly.
+
+**Stack Overflow dependency without comprehension.** They find a code snippet that solves their immediate error, paste it in, move on, and do not understand why it works. The same class of error appears two weeks later in a slightly different form and they search again.
+
+**Certificate collection without application.** The developer has completed courses on React, Vue, Angular, Python, Django, Flask, Docker, Kubernetes, AWS, and GraphQL. They have not built a single project that required more than two of these technologies together.
+
+**Roadmap following as a substitute for direction.** They find a new roadmap that recommends a new set of resources. They follow the roadmap. They complete the resources. They look for the next roadmap.
+
+None of this is stupidity. It is a rational response to the incentive structure of tutorial content, which is optimized for engagement and completion, not for the sometimes uncomfortable development of genuine capability.
+
+---
+
+## Two Developers, Three Years Later
+
+Consider two developers who start coding at the same time.
+
+Developer A is thorough and diligent. In three years, they complete twenty courses, watch several hundred hours of tutorials, and build twelve guided projects. Their knowledge is broad. They understand the concepts. They can discuss React hooks, explain database indexing, and describe the OAuth flow. Their GitHub profile looks active. Their certificates are real.
+
+Developer B is messier about it. They complete four courses — enough to understand the fundamentals — and then start building things. The first project is embarrassing: inconsistent naming, no error handling, SQL queries written directly in route handlers, a frontend that does not work on mobile. They throw it away and build something else. The second is better. They encounter a bug they cannot solve from memory and spend four hours reading the Express documentation. They read a Stack Overflow answer and follow the link to the RFC it references. They do not fully understand the RFC but they understand more than they did. The third project gets deployed. Real users find bugs they did not anticipate. They fix them. They refactor sections that became painful to work with. The project is imperfect. They learned more from building it than from any tutorial.
+
+After three years, Developer A often knows more facts than Developer B. Developer B usually builds better software.
+
+The reason is not effort. Both worked hard. The reason is what each developer practiced.
+
+Developer A practiced following instructions in controlled environments. Developer B practiced making decisions under uncertainty, debugging unfamiliar problems, reading documentation written for practitioners, and recovering from their own mistakes.
+
+Engineering, in practice, is almost entirely the second set of skills.
+
+---
+
+## What Courses Do Not Prepare You For
+
+Courses are designed to teach. To do this effectively, they control the environment. The requirements are clear and stable. The examples are chosen because they illustrate the intended concept cleanly. The codebase is constructed to be understandable. The errors, when they appear, are anticipated and explained.
+
+Professional software development is the opposite environment on every dimension.
+
+**Requirements are ambiguous and change.** The feature request is written in vague language that requires conversation to interpret. The interpretation changes after the first demo. The scope expands. Something the business considered low priority becomes urgent. You design for one set of constraints and build for a different one.
+
+**Codebases have history.** The system you are working in was written by multiple people over multiple years. It contains decisions that made sense at the time and do not make sense now. It contains workarounds for bugs that have since been fixed, but nobody removed the workarounds. It contains inconsistent patterns because the team's standards evolved. Reading and understanding this code — developing the ability to build a mental model of a system you did not create — is a skill that tutorial projects do not develop, because tutorial projects are written to be understood.
+
+**Documentation is incomplete.** The third-party API you are integrating has a reference page that lists the endpoints but does not explain the authentication edge cases you encounter. The error message you receive is not mentioned in the documentation. You search GitHub issues, find a comment from 2021 that describes a similar problem, and piece together an understanding from three partial sources. This is normal. Courses do not teach it because it cannot be scripted.
+
+**Errors are not categorized for you.** In a tutorial, when an error occurs, the instructor anticipates it and explains what it means and how to fix it. In a production system, the error message is often cryptic, the stack trace points to library internals, and the root cause is three layers removed from where the error surfaced. Debugging — real debugging, the kind that requires forming and testing hypotheses about what is wrong — is primarily learned through doing it, not watching it done.
+
+**There is no instructor.** This sounds obvious, but its implications are significant. When you encounter something you do not understand in a course, the course explains it. When you encounter something you do not understand in a real codebase, you have to go find the explanation yourself. This requires a skill — let's call it research fluency — that is rarely taught explicitly and only develops through regular practice.
+
+---
+
+## The Skill That Separates Engineers: Learning How to Learn
+
+There is a capability that strong engineers develop that is almost invisible until you look for it. I would describe it as self-directed learning under uncertainty — the ability to encounter a system, a problem, or a technology you have never seen before and make meaningful progress on understanding it through your own investigation.
+
+This is what engineers actually do, most of the time.
+
+A senior engineer encounters a new requirement involving a service they have not used before. They do not search for a tutorial about that service — they read the documentation. They look at the official examples. They write a small program that isolates the specific thing they need to understand and run it against the actual service. They read the source code if the documentation is unclear. Within a day they understand the service well enough to integrate it reliably.
+
+A junior engineer with tutorial dependency encounters the same requirement. They search for a YouTube tutorial about the service. If one exists, they follow it. If one does not exist, they are stuck — because the tutorial-following skill transfers only when a tutorial is available.
+
+The divergence in outcomes over a five-year career, driven by this single difference in approach, is significant.
+
+The engineers who advance fastest are almost always the ones who became comfortable with primary sources early: official documentation, RFC standards, source code, error messages, system logs. Not because these sources are inherently better than tutorials — tutorials are often clearer and faster to consume — but because the ability to extract understanding from raw technical material is what enables you to learn anything independently, without waiting for someone to teach it to you in the format you prefer.
+
+---
+
+## Going Deeper Than the Framework
+
+There is a specific pattern of learning that I think produces unusually strong engineers, and it involves deliberately studying one level below the abstraction you are currently using.
+
+If you are learning React, you also learn how the browser renders a page: what triggers a layout recalculation, how JavaScript execution interacts with rendering, what the event loop is and why it matters. React becomes more understandable when you understand what it is abstracting.
+
+If you are learning Docker, you also learn what a Linux process is, what namespaces provide in terms of isolation, what cgroups control, and why containers are not virtual machines. Docker becomes more debuggable when you understand what is actually happening when a container runs.
+
+If you are learning to use a REST API, you also learn what HTTP is at the protocol level: what a request and response look like, what status codes mean, how headers work, what authentication mechanisms exist at the protocol layer. API integration becomes less mysterious when you understand the medium of communication.
+
+This does not mean you need to become an expert in every layer before using the abstractions above it. It means developing enough understanding of each layer that the abstractions do not feel like magic — because magic breaks in production and you cannot debug what you do not understand.
+
+The engineers who can do this across multiple layers develop a kind of adaptability that pure framework knowledge cannot provide. When a new framework emerges, they can evaluate it quickly because they understand the underlying problems it is solving. When a framework behaves unexpectedly, they can trace the behavior down to the layer where it originates. When the framework does not exist for the thing they need to build, they can reason about what building it would require.
+
+---
+
+## AI and the New Version of the Same Problem
+
+AI coding assistants have created a new variant of tutorial dependency that is worth addressing directly.
+
+The tools are genuinely useful. The ability to ask a clear question and receive a relevant code example in seconds is a real productivity advantage. The ability to describe a problem in plain language and receive a suggested implementation approach has genuine value for experienced engineers who understand enough to evaluate what they receive.
+
+The risk for developers who are still building their foundational understanding is the same as the tutorial risk, compressed and amplified.
+
+A developer who copies an AI-generated implementation without understanding what it does has acquired lines of code, not understanding. When that implementation has a subtle bug, they cannot find it — because they never understood the code well enough to reason about where it could go wrong. When the requirement changes slightly, they cannot adapt the implementation — because they do not have a model of how the pieces relate. They generate a new implementation, which may or may not have the same problem.
+
+Worse, AI-generated code is confident. It does not hedge. It does not say "I am not sure if this handles your edge case." It produces syntactically correct, conventionally structured code that looks authoritative. The barrier to accepting it without scrutiny is lower than the barrier to accepting the same code from a Stack Overflow answer, because the Stack Overflow answer often has comments pointing out its limitations.
+
+Using AI effectively as a learning tool requires using it the way you would use a very fast, very knowledgeable colleague: as a source of explanations, pointers, and starting points that you then verify, understand, and own. Not as an oracle whose output you deploy without examination.
+
+The developers who are getting the most value from AI tools are almost always the ones who had already developed the judgment to evaluate what the tools produce — which comes from the same place all engineering judgment comes from: building things, making mistakes, and developing understanding through application.
+
+---
+
+## Information Is Not Competence
+
+This distinction deserves to be stated as plainly as possible, because the software industry systematically conflates the two.
+
+Knowing that a hash map has O(1) average lookup time is information. Being able to identify, during a code review, that a specific implementation is using a data structure that will perform poorly under the actual usage patterns of the system — that is competence.
+
+Knowing what a race condition is is information. Being able to look at concurrent code, recognize the specific sequence of operations that could produce incorrect behavior, and understand what synchronization mechanism would prevent it — that is competence.
+
+Knowing that you should write tests is information. Being able to design a test suite that actually catches meaningful regressions, that runs fast enough to be useful in a development workflow, and that doesn't break every time the implementation changes — that is competence.
+
+The gap between information and competence is application under pressure. It is the process of taking a concept you understand abstractly and using it to make real decisions with real consequences in conditions that are messier than the textbook example. This process cannot be skipped. It cannot be completed by watching someone else do it. It requires doing it yourself, failing in specific ways, understanding why you failed, and doing it differently.
+
+Every course, tutorial, and explanation gets you closer to the edge of this gap. None of them crosses it for you.
+
+---
+
+## What Actually Builds Engineering Capability
+
+A few practices that I have seen consistently produce stronger engineers, based on watching the development of many developers at different levels:
+
+**Build things without a tutorial.** Pick something small and useful — a CLI tool, a simple API for a problem you actually have, a script that automates something tedious. The requirements should be yours, not someone else's. The architecture decisions should be yours. When you get stuck — and you will get stuck — that is where the learning is. Sitting with uncertainty, trying approaches, reading documentation, forming hypotheses, testing them. This process is uncomfortable and productive in ways that guided projects are not.
+
+**Read documentation before searching for tutorials.** Most official documentation is better than its reputation. Spending an hour with the official docs for a library before searching for tutorials builds the documentation-reading skill that scales to every new technology you encounter. Tutorials age. Documentation is maintained.
+
+**Break things deliberately.** Take a working piece of code and experiment with it. Remove a piece and see what fails. Change a value and see what changes. Add incorrect input and see how the system responds. Understanding failure modes is understanding how the system actually works, not just how it works when you follow the instructions correctly.
+
+**Read code that was not written by you.** Open-source projects are an enormous resource for understanding how experienced engineers structure real systems. Reading code that solves real problems — not tutorial code written to illustrate a concept — develops your intuition for what good structure looks like and reveals patterns that tutorials rarely discuss.
+
+**Embrace the time when you do not know the answer.** The instinct to immediately search for the solution to an error is understandable but sometimes worth resisting. Spending fifteen minutes reasoning about what the error message actually means, what state the system would need to be in to produce it, and what changes might affect it — before looking anything up — develops diagnostic reasoning that searching short-circuits.
+
+---
+
+## To the Developer Who Feels Stuck
+
+If you have read this and recognized yourself in the description — dozens of courses completed, genuine knowledge of the concepts, persistent uncertainty about whether you are actually growing — I want to say something directly:
+
+The feeling is real and the cause is fixable, but fixing it requires doing something uncomfortable.
+
+You need to build something without guidance and sit with the uncertainty until it resolves. You need to write code that does not work, understand why it does not work, and fix it yourself. You need to read a piece of documentation that was not written for beginners and extract what you need from it. You need to encounter a problem that no tutorial anticipated and find your way through it.
+
+None of this is easy at first. The discomfort of not knowing what to do next is exactly the thing that tutorial dependency develops a strategy to avoid. But that discomfort is also precisely the condition in which engineering skill develops.
+
+The engineers who build careers they are proud of are not the ones who found the best courses. They are the ones who built the most things, broke them, fixed them, and built better things. They read source code when the documentation was unclear. They investigated production issues no tutorial prepared them for. They developed the habit of learning from primary sources, the confidence to attempt problems with uncertain solutions, and the resilience to recover from failures that mattered.
+
+That is not something anyone can teach you. It is something you develop by doing it.
+
+---
+
+## Closing
+
+Courses can introduce concepts. Tutorials can accelerate initial learning. AI can provide guidance and cut through friction. All of these tools have genuine value and no serious engineer dismisses them.
+
+But none of them can replace the growth that comes from wrestling with a real problem — uncertain, ambiguous, without a pre-planned solution — and finding your way through it yourself.
+
+The developers who build exceptional engineering careers are not defined by how many courses they completed. They are defined by their ability to learn independently, adapt to unfamiliar situations, read systems they did not build, and solve problems when no tutorial exists.
+
+That ability is built in one place: in the uncomfortable, productive, irreplaceable work of trying to build something real when you are not sure how, and figuring it out anyway.
+
+---
+
+*I have mentored developers at multiple stages of their careers. The ones who grew fastest were almost never the ones who had done the most courses. They were the ones who had built the most things — most of them imperfect, some of them broken, all of them theirs.*

@@ -1,0 +1,162 @@
+---
+title: "Nobody Talks About On-Call Until the Engineer Has Already Left"
+description: "Being paged at 3am is considered part of the job. Responding within minutes is considered professional. Running on four hours of sleep for a week during an incident is considered dedication. None of it is sustainable. And the engineering industry is very good at celebrating the engineers who do it while quietly burning through them."
+date: "2026-06-01"
+updatedAt: "2026-06-01"
+tags:
+  ["Engineering", "Career", "Leadership", "Mindset", "Backend", "Growth"]
+featured: false
+excerpt: "On-call culture is the most normalized form of professional self-destruction in the software industry. Engineers accept it because everyone accepts it. Organizations celebrate it because it is cheaper than fixing the systems that require it. And the conversation about whether it is sustainable almost never happens until the engineer is already gone."
+---
+
+The message arrives at 2:47am. PagerDuty. Critical alert. Service latency spiking. Some subset of users cannot complete their transactions.
+
+You are awake within thirty seconds, laptop open, trying to remember where you were in the mental model of this service before your brain shut down for the night. You spend forty minutes diagnosing, deploy a fix, write up a brief incident note, and are back in bed at 3:45am. You have a standup at 9:30. You are expected to be present and functional.
+
+This happens twice more that week. Each time is treated as normal. Each time your response is noted as professional. Each time the underlying system condition that caused the alert — the condition that made 2:47am a possible outcome of your employment — is not addressed. Because addressing it would require engineering time. Engineering time is spoken for. The backlog is full. This quarter's roadmap is locked.
+
+The next on-call rotation begins in two weeks.
+
+This is the on-call experience for a significant percentage of backend and platform engineers. Not as a crisis. As a routine.
+
+---
+
+## How On-Call Culture Became Normalized
+
+On-call rotation has a legitimate origin. Production systems serving real users with real needs can fail at any hour, and when they fail, they need someone capable of diagnosing and addressing the failure. Not every production incident is predictable or preventable. Some percentage of 3am pages are unavoidable.
+
+The question is not whether on-call should exist. It is what the culture around it has become and whether that culture bears any resemblance to the legitimate purpose it was built for.
+
+The culture that has developed in much of the software industry around on-call has several characteristics that go well beyond the legitimate requirement.
+
+**Availability is treated as a virtue in itself.** The engineer who responds to pages quickly, works through the night during incidents, and never complains about on-call burden is praised. Their responsiveness is framed as professionalism, dedication, and team commitment. The framing is not inaccurate — those responses are helpful in the moment. But the praise is rarely accompanied by the question of whether those responses should have been necessary, and it rarely extends to the question of what the cumulative cost of that responsiveness is to the person providing it.
+
+**The root cause work that would reduce pages is deprioritized.** Every production incident theoretically has a post-mortem. The post-mortem theoretically identifies a root cause. The root cause theoretically generates action items that prevent recurrence. In practice, the action items go into the backlog. The backlog is reviewed in sprint planning. The sprint is full. The action items get deferred. The same failure mode pages the same engineer three months later. The post-mortem process exists. The organizational will to act on it often doesn't.
+
+**The human cost is invisible until it becomes a resignation letter.** On-call fatigue does not produce visible symptoms in the short term. An engineer sleeping three to five hours for a week still functions. Still attends meetings. Still ships code. The degradation is gradual and largely hidden, from management and sometimes from the engineer themselves. It surfaces as irritability, decreased creativity, declining quality of decisions, reduced engagement — things that are easy to attribute to other causes. By the time it surfaces clearly, it has usually been building for months.
+
+---
+
+## The Math Nobody Does
+
+Here is the calculation that engineering organizations rarely perform explicitly.
+
+A senior backend engineer costs, depending on market and location, somewhere between seventy thousand and two hundred thousand dollars per year in direct compensation. Add benefits, employer taxes, recruiting costs, and the cost of onboarding their replacement, and the effective cost of that engineer to the organization is considerably higher. The cost of losing that engineer — recruiting, interviewing, onboarding, ramp time, institutional knowledge lost — is typically estimated at fifty to two hundred percent of annual salary depending on seniority.
+
+Now calculate the cost of the incidents that are driving the on-call burden. How many of them are recurring — the same failure mode producing a page every few weeks? What would it cost in engineering time to address the root cause? One week? Two weeks? A quarter?
+
+In almost every team I have seen with a significant on-call burden, the cost of addressing the systems issues driving the pages is lower than the cost of losing and replacing one engineer to on-call burnout. Often considerably lower.
+
+The investment is not made because the costs accrue differently. The cost of pages is distributed across many engineers, over time, in ways that don't appear in any budget line. The cost of addressing root causes is immediate, concentrated, and competes with roadmap items that have visible business value.
+
+So the math doesn't get done. The pages continue. The engineers get tired. Some of them leave. Their departure is expensive and attributed to "compensation" or "career growth" or "better opportunity" rather than to the accumulated cost of being woken up at 3am twice a week for two years.
+
+---
+
+## The Hero Engineer Problem
+
+Every team that has a chronic on-call problem also has, usually, a hero engineer.
+
+The hero engineer is the one who knows every service, has responded to every major incident, can diagnose production issues faster than anyone else, and is therefore on-call more than anyone else because it is more efficient that way. They are celebrated. They are praised in all-hands meetings. They receive strong performance reviews. They are considered essential.
+
+They are also the single point of failure that the organization has built its production reliability on top of.
+
+When the hero engineer leaves — and they leave, eventually, because they are human beings who have limits — the organization discovers that the institutional knowledge required to keep the system running was concentrated in one person who is no longer there. The engineers who remain have less context, less familiarity with the failure modes, and less experience with the system. The on-call burden increases because each page takes longer to resolve. New engineers get paged more frequently and with less preparation than the hero engineer ever had.
+
+The organization responds to this by finding the new hero — the engineer who emerges as most capable, who starts handling the most critical pages, who accumulates the most context. The cycle begins again.
+
+The hero engineer is not celebrated because they are exceptional. They are celebrated because celebrating them is cheaper than building the systems, documentation, and team structures that would make them unnecessary. The hero enables the organization to not address the underlying issues. The celebration ensures the hero keeps accepting that role.
+
+The hero engineer is not the solution to the on-call problem. They are the evidence that the on-call problem exists and is not being addressed.
+
+---
+
+## Alert Fatigue Is a Design Choice
+
+Most on-call setups have too many alerts. Not slightly too many. Vastly too many.
+
+A backend service in a mid-sized engineering organization might have dozens of configured alerts. Error rate above threshold. Latency above threshold. Memory utilization above threshold. Disk space above threshold. Database connection pool above threshold. Queue depth above threshold. Certificate expiring in thirty days.
+
+Many of these alerts fire regularly. Some fire multiple times per week. Some fire overnight with enough frequency that the engineer on-call learns to silence them without investigating because they almost never correspond to a real user-facing problem.
+
+When engineers learn to ignore alerts, every alert becomes suspect. The 3am page for the alert that has fired fifteen times in the last month without being a real incident is the same noise as the 3am page for the alert that represents a genuine outage. The engineer cannot distinguish them without investigation. So they investigate all of them. Most are noise. Some are not. The cost of the noise is paid in sleep, in attention, in cognitive capacity.
+
+Alert fatigue is not an accident. It is the predictable consequence of adding alerts without removing them, without calibrating their thresholds, and without regularly auditing whether each alert is actionable — whether an engineer receiving it has something specific and useful they can do, or whether it is informational noise that should be a dashboard metric rather than a page.
+
+Alert fatigue is a design choice disguised as an oversight. The alerts were configured by engineers who wanted visibility. Nobody went back to remove the ones that produced noise. That decision — not deciding — created an on-call environment where much of the night-time work is investigating alerts that shouldn't be alerts.
+
+Fixing alert fatigue is straightforward. It requires a few days of careful audit and calibration. It is almost never done because it is not perceived as high-value engineering work compared to shipping features. The engineers on-call continue to be woken up by alerts that should not wake anyone up.
+
+---
+
+## What Organizations Say vs What They Do
+
+"We care about work-life balance."
+
+"Engineer wellness is a priority."
+
+"We have flexible on-call rotations."
+
+"Nobody should feel pressured by on-call burden."
+
+These are real things that real engineering organizations say. They appear in job listings, in company values documents, in all-hands presentations. The people saying them usually mean them at the level of genuine intention.
+
+And then the roadmap gets locked. The backlog of root cause action items gets deprioritized. The on-call rotation does not get expanded because headcount is frozen. The monitoring does not get improved because it is not a product feature. The runbooks do not get written because there is always something more urgent.
+
+The gap between what organizations say about on-call culture and what they do about on-call culture is not hypocrisy exactly. It is the gap between stated values and operational priorities. Operational priorities are revealed by where engineering time goes. Engineering time goes to roadmap items because roadmap items have business owners who advocate for them. The on-call burden has no business owner. It has engineers who absorb it quietly until they cannot.
+
+The engineers who speak up about on-call burden are often — not always, but often — perceived as not being team players. As prioritizing personal comfort over operational reliability. The framing is not fair, but it is real, and engineers know it is real, which is why the conversation about unsustainable on-call culture almost always happens in private rather than in planning meetings.
+
+---
+
+## The Resignation That Nobody Predicted
+
+The resignation letter arrives and the manager is surprised.
+
+The engineer was high-performing. No complaints flagged in reviews. No explicit warning signs. The exit interview cites "better opportunity" or "growth trajectory" or "compensation." These things may be true. They are also, frequently, the version of the reason that is safe to give in an exit interview.
+
+The actual reason, the one that built over eighteen months of 3am pages and unremediated incidents and deferred root cause work and a backlog full of monitoring improvements that never got prioritized, is not said in the exit interview because saying it does not change anything and the engineer is already leaving.
+
+The manager reports the resignation to leadership as a competitive talent market problem. The replacement engineer gets hired. Nobody changes the on-call structure. The new engineer starts learning the systems. Their first major page comes three weeks in, overnight, on a system they have not yet fully understood.
+
+The cycle continues.
+
+---
+
+## What Sustainable On-Call Actually Looks Like
+
+I want to be specific about this because the argument is not that on-call should not exist. It should. It is that most implementations of it are designed to minimize short-term cost rather than to be sustainable for the engineers doing it.
+
+Sustainable on-call has a few non-negotiable characteristics.
+
+**The rotation is large enough.** Each engineer is on primary on-call for a bounded period, with a secondary who shares the load. The time between each engineer's rotations is long enough that recovery is possible. A four-person rotation where each engineer is primary for one week in four is different from a two-person rotation where each engineer is primary half the time.
+
+**Overnight pages have consequences that are tracked.** If an engineer was paged between 10pm and 6am, that gets recorded. Not to punish anyone — to create visibility. If one service is generating overnight pages repeatedly, that visibility creates organizational pressure to address the root cause rather than allowing it to be absorbed quietly by individual engineers.
+
+**Post-mortem action items have owners and deadlines.** Not "add to backlog." A named engineer, a specific sprint, and a definition of done. The items that address recurring failure modes are treated as important as roadmap features — because the cost of not doing them is being paid by engineers overnight and will eventually be paid by attrition.
+
+**Alert thresholds are audited regularly.** Alerts that are not actionable are removed or converted to dashboard metrics. The signal-to-noise ratio of the alerting system is treated as an engineering quality metric with the same seriousness as test coverage or deployment frequency.
+
+**Compensation reflects the real cost.** On-call adds genuine burden and should be reflected in compensation. Not as a token gesture. As an actual accounting of the value being provided and the cost being absorbed.
+
+None of this is complicated. All of it is known. The gap between knowing and doing is organizational will — and organizational will is revealed by what gets prioritized when the roadmap is full and the backlog is long.
+
+---
+
+## Closing
+
+The engineering industry has built a culture where being constantly available is professional, where absorbing on-call burden without complaint is dedication, and where burning out quietly is considered better than saying something out loud.
+
+That culture is not sustainable, and the evidence is in every engineering team that has lost strong engineers to burnout, every post-mortem that generated action items nobody acted on, and every alert that has fired so many times the engineer on-call has learned to dismiss it before reading it.
+
+On-call is necessary. The current culture around it is not.
+
+The conversation about whether it is sustainable is one that engineering organizations consistently avoid until the resignation letter arrives. At which point the conversation that should have happened eighteen months ago happens too late to matter for the person who is already gone.
+
+The next time you are in a planning meeting where root cause work gets deprioritized for the third consecutive quarter, it is worth asking clearly: who is absorbing the cost of that decision? What is that cost? And what will it eventually produce?
+
+The answers are usually inconvenient. They are also usually obvious, to everyone in the room, which is exactly why the question does not get asked.
+
+---
+
+*I have been the engineer absorbing the on-call burden quietly. I have also been in the room where the decisions not to address root causes were made. Both experiences are relevant to writing this. The second one, more than the first, is what convinced me the problem is structural rather than individual.*

@@ -1,6 +1,6 @@
 import { getAllPostsAdmin } from "@/app/actions/admin";
 import { format } from "date-fns";
-import { ExternalLink, Star, Pencil } from "lucide-react";
+import { ExternalLink, Star, Pencil, FileText } from "lucide-react";
 import Link from "next/link";
 import { ToggleStatusBtn, DeletePostBtn } from "./actions-client";
 
@@ -32,8 +32,20 @@ export default async function ManagePostsPage() {
       </div>
 
       {posts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="text-white/25 font-mono text-sm">No posts yet</p>
+        <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
+          <div className="w-16 h-16 rounded-2xl border border-white/8 bg-white/3 flex items-center justify-center">
+            <FileText className="w-7 h-7 text-white/20" />
+          </div>
+          <div>
+            <p className="text-white/50 font-semibold mb-1">No posts yet</p>
+            <p className="text-sm text-white/25 font-mono">Create your first post to get started.</p>
+          </div>
+          <Link
+            href="/admin/dashboard/blog"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-background text-sm font-bold hover:bg-primary/90 transition-colors"
+          >
+            + Write your first post
+          </Link>
         </div>
       ) : (
         <div className="rounded-2xl border border-white/6 overflow-hidden">

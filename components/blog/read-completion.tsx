@@ -10,19 +10,30 @@ interface ReadCompletionProps {
 }
 
 export function ReadCompletion({ slug, title }: ReadCompletionProps) {
-  const firedRef = useRef(false);
+  const firedRef  = useRef(false);
+  const seenTopRef = useRef(false); // user must scroll near-top before we start tracking
 
   useEffect(() => {
+    // Reset both guards whenever the post changes
+    firedRef.current   = false;
+    seenTopRef.current = false;
+
     const key = `read_done_${slug}`;
-    // Already completed in a previous session — still track silently, just don't toast again
     const alreadyToasted = !!localStorage.getItem(key);
 
     const check = () => {
       if (firedRef.current) return;
-      const { scrollTop, scrollHeight, clientHeight } =
-        document.documentElement;
+
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       const progress = scrollTop / (scrollHeight - clientHeight);
-      if (progress >= 0.88) {
+
+      // Mark that the reader reached the top of THIS page (< 15% = near top)
+      if (progress < 0.15) {
+        seenTopRef.current = true;
+      }
+
+      // Only fire if: the user was at the top first AND now reached 88%
+      if (seenTopRef.current && progress >= 0.88) {
         firedRef.current = true;
         window.removeEventListener("scroll", check);
 
@@ -37,8 +48,16 @@ export function ReadCompletion({ slug, title }: ReadCompletionProps) {
       }
     };
 
-    window.addEventListener("scroll", check, { passive: true });
-    return () => window.removeEventListener("scroll", check);
+    // Delay attaching the listener by 600ms so Next.js scroll restoration
+    // completes before we start observing — prevents false positives on navigation
+    const timer = setTimeout(() => {
+      window.addEventListener("scroll", check, { passive: true });
+    }, 600);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", check);
+    };
   }, [slug, title]);
 
   return null;

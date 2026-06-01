@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { trackPageView } from "@/app/actions/analytics";
 
 function getVisitorId(): string {
   const key = "portfolio_vid";
@@ -22,15 +23,8 @@ export function TrackVisit() {
 
     try {
       const visitorId = getVisitorId();
-      fetch("/api/track", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          path: pathname,
-          visitorId,
-          referrer: document.referrer,
-        }),
-      }).catch(() => {});
+      // Call server action instead of client-side fetch
+      trackPageView(pathname, visitorId, document.referrer).catch(() => {});
     } catch {
       // silently ignore
     }

@@ -12,9 +12,10 @@ interface BlogClientProps {
   tags: { tag: string; count: number }[];
   featuredPost: BlogPost | undefined;
   viewCounts?: Record<string, number>;
+  ratings?: Record<string, { avg: number; count: number }>;
 }
 
-export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogClientProps) {
+export function BlogClient({ posts, tags, featuredPost, viewCounts = {}, ratings = {} }: BlogClientProps) {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
@@ -54,7 +55,7 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogC
             />
             Pranta Das
           </Link>
-          <span className="text-white/20 text-xs font-mono tracking-widest uppercase">
+          <span className="text-white/40 text-xs font-mono tracking-widest uppercase">
             Blog
           </span>
         </div>
@@ -69,77 +70,48 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogC
           className="mb-14"
         >
           {/* Top meta row */}
-          <div className="flex items-start justify-between gap-6 mb-8">
-            <div className="flex-1 min-w-0">
-              {/* Label */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-5">
-                <PenLine
-                  className="w-3 h-3 text-primary/60"
-                  aria-hidden="true"
-                />
-                <span className="text-xs font-mono text-primary/70 uppercase tracking-widest">
-                  Engineering Blog
-                </span>
-              </div>
-
-              {/* Headline */}
-              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-4">
-                Writing that <span className="gradient-text-cyan">matters</span>
-              </h1>
-
-              {/* Description */}
-              <p className="text-white/50 text-base md:text-lg max-w-2xl leading-relaxed mb-6">
-                Engineering insights, architectural decisions, and lessons
-                learned building real-world products — from a Backend Engineer
-                in <span className="text-white/70">Dhaka, Bangladesh 🇧🇩</span>.
-                No tutorials. No filler. Production experience only.
-              </p>
-
-              {/* Stats row */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-mono text-white/30">
-                <span>
-                  <span className="text-white/60 font-semibold">
-                    {posts.length}
-                  </span>{" "}
-                  articles
-                </span>
-                <span className="w-px h-3 bg-white/10" aria-hidden="true" />
-                <span>TypeScript · Node.js · System Design · Career</span>
-                <span className="w-px h-3 bg-white/10" aria-hidden="true" />
-                <Link
-                  href="/api/rss"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="RSS Feed"
-                  className="inline-flex items-center gap-1.5 text-white/30 hover:text-primary transition-colors"
-                >
-                  <Rss className="w-3 h-3" aria-hidden="true" />
-                  RSS Feed
-                  <ArrowUpRight className="w-2.5 h-2.5" aria-hidden="true" />
-                </Link>
-              </div>
+          <div className="mb-8">
+            {/* Label */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-5">
+              <PenLine className="w-3 h-3 text-primary/60" aria-hidden="true" />
+              <span className="text-xs font-mono text-primary/70 uppercase tracking-widest">
+                Engineering Blog
+              </span>
             </div>
 
-            {/* Decorative accent — hidden on small screens */}
-            <div className="hidden lg:flex flex-col items-end gap-1.5 text-right shrink-0 select-none">
-              <div className="font-mono text-xs text-primary/20 leading-relaxed">
-                <div>// engineer.blog.ts</div>
-                <div>
-                  <span className="text-primary/35">export const</span> topics =
-                  [
-                </div>
-                <div>
-                  &nbsp;&nbsp;
-                  <span className="text-white/20">"architecture"</span>,
-                </div>
-                <div>
-                  &nbsp;&nbsp;<span className="text-white/20">"systems"</span>,
-                </div>
-                <div>
-                  &nbsp;&nbsp;<span className="text-white/20">"career"</span>,
-                </div>
-                <div>];</div>
-              </div>
+            {/* Headline */}
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-4">
+              Writing that <span className="gradient-text-cyan">matters</span>
+            </h1>
+
+            {/* Description */}
+            <p className="text-white/50 text-base md:text-lg max-w-2xl leading-relaxed mb-6">
+              Engineering insights, architectural decisions, and lessons
+              learned building real-world products — from a Backend Engineer
+              in <span className="text-white/70">Dhaka, Bangladesh 🇧🇩</span>.
+              No tutorials. No filler. Production experience only.
+            </p>
+
+            {/* Stats row */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-mono text-white/30">
+              <span>
+                <span className="text-white/60 font-semibold">{posts.length}</span>{" "}
+                articles
+              </span>
+              <span className="w-px h-3 bg-white/10" aria-hidden="true" />
+              <span>TypeScript · Node.js · System Design · Career</span>
+              <span className="w-px h-3 bg-white/10" aria-hidden="true" />
+              <Link
+                href="/api/rss"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="RSS Feed"
+                className="inline-flex items-center gap-1.5 text-white/30 hover:text-primary transition-colors"
+              >
+                <Rss className="w-3 h-3" aria-hidden="true" />
+                RSS Feed
+                <ArrowUpRight className="w-2.5 h-2.5" aria-hidden="true" />
+              </Link>
             </div>
           </div>
 
@@ -186,6 +158,9 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogC
               }`}
             >
               All
+              <span className={`ml-1.5 ${activeTag === null ? "text-primary/60" : "text-white/40"}`}>
+                {posts.length}
+              </span>
             </button>
             {tags.map(({ tag, count }) => (
               <button
@@ -199,7 +174,7 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogC
                 }`}
               >
                 {tag}
-                <span className="ml-1.5 text-white/20">{count}</span>
+                <span className="ml-1.5 text-white/40">{count}</span>
               </button>
             ))}
           </div>
@@ -213,7 +188,7 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogC
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-10"
           >
-            <BlogCard post={featuredPost} featured viewCount={viewCounts[featuredPost.slug]} />
+            <BlogCard post={featuredPost} featured viewCount={viewCounts[featuredPost.slug]} rating={ratings[featuredPost.slug]} />
           </motion.div>
         )}
 
@@ -244,7 +219,7 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogC
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: i * 0.06 }}
                 >
-                  <BlogCard post={post} viewCount={viewCounts[post.slug]} />
+                  <BlogCard post={post} viewCount={viewCounts[post.slug]} rating={ratings[post.slug]} />
                 </motion.div>
               ))}
             </motion.div>
@@ -253,7 +228,7 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogC
 
         {/* Post count */}
         {filtered.length > 0 && (
-          <p className="mt-8 text-center text-xs font-mono text-white/20">
+          <p className="mt-8 text-center text-xs font-mono text-white/40">
             {filtered.length} article{filtered.length !== 1 ? "s" : ""}
           </p>
         )}

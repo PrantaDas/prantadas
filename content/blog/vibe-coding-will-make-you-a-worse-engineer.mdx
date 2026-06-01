@@ -1,0 +1,124 @@
+---
+title: "Vibe Coding Will Make You a Worse Engineer"
+description: "Describing what you want to an AI and letting it build everything feels like the future of software development. For experienced engineers, it probably is. For everyone else, it may be the most effective skill atrophy mechanism the industry has ever produced."
+date: "2026-06-01"
+updatedAt: "2026-06-01"
+tags:
+  ["AI", "Engineering", "Career", "Mindset", "Growth", "Junior Developer"]
+featured: true
+excerpt: "Vibe coding is real, it is productive, and for engineers who already understand what they are building, it is genuinely transformative. The problem is what happens when it becomes the primary way a developer learns to build software — before they ever develop the ability to build it without the AI."
+---
+
+Andrej Karpathy coined the term in early 2025 and it immediately named something that had already been happening for months. Vibe coding: you describe what you want, the AI builds it, you review it enough to feel like it works, and you move on. No deep reading of the output. No tracing through the logic. No understanding of why specific decisions were made. The vibe is right, so you ship it.
+
+The productivity gains are real. I have used these tools. Engineers who use them well build faster than engineers who don't — sometimes dramatically faster. On tasks where the pattern is well-established and the requirements are clear, AI-assisted development is genuinely impressive.
+
+But I want to be honest about something the productivity narrative tends to skip: there is a specific type of engineer for whom vibe coding is a force multiplier, and a different type for whom it is quietly, systematically building a ceiling they will not notice until they hit it.
+
+Understanding the difference is, I think, one of the more important career questions for engineers working right now.
+
+---
+
+## What Vibe Coding Actually Is
+
+Let me be precise about what I mean, because the term covers a range of behaviors.
+
+At one end: an experienced engineer uses an AI tool to generate the boilerplate for a database migration, reviews it against their understanding of the schema, adjusts two fields, and runs it. The AI saved twenty minutes. The engineer understood everything that was generated.
+
+At the other end: a developer describes a feature to an AI, receives several hundred lines of code, pastes it into their project, runs it, sees that it appears to work, and commits it without being able to explain what most of the code does or what would happen if a specific input was malformed.
+
+Both of these get called vibe coding. They are not the same thing. The first is an experienced engineer using a capable tool. The second is something different, and it is the second I want to talk about.
+
+---
+
+## The Force Multiplier Problem
+
+AI coding tools are a force multiplier. This is a genuine description and it has an important implication: a multiplier applied to a large number produces a large result. The same multiplier applied to a small number produces a small result.
+
+An engineer who understands system design, debugging, performance characteristics, security implications, and failure modes uses AI to move faster through problems they already know how to solve. The AI handles the execution. The engineer provides the judgment. The combination is powerful.
+
+An engineer who does not yet have that foundation uses AI to skip the process of developing it. They get working code without understanding. They build features without learning the concepts behind them. They fix bugs by regenerating the code until it works rather than by understanding why it broke.
+
+The outputs look similar in the short term. The divergence becomes visible in situations the AI cannot handle — and those situations are, almost without exception, the consequential ones.
+
+---
+
+## When the AI Cannot Help
+
+There is a category of engineering problem that AI tools currently handle poorly. Not because the tools are bad — they are getting better continuously — but because the problems require contextual judgment that cannot be expressed in a prompt.
+
+A production incident at 2am where three unrelated-looking errors are actually symptoms of a single race condition introduced three deployments ago. A performance regression that only manifests under a specific traffic pattern on a specific database query that is six joins deep. A security vulnerability that is not in the code the AI can see but in the interaction between two services that were built by different teams at different times. A requirement from a stakeholder that contradicts three previous requirements in ways that nobody has noticed yet.
+
+These problems require an engineer who can read unfamiliar code and build a mental model of its behavior. Who can trace execution paths through multiple layers without running the code. Who understands enough about how databases, networks, or concurrency work to form hypotheses about failure modes and test them systematically.
+
+The engineer who developed those abilities by building things, reading code, debugging failures, and understanding systems — even slowly, even imperfectly — has something to bring to these situations.
+
+The engineer who spent the same period describing requirements to an AI and reviewing outputs at surface level has generated a lot of working code and developed very little of the diagnostic capability that working code eventually requires.
+
+---
+
+## The Tutorial Addiction Problem, Compressed
+
+I wrote previously about tutorial addiction — the pattern where developers spend years consuming educational content and struggle to build independently because they optimized for following instructions rather than making decisions.
+
+Vibe coding is, in a sense, tutorial addiction at production speed. Except instead of following a tutorial, you are following AI-generated code. And instead of building tutorial projects, you are building real ones — which makes the gap harder to notice, because the outputs look like progress.
+
+The mechanism is similar: the cognitive work of figuring out how to build something — what approach to take, how components should relate, what edge cases exist, what failure modes are possible — gets bypassed. The result exists without the understanding that building it would have produced.
+
+The difference from tutorial following is the speed. A developer following tutorials might take a week to build a feature and absorb some understanding along the way. A developer vibe coding can build the same feature in hours with less comprehension of any of it.
+
+Speed is not always an advantage when the goal is skill development.
+
+---
+
+## The Debugging Crisis Is Already Visible
+
+Engineers who have been hiring or mentoring in the last two years have started to notice something specific: candidates who can build things cannot debug them.
+
+The feature works. Ask them to describe what happens when a specific input fails validation and they cannot trace through the logic. Ask them why a specific design decision was made and they cannot explain it. Show them an error they have not seen before and they reach immediately for the AI rather than reading the stack trace.
+
+This is not a personal failure. It is a predictable consequence of a development workflow that has optimized for output over understanding. You get good at what you practice. If the workflow is describe → generate → test → ship, the skills that develop are prompting and verification. The skills that don't develop are design, debugging, and deep comprehension.
+
+These are the skills that compound most significantly over a career. They are also the skills that are hardest to develop later, after habits are established, because developing them requires sitting with uncertainty and confusion in a way that is directly in competition with the availability of a tool that will just generate an answer.
+
+---
+
+## Who Is Already Using This Well
+
+I want to be clear about what good AI-assisted engineering looks like, because I am not arguing against the tools.
+
+The engineers I have seen use these tools most effectively share a common pattern: they understand enough to evaluate what they receive. They read the generated code and they know what questions to ask. They recognize when an approach is technically correct but architecturally problematic for their specific system. They catch the subtle bug in the generated logic because they understand the domain well enough to know what the correct behavior should be.
+
+For these engineers, AI tools are genuinely transformative. They compress the execution of well-understood patterns. They surface approaches the engineer might not have considered. They handle the parts of the work that are repetitive without being interesting. They allow the engineer to spend more time on the problems that actually require judgment.
+
+This is the legitimate promise of AI in software development. It is real and it is significant.
+
+But it is contingent on the engineer already having the foundation that makes evaluation possible. And that foundation does not develop through vibe coding. It develops through the slower, harder process of building things you understand, debugging things you wrote, and developing the mental models that let you reason about systems independent of any tool.
+
+---
+
+## The Practical Question
+
+If you are early in your engineering career, the question worth sitting with is this: when you build something using AI assistance, are you developing any understanding of how it works, or are you primarily developing the ability to use AI assistance?
+
+Both are skills. But they are not equivalent in value, and they are not interchangeable when the hard problems arrive.
+
+The engineers who will use AI most effectively over the next decade are the ones who developed real engineering foundations before AI made it optional. They will use AI to move faster through problems they already understand. The engineers who used AI to avoid developing those foundations will spend their careers dependent on the tool in ways that limit what they can build and where they can work.
+
+This is not speculation. It is the logical consequence of what skills each approach develops — and skills, unlike code, cannot be generated on demand.
+
+---
+
+## Closing
+
+Vibe coding will not make you a worse engineer if you already know how to engineer. It will make you faster.
+
+Vibe coding will make you a worse engineer if it replaces the process of learning to engineer. Not immediately — the working code will hide the gap for a while. But the gap will be there, and it will surface in the moments that matter most: the production incident, the architecture decision, the performance problem that cannot be fixed by generating new code.
+
+The tools are excellent. Use them. But use them in a way that builds your ability to work without them — because the engineering problems that matter most are still the ones where the tool runs out of road and hands the controls back to you.
+
+At that point, whether you know how to fly is the only thing that counts.
+
+---
+
+*The autopilot analogy from an earlier article applies here more literally than it might seem. The pilots who most effectively manage modern automated aircraft are the ones who learned to fly manually first. The automation did not make that foundation irrelevant. It made it the thing you need most when the automation reaches its limits.*

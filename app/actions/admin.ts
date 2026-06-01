@@ -8,6 +8,7 @@ import path from "path";
 import matter from "gray-matter";
 import { connectDB } from "@/lib/db";
 import { Comment } from "@/lib/models/comment";
+import { deleteImgbbImage } from "@/lib/avatar";
 import { BlogPostModel } from "@/lib/models/blog-post";
 import { PageView } from "@/lib/models/page-view";
 
@@ -52,6 +53,7 @@ export interface AdminComment {
   email: string;
   message: string;
   rating: number;
+  avatar?: string;
   createdAt: string;
 }
 
@@ -59,20 +61,41 @@ export async function getAllCommentsAdmin(): Promise<AdminComment[]> {
   await connectDB();
   const docs = await Comment.find({}).sort({ createdAt: -1 }).lean().exec();
   return docs.map((d) => ({
-    id: String(d._id),
-    slug: d.slug as string,
-    name: d.name as string,
-    email: d.email as string,
-    message: d.message as string,
-    rating: d.rating as number,
+    id:        String(d._id),
+    slug:      d.slug as string,
+    name:      d.name as string,
+    email:     d.email as string,
+    message:   d.message as string,
+    rating:    d.rating as number,
+    avatar:    d.avatar as string | undefined,
     createdAt: (d.createdAt as Date).toISOString(),
   }));
 }
 
 export async function deleteComment(id: string): Promise<void> {
   await connectDB();
+  const doc = await Comment.findById(id).lean();
+  if (doc?.avatarId) {
+    await deleteImgbbImage(doc.avatarId as string);
+  }
   await Comment.findByIdAndDelete(id);
   revalidatePath("/admin/dashboard/comments");
+}
+
+export async function deleteAllComments(): Promise<{ deleted: number }> {
+  await connectDB();
+  // Collect all avatar IDs for imgbb cleanup (best-effort, in parallel)
+  const docs = await Comment.find({}).select("avatarId").lean();
+  const avatarIds = docs
+    .map((d) => d.avatarId as string | undefined)
+    .filter(Boolean) as string[];
+
+  await Promise.allSettled(avatarIds.map((id) => deleteImgbbImage(id)));
+
+  const result = await Comment.deleteMany({});
+  revalidatePath("/admin/dashboard/comments");
+  revalidatePath("/admin/dashboard");
+  return { deleted: result.deletedCount };
 }
 
 // ── Blog upload ───────────────────────────────────────────────────────────────
@@ -384,6 +407,33 @@ export async function getAnalytics(period: AnalyticsPeriod): Promise<AnalyticsDa
 }
 
 // ── Migration: filesystem MDX → MongoDB ──────────────────────────────────────
+
+export interface MigrationPreview {
+  inDb: string[];      // slugs already in MongoDB
+  newFiles: string[];  // slugs only in filesystem (not yet migrated)
+}
+
+export async function getMigrationPreview(): Promise<MigrationPreview> {
+  const BLOG_DIR = path.join(process.cwd(), "content", "blog");
+  if (!fs.existsSync(BLOG_DIR)) return { inDb: [], newFiles: [] };
+
+  const slugs = fs
+    .readdirSync(BLOG_DIR)
+    .filter((f) => f.endsWith(".mdx"))
+    .map((f) => f.replace(/\.mdx$/, ""));
+
+  await connectDB();
+  const existingDocs = await BlogPostModel.find(
+    { slug: { $in: slugs } },
+    { slug: 1, _id: 0 },
+  ).lean();
+  const existingSet = new Set(existingDocs.map((d) => d.slug as string));
+
+  return {
+    inDb:     slugs.filter((s) => existingSet.has(s)),
+    newFiles: slugs.filter((s) => !existingSet.has(s)),
+  };
+}
 
 export interface MigrateResult {
   migrated: string[];
