@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useTransition } from "react";
 import { motion, useInView } from "framer-motion";
+import { submitContactForm } from "@/app/actions/contact";
 import {
   Mail,
   Phone,
@@ -71,7 +72,12 @@ interface FormErrors {
   message?: string;
 }
 
-const EMPTY_FORM: FormValues = { name: "", email: "", subject: "", message: "" };
+const EMPTY_FORM: FormValues = {
+  name: "",
+  email: "",
+  subject: "",
+  message: "",
+};
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -127,8 +133,8 @@ function FloatingInput({
   const borderClass = showError
     ? "border-red-400/50 ring-1 ring-red-400/20"
     : focused
-    ? "border-primary/40 ring-1 ring-primary/10"
-    : "border-white/8 hover:border-white/15";
+      ? "border-primary/40 ring-1 ring-primary/10"
+      : "border-white/8 hover:border-white/15";
 
   const baseClass = `w-full bg-transparent border rounded-xl px-4 text-sm text-white/80 outline-none transition-all duration-200 resize-none placeholder:text-white/20 ${borderClass}`;
 
@@ -195,7 +201,8 @@ export function ContactSection() {
   const [values, setValues] = useState<FormValues>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [submitting, setSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const submitting = isPending;
 
   const setField = useCallback(
     (field: keyof FormValues) => (val: string) => {
@@ -209,10 +216,9 @@ export function ContactSection() {
     [errors],
   );
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Mark all fields as touched
     setTouched({ name: true, email: true, subject: true, message: true });
 
     const validationErrors = validate(values);
@@ -221,30 +227,25 @@ export function ContactSection() {
       return;
     }
 
-    setSubmitting(true);
     setErrors({});
 
-    try {
-      // Simulate API call — wire to your email service here
-      await new Promise<void>((resolve) => setTimeout(resolve, 1200));
+    startTransition(async () => {
+      const result = await submitContactForm(values);
 
-      toast.success("Message sent!", {
-        description: "Thanks for reaching out. I'll get back to you soon.",
-        duration: 5000,
-        icon: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
-      });
-
-      // Reset form
-      setValues(EMPTY_FORM);
-      setTouched({});
-      setErrors({});
-    } catch {
-      toast.error("Something went wrong", {
-        description: "Please try again or reach out via email directly.",
-      });
-    } finally {
-      setSubmitting(false);
-    }
+      if (result.success) {
+        toast.success("Message sent!", {
+          description: "Thanks for reaching out. I'll get back to you soon — check your inbox for a confirmation.",
+          duration: 6000,
+          icon: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+        });
+        setValues(EMPTY_FORM);
+        setTouched({});
+      } else {
+        toast.error("Failed to send", {
+          description: result.error ?? "Please try again or email me directly.",
+        });
+      }
+    });
   };
 
   // Show errors only for touched fields
@@ -256,7 +257,7 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" ref={ref} className="relative py-24 md:py-32">
+    <section id="contact" ref={ref} className="relative py-16 md:py-24">
       {/* Background accent */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-primary/5 blur-[80px] pointer-events-none" />
 

@@ -31,10 +31,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogPage() {
-  const posts = getAllBlogPosts();
-  const tags = getAllTags();
-  const featuredPost = getFeaturedPost();
+export default async function BlogPage() {
+  const [posts, tags, featuredPost] = await Promise.all([
+    getAllBlogPosts(),
+    getAllTags(),
+    getFeaturedPost(),
+  ]);
 
   return (
     <main className="min-h-screen bg-background noise-overlay">

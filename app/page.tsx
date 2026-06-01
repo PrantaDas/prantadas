@@ -110,12 +110,13 @@ const CURATED_SLUGS = [
 ];
 
 export default async function Home() {
-  const [repositories, year] = await Promise.all([
+  const [repositories, year, curatedPosts] = await Promise.all([
     getRepositories(),
     getYear(),
+    getCuratedPosts(CURATED_SLUGS),
   ]);
 
-  const articles = getCuratedPosts(CURATED_SLUGS).map((p) => ({
+  const articles = curatedPosts.map((p) => ({
     slug: p.slug,
     title: p.title,
     description: p.description,

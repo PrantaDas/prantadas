@@ -2,8 +2,94 @@
 
 import { useState, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Sparkles, ChevronRight } from "lucide-react";
+import { Sparkles, ChevronRight, LayoutGrid, Radar } from "lucide-react";
 import { skillsData } from "@/data/skills";
+import {
+  RadarChart, Radar as ReRadar, PolarGrid, PolarAngleAxis,
+  PolarRadiusAxis, ResponsiveContainer, Tooltip,
+} from "recharts";
+
+const radarData = [
+  { subject: "Backend Dev",  score: 95 },
+  { subject: "API Design",   score: 90 },
+  { subject: "Databases",    score: 85 },
+  { subject: "Realtime",     score: 80 },
+  { subject: "Web3",         score: 75 },
+  { subject: "DevOps",       score: 70 },
+  { subject: "Automation",   score: 65 },
+  { subject: "Frontend",     score: 55 },
+];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function RadarTooltip({ active, payload }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-xl border border-white/10 bg-[#0d1117] px-3 py-2 text-xs font-mono shadow-xl">
+      <span className="text-white/50">{payload[0]?.payload?.subject}: </span>
+      <span className="text-primary font-bold">{payload[0]?.value}%</span>
+    </div>
+  );
+}
+
+function TechRadar() {
+  return (
+    <div className="flex flex-col lg:flex-row items-center gap-10">
+      {/* Chart */}
+      <div className="w-full max-w-sm flex-shrink-0">
+        <ResponsiveContainer width="100%" height={360}>
+          <RadarChart data={radarData} margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
+            <PolarGrid stroke="rgba(255,255,255,0.06)" />
+            <PolarAngleAxis
+              dataKey="subject"
+              tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 11, fontFamily: "monospace" }}
+            />
+            <PolarRadiusAxis
+              angle={90}
+              domain={[0, 100]}
+              tick={{ fill: "rgba(255,255,255,0.2)", fontSize: 9, fontFamily: "monospace" }}
+              tickCount={5}
+              stroke="rgba(255,255,255,0.04)"
+            />
+            <ReRadar
+              dataKey="score"
+              stroke="#00d4ff"
+              strokeWidth={2}
+              fill="#00d4ff"
+              fillOpacity={0.12}
+              dot={{ fill: "#00d4ff", r: 4 }}
+            />
+            <Tooltip content={<RadarTooltip />} />
+          </RadarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Bar list */}
+      <div className="flex-1 w-full space-y-3">
+        {[...radarData].sort((a, b) => b.score - a.score).map(({ subject, score }) => (
+          <div key={subject}>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-sm text-white/65 font-mono">{subject}</span>
+              <span className="text-xs text-primary/70 font-mono font-bold">{score}%</span>
+            </div>
+            <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <motion.div
+                className="h-full rounded-full"
+                style={{ background: `hsl(${190 + (score / 100) * 60}, 80%, 55%)` }}
+                initial={{ width: 0 }}
+                whileInView={{ width: `${score}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.9, ease: "easeOut", delay: 0.1 }}
+              />
+            </div>
+          </div>
+        ))}
+        <p className="text-xs text-white/20 font-mono pt-2">
+          * Based on real-world production experience
+        </p>
+      </div>
+    </div>
+  );
+}
 
 // ─── Category metadata ───────────────────────────────────────────────────────
 const categoryMeta: Record<
@@ -191,13 +277,17 @@ function SkillCard({
       style={{ "--card-glow": c.glow } as React.CSSProperties}
       className="group flex flex-col items-center gap-2.5 p-3.5 rounded-2xl border border-white/8 bg-white/3 backdrop-blur-sm cursor-default select-none hover:border-opacity-100 transition-all duration-200 skill-card"
     >
-      <div className={`text-2xl sm:text-3xl leading-none ${c.text} group-hover:${c.activeText} transition-colors duration-200`}>
+      <div
+        className={`text-2xl sm:text-3xl leading-none ${c.text} group-hover:${c.activeText} transition-colors duration-200`}
+      >
         <Icon />
       </div>
       <span className="text-[10px] sm:text-xs font-medium text-white/50 group-hover:text-white/80 transition-colors duration-200 text-center leading-tight px-1">
         {skill.name}
       </span>
-      <span className={`w-1.5 h-1.5 rounded-full ${c.dot} opacity-50 group-hover:opacity-80 transition-opacity`} />
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${c.dot} opacity-50 group-hover:opacity-80 transition-opacity`}
+      />
     </motion.div>
   );
 }
@@ -231,7 +321,9 @@ function FilterPill({
       `}
     >
       {label !== "All" && (
-        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${meta.dot} ${isActive ? "opacity-90" : "opacity-50"}`} />
+        <span
+          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${meta.dot} ${isActive ? "opacity-90" : "opacity-50"}`}
+        />
       )}
       {label}
       <span className="opacity-45">({count})</span>
@@ -241,6 +333,7 @@ function FilterPill({
 
 // ─── Section ─────────────────────────────────────────────────────────────────
 export function SkillsSection() {
+  const [view, setView] = useState<"grid" | "radar">("grid");
   const [activeCategory, setActiveCategory] = useState("All");
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
@@ -261,7 +354,7 @@ export function SkillsSection() {
     <section
       id="skills"
       ref={ref}
-      className="relative py-24 md:py-32 overflow-hidden"
+      className="relative py-16 md:py-24 overflow-hidden"
     >
       {/* Ambient background */}
       <div className="absolute inset-0 pointer-events-none">
@@ -289,85 +382,121 @@ export function SkillsSection() {
             <span className="gradient-text-purple">Technologies</span>
           </h2>
 
-          <p className="text-white/40 max-w-md mx-auto">
+          <p className="text-white/40 max-w-md mx-auto mb-6">
             A curated toolkit forged through years of building real-world
             systems at scale.
           </p>
-        </motion.div>
 
-        {/* ── Category filters ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55, delay: 0.15 }}
-          className="mb-10"
-        >
-          <div className="flex flex-wrap justify-center gap-2">
-            <FilterPill
-              label="All"
-              count={categoryCount("All")}
-              isActive={activeCategory === "All"}
-              onClick={() => setActiveCategory("All")}
-              meta={fallbackMeta}
-            />
-            {allCategories.map((cat) => (
-              <FilterPill
-                key={cat}
-                label={cat}
-                count={categoryCount(cat)}
-                isActive={activeCategory === cat}
-                onClick={() => setActiveCategory(cat)}
-                meta={categoryMeta[cat] ?? fallbackMeta}
-              />
-            ))}
+          {/* View toggle */}
+          <div className="flex justify-center">
+            <div className="inline-flex gap-1 p-1 rounded-xl bg-white/4 border border-white/8">
+              <button
+                onClick={() => setView("grid")}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono transition-all ${
+                  view === "grid" ? "bg-white/10 text-white/85" : "text-white/35 hover:text-white/60"
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" /> Skill Grid
+              </button>
+              <button
+                onClick={() => setView("radar")}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono transition-all ${
+                  view === "radar" ? "bg-white/10 text-white/85" : "text-white/35 hover:text-white/60"
+                }`}
+              >
+                <Radar className="w-3.5 h-3.5" /> Tech Radar
+              </button>
+            </div>
           </div>
         </motion.div>
 
-        {/* ── Skill grid ── */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.25 }}
-        >
-          <AnimatePresence mode="popLayout">
+        {view === "grid" ? (
+          <>
+            {/* ── Category filters ── */}
             <motion.div
-              layout
-              className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-2.5 sm:gap-3"
+              initial={{ opacity: 0, y: 16 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55, delay: 0.15 }}
+              className="mb-10"
             >
-              {filteredSkills.map((skill, i) => (
-                <SkillCard key={skill.name} skill={skill} index={i} />
-              ))}
+              <div className="flex flex-wrap justify-center gap-2">
+                <FilterPill
+                  label="All"
+                  count={categoryCount("All")}
+                  isActive={activeCategory === "All"}
+                  onClick={() => setActiveCategory("All")}
+                  meta={fallbackMeta}
+                />
+                {allCategories.map((cat) => (
+                  <FilterPill
+                    key={cat}
+                    label={cat}
+                    count={categoryCount(cat)}
+                    isActive={activeCategory === cat}
+                    onClick={() => setActiveCategory(cat)}
+                    meta={categoryMeta[cat] ?? fallbackMeta}
+                  />
+                ))}
+              </div>
             </motion.div>
-          </AnimatePresence>
-        </motion.div>
 
-        {/* ── Footer ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
-        >
-          {allCategories.map((cat) => {
-            const c = categoryMeta[cat] ?? fallbackMeta;
-            return (
-              <button
-                key={cat}
-                onClick={() =>
-                  setActiveCategory(activeCategory === cat ? "All" : cat)
-                }
-                className="group flex items-center gap-1.5 text-[11px] text-white/20 hover:text-white/45 transition-colors"
-              >
-                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.dot}`} />
-                <span className="font-mono">{cat}</span>
-                <ChevronRight className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity -ml-0.5" />
-              </button>
-            );
-          })}
-          <span className="text-[11px] font-mono text-white/12 ml-2">
-            · {skillsData.length} total
-          </span>
-        </motion.div>
+            {/* ── Skill grid ── */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.25 }}
+            >
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  layout
+                  className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-2.5 sm:gap-3"
+                >
+                  {filteredSkills.map((skill, i) => (
+                    <SkillCard key={skill.name} skill={skill} index={i} />
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+
+            {/* ── Footer legend ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
+            >
+              {allCategories.map((cat) => {
+                const c = categoryMeta[cat] ?? fallbackMeta;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() =>
+                      setActiveCategory(activeCategory === cat ? "All" : cat)
+                    }
+                    className="group flex items-center gap-1.5 text-[11px] text-white/20 hover:text-white/45 transition-colors"
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.dot}`} />
+                    <span className="font-mono">{cat}</span>
+                    <ChevronRight className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity -ml-0.5" />
+                  </button>
+                );
+              })}
+              <span className="text-[11px] font-mono text-white/12 ml-2">
+                · {skillsData.length} total
+              </span>
+            </motion.div>
+          </>
+        ) : (
+          /* ── Tech Radar ── */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-4"
+          >
+            <TechRadar />
+          </motion.div>
+        )}
       </div>
     </section>
   );

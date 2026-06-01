@@ -50,6 +50,7 @@ const education = [
     company: "Daffodil International University",
     location: "Dhaka",
     period: "September 2018 — July 2022",
+    description: "",
     type: "education",
   },
   {
@@ -57,6 +58,7 @@ const education = [
     company: "Cantonment College, Jashore",
     location: "Jashore",
     period: "April 2016 — March 2018",
+    description: "",
     type: "education",
   },
   {
@@ -64,6 +66,7 @@ const education = [
     company: "Panjia Secondary School, Jashore",
     location: "Jashore",
     period: "January 2014 — February 2016",
+    description: "",
     type: "education",
   },
 ];
@@ -161,7 +164,7 @@ export function ExperienceSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="experience" ref={ref} className="relative py-24 md:py-32">
+    <section id="experience" ref={ref} className="relative py-16 md:py-24">
       <div className="container max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

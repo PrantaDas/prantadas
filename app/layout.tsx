@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/sonner";
+import { TrackVisit } from "@/components/analytics/track-visit";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -190,6 +191,7 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans bg-background text-foreground antialiased`}
       >
+        <TrackVisit />
         {children}
         <Toaster position="bottom-right" richColors />
       </body>

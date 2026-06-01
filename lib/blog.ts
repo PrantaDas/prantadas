@@ -1,9 +1,6 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
 import readingTime from "reading-time";
-
-const BLOG_DIR = path.join(process.cwd(), "content/blog");
+import { connectDB } from "./db";
+import { BlogPostModel } from "./models/blog-post";
 
 export interface BlogPost {
   slug: string;
@@ -41,76 +38,86 @@ export const AUTHOR: Author = {
   linkedin: "https://linkedin.com/in/pranta-das7",
 };
 
-export function getAllSlugs(): string[] {
-  if (!fs.existsSync(BLOG_DIR)) return [];
-  return fs
-    .readdirSync(BLOG_DIR)
-    .filter((f) => f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.mdx$/, ""));
-}
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-export function getBlogPost(slug: string): BlogPost | null {
-  const filePath = path.join(BLOG_DIR, `${slug}.mdx`);
-  if (!fs.existsSync(filePath)) return null;
-
-  const raw = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(raw);
-  const rt = readingTime(content);
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function docToPost(doc: any): BlogPost {
+  const rt = readingTime(doc.content ?? "");
   return {
-    slug,
-    title: data.title ?? slug,
-    description: data.description ?? "",
-    date: data.date ?? "",
-    updatedAt: data.updatedAt,
-    tags: data.tags ?? [],
+    slug: doc.slug,
+    title: doc.title ?? doc.slug,
+    description: doc.description ?? "",
+    date: doc.date ?? "",
+    updatedAt: doc.updatedAt,
+    tags: doc.tags ?? [],
     readingTime: rt.text,
     readingMinutes: Math.ceil(rt.minutes),
-    featured: data.featured ?? false,
-    coverImage: data.coverImage,
-    excerpt: data.excerpt ?? data.description ?? "",
+    featured: doc.featured ?? false,
+    coverImage: doc.coverImage,
+    excerpt: doc.excerpt ?? doc.description ?? "",
     author: AUTHOR,
-    content,
+    content: doc.content ?? "",
   };
 }
 
-export function getAllBlogPosts(): BlogPost[] {
-  const slugs = getAllSlugs();
-  const posts = slugs
-    .map((slug) => getBlogPost(slug))
-    .filter(Boolean) as BlogPost[];
+// ── Public API ────────────────────────────────────────────────────────────────
 
-  return posts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+const PUBLISHED = { status: "published" } as const;
+
+export async function getAllSlugs(): Promise<string[]> {
+  await connectDB();
+  const docs = await BlogPostModel.find(PUBLISHED, { slug: 1, _id: 0 }).lean();
+  return docs.map((d) => d.slug as string);
 }
 
-export function getFeaturedPost(): BlogPost | undefined {
-  return getAllBlogPosts().find((p) => p.featured);
+export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+  await connectDB();
+  const doc = await BlogPostModel.findOne({ slug, ...PUBLISHED }).lean();
+  if (!doc) return null;
+  return docToPost(doc);
 }
 
-export function getRelatedPosts(
+export async function getAllBlogPosts(): Promise<BlogPost[]> {
+  await connectDB();
+  const docs = await BlogPostModel.find(PUBLISHED).sort({ date: -1 }).lean();
+  return docs.map(docToPost);
+}
+
+export async function getFeaturedPost(): Promise<BlogPost | undefined> {
+  await connectDB();
+  const doc = await BlogPostModel.findOne({ featured: true, ...PUBLISHED }).lean();
+  return doc ? docToPost(doc) : undefined;
+}
+
+export async function getRelatedPosts(
   slug: string,
   tags: string[],
   limit = 3,
-): BlogPost[] {
-  return getAllBlogPosts()
-    .filter((p) => p.slug !== slug)
-    .map((p) => ({
-      post: p,
-      score: p.tags.filter((t) => tags.includes(t)).length,
+): Promise<BlogPost[]> {
+  await connectDB();
+  const docs = await BlogPostModel.find({
+    slug: { $ne: slug },
+    tags: { $in: tags },
+    ...PUBLISHED,
+  })
+    .sort({ date: -1 })
+    .lean();
+
+  return docs
+    .map((d) => ({
+      post: docToPost(d),
+      score: (d.tags as string[]).filter((t) => tags.includes(t)).length,
     }))
-    .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map(({ post }) => post);
 }
 
-export function getAdjacentPosts(slug: string): {
+export async function getAdjacentPosts(slug: string): Promise<{
   prev: BlogPost | null;
   next: BlogPost | null;
-} {
-  const posts = getAllBlogPosts();
+}> {
+  const posts = await getAllBlogPosts();
   const idx = posts.findIndex((p) => p.slug === slug);
   return {
     prev: idx < posts.length - 1 ? posts[idx + 1] : null,
@@ -118,20 +125,20 @@ export function getAdjacentPosts(slug: string): {
   };
 }
 
-export function getCuratedPosts(slugs: string[]): BlogPost[] {
-  const all = getAllBlogPosts();
-  return slugs
-    .map((slug) => all.find((p) => p.slug === slug))
-    .filter(Boolean) as BlogPost[];
+export async function getCuratedPosts(slugs: string[]): Promise<BlogPost[]> {
+  await connectDB();
+  const docs = await BlogPostModel.find({ slug: { $in: slugs } }).lean();
+  const map = new Map(docs.map((d) => [d.slug as string, docToPost(d)]));
+  return slugs.map((s) => map.get(s)).filter(Boolean) as BlogPost[];
 }
 
-export function getAllTags(): { tag: string; count: number }[] {
-  const posts = getAllBlogPosts();
-  const counts: Record<string, number> = {};
-  posts.forEach((p) =>
-    p.tags.forEach((t) => (counts[t] = (counts[t] ?? 0) + 1)),
-  );
-  return Object.entries(counts)
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count);
+export async function getAllTags(): Promise<{ tag: string; count: number }[]> {
+  await connectDB();
+  const result = await BlogPostModel.aggregate([
+    { $match: PUBLISHED },
+    { $unwind: "$tags" },
+    { $group: { _id: "$tags", count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+  ]);
+  return result.map((r) => ({ tag: r._id as string, count: r.count as number }));
 }

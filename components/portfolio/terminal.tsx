@@ -53,26 +53,114 @@ function makeArt(content: string): CommandOutput {
 
 type CommandResult = CommandOutput[];
 
-const COMMANDS: Record<string, () => CommandResult> = {
+// Section → anchor ID or URL
+const SECTIONS: Record<string, string> = {
+  about: "#about",
+  skills: "#skills",
+  projects: "#projects",
+  experience: "#experience",
+  contact: "#contact",
+  certifications: "#certifications",
+  blog: "/blog",
+  home: "#hero",
+};
+
+function navigate(target: string) {
+  if (target.startsWith("/")) {
+    window.location.href = target;
+  } else {
+    document.querySelector(target)?.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+// Commands now receive the rest of the line as `args`
+const COMMANDS: Record<string, (args: string) => CommandResult> = {
   help: () => [
     makeHighlight("━━━ Available Commands ━━━"),
-    makeText("  about        → Who am I"),
-    makeText("  skills       → Tech stack"),
-    makeText("  projects     → Open source & professional work"),
-    makeText("  experience   → Career timeline"),
-    makeText("  contact      → Get in touch"),
-    makeText("  socials      → Social links"),
-    makeText("  stack        → Current tech stack"),
-    makeText("  now          → What I'm working on"),
-    makeText("  certifications → My certifications"),
-    makeText("  clear        → Clear terminal"),
-    makeText("  whoami       → System identity"),
-    makeText("  sudo rm -rf /→ 😈"),
     makeText(""),
-    makeText("  Type any command to execute."),
+    makeText("  Navigation:"),
+    makeText("  open <section>   → scroll to section (about/skills/projects/...)"),
+    makeText("  goto <section>   → alias for open"),
+    makeText(""),
+    makeText("  Info:"),
+    makeText("  about            → Who am I"),
+    makeText("  skills           → Tech stack"),
+    makeText("  projects         → Featured projects"),
+    makeText("  experience       → Career timeline"),
+    makeText("  contact          → Contact info"),
+    makeText("  blog             → Recent articles"),
+    makeText("  stack            → Current production stack"),
+    makeText("  now              → What I'm working on"),
+    makeText("  certifications   → HackerRank certs"),
+    makeText("  whoami           → System identity"),
+    makeText(""),
+    makeText("  Utils:"),
+    makeText("  echo <text>      → print text"),
+    makeText("  man <cmd>        → manual for a command"),
+    makeText("  ls               → list directory"),
+    makeText("  neofetch         → system info"),
+    makeText("  clear            → clear terminal"),
+    makeText("  exit / quit      → close the terminal"),
+    makeText(""),
+    makeText("  Easter eggs:"),
+    makeText("  matrix  sudo  sudo rm -rf /  uname  date  pwd"),
   ],
 
-  about: () => [
+  open: (args) => {
+    const sec = args.trim().toLowerCase();
+    if (!sec) return [makeError("  Usage: open <section>"), makeText("  Sections: " + Object.keys(SECTIONS).join(", "))];
+    const target = SECTIONS[sec];
+    if (!target) return [makeError(`  Unknown section: ${sec}`), makeText("  Available: " + Object.keys(SECTIONS).join(", "))];
+    navigate(target);
+    return [makeSuccess(`  ↗ Navigating to '${sec}'...`)];
+  },
+
+  goto: (args) => COMMANDS.open(args),
+
+  blog: () => [
+    makeHighlight("━━━ Recent Articles ━━━"),
+    makeText(""),
+    makeText("  ★ AI in Production Software: Benefits, Risks & Expectations"),
+    makeText("    tags: AI · Backend · Architecture"),
+    makeText(""),
+    makeText("  ○ Engineer to Team Lead: Architecture Decisions"),
+    makeText("    tags: Career · Leadership · Engineering"),
+    makeText(""),
+    makeText("  ○ RabbitMQ vs Kafka for Node.js in Production"),
+    makeText("    tags: Backend · Node.js · Message Queue"),
+    makeText(""),
+    makeText("  ○ The Hidden Cost of Overengineering"),
+    makeText("    tags: Architecture · Engineering"),
+    makeText(""),
+    makeText("  ○ Type-Safe APIs with tRPC + TypeScript"),
+    makeText("    tags: TypeScript · API · Backend"),
+    makeText(""),
+    makeLinks([{ label: "→ Read all", value: "prantadas.vercel.app/blog", href: "/blog" }]),
+  ],
+
+  echo: (args) => [
+    args.trim() ? makeText(`  ${args}`) : makeText("  Usage: echo <message>"),
+  ],
+
+  man: (args) => {
+    const cmd = args.trim().toLowerCase();
+    const manuals: Record<string, string> = {
+      open: "open <section> — scroll to a section or navigate to a page.\n  Sections: " + Object.keys(SECTIONS).join(", "),
+      echo: "echo <text> — print text to the terminal.",
+      blog: "blog — list recent blog articles.",
+      neofetch: "neofetch — display system info in a stylized format.",
+      whoami: "whoami — print current user info.",
+      sudo: "sudo — attempt to elevate privileges. (nice try)",
+      ls: "ls — list contents of the current directory.",
+      clear: "clear — clear all terminal output.",
+    };
+    if (!cmd) return [makeError("  Usage: man <command>")];
+    const manual = manuals[cmd];
+    if (!manual) return [makeError(`  No manual entry for: ${cmd}`)];
+    return [makeHighlight(`  man ${cmd}`), makeText(""), makeText(`  ${manual}`)];
+  },
+
+  about: (_args) => [
     makeArt(
       `  ██████╗ ██████╗  █████╗ ███╗   ██╗████████╗ █████╗ 
   ██╔══██╗██╔══██╗██╔══██╗████╗  ██║╚══██╔══╝██╔══██╗
@@ -100,7 +188,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     ),
   ],
 
-  skills: () => [
+  skills: (_args) => [
     makeHighlight("━━━ Tech Stack ━━━"),
     makeText(""),
     makeText("  Languages   : JavaScript · TypeScript"),
@@ -115,7 +203,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     makeText("  Automation  : Selenium · Puppeteer · Beautiful Soup"),
   ],
 
-  projects: () => [
+  projects: (_args) => [
     makeHighlight("━━━ Featured Projects ━━━"),
     makeText(""),
     makeText("  Open Source:"),
@@ -141,7 +229,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     makeText("  → github.com/Prantadas"),
   ],
 
-  experience: () => [
+  experience: (_args) => [
     makeHighlight("━━━ Career Timeline ━━━"),
     makeText(""),
     makeSuccess("  ● [Current] Team Lead (Backend)"),
@@ -162,7 +250,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     makeText("  ○ HSC (Science) — Cantonment College, Jashore (2016–2018)"),
   ],
 
-  contact: () => [
+  contact: (_args) => [
     makeHighlight("━━━ Contact ━━━"),
     makeText(""),
     makeLinks([
@@ -187,7 +275,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     makeText("  → Scroll to the Contact section to send a message"),
   ],
 
-  socials: () => [
+  socials: (_args) => [
     makeHighlight("━━━ Social Links ━━━"),
     makeText(""),
     makeLinks([
@@ -209,7 +297,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     ]),
   ],
 
-  stack: () => [
+  stack: (_args) => [
     makeHighlight("━━━ Current Production Stack ━━━"),
     makeText(""),
     makeText("  Runtime    : Node.js 20 LTS"),
@@ -223,7 +311,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     makeText("  Deployment : Docker + CI/CD"),
   ],
 
-  now: () => [
+  now: (_args) => [
     makeHighlight("━━━ What I'm Up To ━━━"),
     makeText(""),
     makeSuccess("  Currently:"),
@@ -242,7 +330,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     makeText("  · Senior / Lead engineering roles"),
   ],
 
-  certifications: () => [
+  certifications: (_args) => [
     makeHighlight("━━━ HackerRank Certifications ━━━"),
     makeText(""),
     makeText(
@@ -262,7 +350,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     ),
   ],
 
-  whoami: () => [
+  whoami: (_args) => [
     makeText(`${OWNER}@${HOST}`),
     makeText(""),
     makeText(
@@ -272,35 +360,32 @@ const COMMANDS: Record<string, () => CommandResult> = {
     makeSuccess("  Roles: backend_dev, team_lead, open_source_contributor"),
   ],
 
-  "sudo rm -rf /": () => [
+  "sudo rm -rf /": (_args) => [
     makeError("  sudo: seriously? nice try."),
     makeText("  Your permissions: none. The craft lives on."),
   ],
 
-  sudo: () => [
+  sudo: (_args) => [
     makeError("  [sudo] password for visitor: "),
     makeText("  Sorry, try again."),
     makeError("  sudo: 3 incorrect password attempts"),
   ],
 
-  ls: () => [
+  ls: (_args) => [
     makeText("  projects/    skills/    experience/    certifications/"),
     makeText("  about.md     contact.md    README.md"),
   ],
 
-  pwd: () => [makeText("/home/pranta/portfolio")],
+  pwd: (_args) => [makeText("/home/pranta/portfolio")],
 
-  date: () => [makeText(`  ${new Date().toString()}`)],
+  date: (_args) => [makeText(`  ${new Date().toString()}`)],
 
-  uname: () => [
+  uname: (_args) => [
     makeText("  PrantaOS 3.0.0 portfolio-server #1 SMP PREEMPT_DYNAMIC"),
   ],
 
-  echo: () => [
-    makeText("  Usage: echo <message> — I can only echo your admiration."),
-  ],
 
-  neofetch: () => [
+  neofetch: (_args) => [
     makeArt(
       `       ██████           pranta@portfolio
       ██░░░░██          ─────────────────
@@ -313,7 +398,7 @@ const COMMANDS: Record<string, () => CommandResult> = {
     ),
   ],
 
-  matrix: () => [
+  matrix: (_args) => [
     makeSuccess("  Initializing matrix..."),
     makeText("  01001000 01100101 01101100 01101100 01101111"),
     makeText("  Wake up, developer. The Matrix has you."),
@@ -469,12 +554,15 @@ export function Terminal({ isOpen, onClose }: TerminalProps) {
   );
 
   const runCommand = useCallback((raw: string) => {
-    const trimmed = raw.trim().toLowerCase();
+    const trimmed = raw.trim();
     if (!trimmed) return;
 
     const output: CommandOutput[] = [];
+    const spaceIdx = trimmed.indexOf(" ");
+    const cmd = (spaceIdx === -1 ? trimmed : trimmed.slice(0, spaceIdx)).toLowerCase();
+    const args = spaceIdx === -1 ? "" : trimmed.slice(spaceIdx + 1);
 
-    if (trimmed === "clear") {
+    if (cmd === "clear") {
       setHistory([]);
       setCmdHistory((prev) => [raw, ...prev]);
       setHistoryIndex(-1);
@@ -482,11 +570,23 @@ export function Terminal({ isOpen, onClose }: TerminalProps) {
       return;
     }
 
-    const handler = COMMANDS[trimmed];
+    if (cmd === "exit" || cmd === "quit") {
+      setHistory((prev) => [
+        ...prev,
+        { id: idRef.current++, command: raw, output: [makeSuccess("  Goodbye! 👋")] },
+      ]);
+      setCmdHistory((prev) => [raw, ...prev]);
+      setHistoryIndex(-1);
+      setInput("");
+      setTimeout(() => onClose(), 600);
+      return;
+    }
+
+    const handler = COMMANDS[cmd];
     if (handler) {
-      output.push(...handler());
+      output.push(...handler(args));
     } else {
-      output.push(makeError(`  command not found: ${trimmed}`));
+      output.push(makeError(`  command not found: ${cmd}`));
       output.push(makeText("  Type 'help' to see available commands."));
     }
 
@@ -514,9 +614,11 @@ export function Terminal({ isOpen, onClose }: TerminalProps) {
       setInput(next === -1 ? "" : (cmdHistory[next] ?? ""));
     } else if (e.key === "Tab") {
       e.preventDefault();
+      const parts = input.split(" ");
+      const partial = parts[0].toLowerCase();
       const cmds = Object.keys(COMMANDS);
-      const match = cmds.find((c) => c.startsWith(input.toLowerCase()));
-      if (match) setInput(match);
+      const match = cmds.find((c) => c.startsWith(partial) && c !== partial);
+      if (match) setInput(parts.length > 1 ? match + " " + parts.slice(1).join(" ") : match);
     } else if (e.key === "l" && e.ctrlKey) {
       e.preventDefault();
       setHistory([]);

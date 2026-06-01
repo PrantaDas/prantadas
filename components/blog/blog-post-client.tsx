@@ -77,7 +77,7 @@ export function BlogPostClient({
           </ol>
         </nav>
 
-        <div className="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12 lg:items-start">
+        <div className="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12">
           {/* Main content */}
           <div>
             {/* Post header */}
@@ -271,8 +271,10 @@ export function BlogPostClient({
           </div>
 
           {/* Sidebar — TOC */}
-          <aside className="hidden lg:block sticky top-20">
-            <TableOfContents content={post.content} />
+          <aside className="hidden lg:block">
+            <div className="sticky top-20">
+              <TableOfContents content={post.content} />
+            </div>
           </aside>
         </div>
       </div>

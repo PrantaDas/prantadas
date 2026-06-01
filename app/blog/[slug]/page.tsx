@@ -22,6 +22,10 @@ import {
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { BlogCard } from "@/components/blog/blog-card";
+import { ShareButtons } from "@/components/blog/share-buttons";
+import { LikeButton } from "@/components/blog/like-button";
+import { CommentSection } from "@/components/blog/comment-section";
+import { getComments } from "@/app/actions/comments";
 import { format } from "date-fns";
 import {
   ArrowLeft,
@@ -42,43 +46,56 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  return getAllSlugs().map((slug) => ({ slug }));
+  const slugs = await getAllSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getBlogPost(slug);
   if (!post) return {};
 
   const url = `${BASE_URL}/blog/${slug}`;
+
+  const ogImage = { url: `${BASE_URL}/photo.webp`, width: 1200, height: 630, alt: post.title };
 
   return {
     title: post.title,
     description: post.description,
     authors: [{ name: post.author.name, url: BASE_URL }],
     keywords: post.tags,
+    category: post.tags[0] ?? "Engineering",
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
     openGraph: {
       type: "article",
       url,
       title: post.title,
       description: post.description,
+      siteName: "Pranta Das — Engineering Blog",
+      locale: "en_US",
       publishedTime: new Date(post.date).toISOString(),
       modifiedTime: post.updatedAt
         ? new Date(post.updatedAt).toISOString()
-        : undefined,
-      authors: [BASE_URL],
+        : new Date(post.date).toISOString(),
+      authors: [`${BASE_URL}/about`],
       tags: post.tags,
-      images: [{ url: "/photo.webp", width: 1200, height: 630 }],
+      section: post.tags[0] ?? "Engineering",
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: ["/photo.webp"],
+      images: [`${BASE_URL}/photo.webp`],
       creator: "@prantadas",
+      site: "@prantadas",
     },
     alternates: {
       canonical: url,
+      types: { "application/rss+xml": `${BASE_URL}/api/rss` },
+    },
+    other: {
+      "article:reading_time": post.readingTime,
     },
   };
 }
@@ -109,11 +126,14 @@ const mdxOptions = {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getBlogPost(slug);
   if (!post) notFound();
 
-  const related = getRelatedPosts(slug, post.tags, 3);
-  const { prev, next } = getAdjacentPosts(slug);
+  const [related, { prev, next }, comments] = await Promise.all([
+    getRelatedPosts(slug, post.tags, 3),
+    getAdjacentPosts(slug),
+    getComments(slug),
+  ]);
 
   const formattedDate = post.date
     ? format(new Date(post.date), "MMMM d, yyyy")
@@ -232,7 +252,7 @@ export default async function BlogPostPage({ params }: Props) {
             </ol>
           </nav>
 
-          <div className="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12 lg:items-start">
+          <div className="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12">
             {/* Main column */}
             <div>
               <header className="mb-10">
@@ -242,14 +262,15 @@ export default async function BlogPostPage({ params }: Props) {
                   aria-label="Post tags"
                 >
                   {post.tags.map((tag) => (
-                    <span
+                    <Link
                       key={tag}
+                      href={`/blog/tag/${encodeURIComponent(tag)}`}
                       role="listitem"
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/8 border border-primary/15 text-primary/70 text-xs font-mono"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/8 border border-primary/15 text-primary/70 text-xs font-mono hover:bg-primary/15 hover:text-primary transition-colors"
                     >
                       <Tag className="w-2.5 h-2.5" aria-hidden="true" />
                       {tag}
-                    </span>
+                    </Link>
                   ))}
                 </div>
 
@@ -317,6 +338,12 @@ export default async function BlogPostPage({ params }: Props) {
                   components={components as any}
                 />
               </article>
+
+              {/* Share + Like */}
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <LikeButton slug={post.slug} />
+                <ShareButtons title={post.title} slug={post.slug} />
+              </div>
 
               {/* Author card */}
               <div className="mt-12 p-5 rounded-2xl border border-white/8 bg-white/3 flex flex-col sm:flex-row gap-5 items-start">
@@ -425,11 +452,16 @@ export default async function BlogPostPage({ params }: Props) {
                   </div>
                 </section>
               )}
+
+              {/* Comments */}
+              <CommentSection slug={post.slug} initialComments={comments} />
             </div>
 
             {/* Sticky ToC sidebar */}
-            <aside className="hidden lg:block sticky top-20">
-              <TableOfContents content={post.content} />
+            <aside className="hidden lg:block">
+              <div className="sticky top-20">
+                <TableOfContents content={post.content} />
+              </div>
             </aside>
           </div>
         </div>

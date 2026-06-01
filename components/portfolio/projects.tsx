@@ -222,7 +222,7 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
       : repositories.filter((r) => r.category === activeCategory);
 
   return (
-    <section id="projects" ref={ref} className="relative py-24 md:py-32">
+    <section id="projects" ref={ref} className="relative py-16 md:py-24">
       <div className="container max-w-6xl mx-auto px-6">
         {/* Header */}
         <motion.div

@@ -11,6 +11,7 @@ import { CertificationsSection } from "@/components/portfolio/certifications";
 import { ContactSection } from "@/components/portfolio/contact";
 import { SiteFooter } from "@/components/portfolio/footer";
 import { Terminal } from "@/components/portfolio/terminal";
+import { ScrollToTop } from "@/components/portfolio/scroll-to-top";
 import { ProjectsSection } from "@/components/portfolio/projects";
 import {
   FeaturedArticlesSection,
@@ -96,6 +97,9 @@ export function PortfolioClient({
 
       {/* Floating terminal */}
       <Terminal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
+
+      {/* Scroll to top */}
+      <ScrollToTop />
 
       {/* Keyboard hint */}
       {!terminalOpen && (

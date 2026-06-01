@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { Terminal, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 
 const navLinks = [
@@ -16,7 +16,7 @@ const navLinks = [
 ];
 
 interface NavProps {
-  onTerminalOpen: () => void;
+  onTerminalOpen?: () => void;
 }
 
 export function Navigation({ onTerminalOpen }: NavProps) {
@@ -34,10 +34,10 @@ export function Navigation({ onTerminalOpen }: NavProps) {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-
-      // Active section detection
-      const sections = navLinks.map((l) => l.href.slice(1));
-      for (const id of sections.reverse()) {
+      const sections = navLinks
+        .filter((l) => !l.isPage)
+        .map((l) => l.href.slice(1));
+      for (const id of [...sections].reverse()) {
         const el = document.getElementById(id);
         if (el && el.getBoundingClientRect().top <= 120) {
           setActiveSection(id);
@@ -45,15 +45,13 @@ export function Navigation({ onTerminalOpen }: NavProps) {
         }
       }
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollTo = (href: string) => {
     const id = href.slice(1);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMobileOpen(false);
   };
 
@@ -66,47 +64,36 @@ export function Navigation({ onTerminalOpen }: NavProps) {
         role="banner"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "py-3 glass border-b border-white/5"
+            ? "py-3 bg-background/70 backdrop-blur-xl border-b border-white/[0.05]"
             : "py-5 bg-transparent"
         }`}
       >
-        <div className="container max-w-6xl mx-auto px-6 flex items-center justify-between">
+        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between min-w-0">
           {/* Logo */}
           <motion.a
             href="#"
             aria-label="Pranta Das — Back to top"
-            className="flex items-center gap-2 group"
+            className="flex items-center gap-2.5 group shrink-0"
             whileHover={{ scale: 1.02 }}
           >
-            <div className="relative w-8 h-8 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors" />
-              <span className="font-mono text-primary font-bold text-sm relative z-10">
+            <div className="relative w-7 h-7 flex items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+              <span className="font-mono text-primary font-bold text-xs">
                 PD
               </span>
             </div>
-            <span className="font-display font-semibold text-white/90 group-hover:text-white transition-colors">
+            <span className="font-display font-semibold text-white/80 group-hover:text-white transition-colors text-sm tracking-wide hidden sm:inline">
               Pranta Das
             </span>
           </motion.a>
 
-          {/* Desktop Nav */}
+          {/* Desktop Nav — anchor links only */}
           <nav
             aria-label="Primary navigation"
-            className="hidden md:flex items-center gap-1"
+            className="hidden lg:flex items-center gap-0.5"
           >
-            {navLinks.map((link) =>
-              link.isPage ? (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-label={`Go to ${link.label} page`}
-                  className="relative px-4 py-2 text-sm font-medium group"
-                >
-                  <span className="relative z-10 transition-colors duration-200 text-white/50 group-hover:text-white/90">
-                    {link.label}
-                  </span>
-                </Link>
-              ) : (
+            {navLinks
+              .filter((l) => !l.isPage)
+              .map((link) => (
                 <button
                   key={link.href}
                   onClick={() => scrollTo(link.href)}
@@ -114,13 +101,13 @@ export function Navigation({ onTerminalOpen }: NavProps) {
                   aria-current={
                     activeSection === link.href.slice(1) ? "true" : undefined
                   }
-                  className="relative px-4 py-2 text-sm font-medium group"
+                  className="relative px-3.5 py-2 text-xs font-mono uppercase tracking-widest group"
                 >
                   <span
                     className={`relative z-10 transition-colors duration-200 ${
                       activeSection === link.href.slice(1)
                         ? "text-primary"
-                        : "text-white/50 group-hover:text-white/90"
+                        : "text-white/40 group-hover:text-white/80"
                     }`}
                   >
                     {link.label}
@@ -128,7 +115,7 @@ export function Navigation({ onTerminalOpen }: NavProps) {
                   {activeSection === link.href.slice(1) && (
                     <motion.div
                       layoutId="nav-indicator"
-                      className="absolute inset-0 rounded-lg bg-primary/8"
+                      className="absolute inset-0 rounded-md bg-primary/8"
                       transition={{
                         type: "spring",
                         bounce: 0.2,
@@ -137,31 +124,26 @@ export function Navigation({ onTerminalOpen }: NavProps) {
                     />
                   )}
                 </button>
-              ),
-            )}
+              ))}
           </nav>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-3">
-            <motion.button
-              onClick={onTerminalOpen}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Open interactive terminal"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 transition-all duration-200 text-sm font-mono text-primary"
+          {/* Right: Blog CTA + mobile toggle */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <Link
+              href="/blog"
+              aria-label="Go to engineering blog"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/35 transition-all duration-200 text-xs font-mono text-primary"
             >
-              <Terminal className="w-3.5 h-3.5" aria-hidden="true" />
-              <span className="hidden sm:inline">terminal</span>
-            </motion.button>
+              Blog
+            </Link>
 
-            {/* Mobile menu toggle */}
             <button
               aria-label={
                 mobileOpen ? "Close navigation menu" : "Open navigation menu"
               }
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
-              className="md:hidden p-2 text-white/60 hover:text-white transition-colors"
+              className="lg:hidden p-2 text-white/50 hover:text-white transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
             >
               {mobileOpen ? (
@@ -184,58 +166,45 @@ export function Navigation({ onTerminalOpen }: NavProps) {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.22 }}
             id="mobile-nav"
             aria-label="Mobile navigation"
-            className="fixed inset-0 z-40 glass flex flex-col items-center justify-center gap-6 md:hidden"
+            className="fixed inset-0 z-40 overflow-hidden bg-background/95 backdrop-blur-xl flex flex-col items-center justify-center gap-5 lg:hidden"
           >
             {navLinks.map((link, i) =>
               link.isPage ? (
                 <motion.div
                   key={link.href}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06 }}
+                  transition={{ delay: i * 0.055 }}
                 >
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
                     aria-label={`Go to ${link.label} page`}
-                    className="font-display text-3xl font-semibold text-white/80 hover:text-primary transition-colors"
+                    className="font-display text-2xl font-semibold text-primary"
                   >
-                    {link.label}
+                    {link.label} ↗
                   </Link>
                 </motion.div>
               ) : (
                 <motion.button
                   key={link.href}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06 }}
+                  transition={{ delay: i * 0.055 }}
                   onClick={() => scrollTo(link.href)}
                   aria-label={`Go to ${link.label} section`}
-                  className="font-display text-3xl font-semibold text-white/80 hover:text-primary transition-colors"
+                  className="font-display text-2xl font-semibold text-white/75 hover:text-white transition-colors"
                 >
                   {link.label}
                 </motion.button>
               ),
             )}
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: navLinks.length * 0.06 }}
-              onClick={() => {
-                onTerminalOpen();
-                setMobileOpen(false);
-              }}
-              className="flex items-center gap-2 mt-4 px-6 py-3 rounded-xl border border-primary/30 text-primary font-mono"
-            >
-              <Terminal className="w-4 h-4" />
-              Open Terminal
-            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>

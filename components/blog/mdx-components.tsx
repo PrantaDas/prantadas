@@ -1,6 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { AlertTriangle, Info, Lightbulb, AlertCircle } from "lucide-react";
+import { CodeBlock } from "@/components/blog/code-block";
 
 // ── Prose overrides for MDX content ──────────────────────────────────────────
 export function useMDXComponents(components: MDXComponents): MDXComponents {
@@ -110,14 +111,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
     // Code block wrapper (rehype-pretty-code wraps in <figure>)
     pre: ({ children, ...props }) => (
-      <div className="relative my-6 group">
-        <pre
-          {...props}
-          className="overflow-x-auto rounded-xl border border-white/8 bg-[#0d1117] p-5 text-sm font-mono leading-relaxed"
-        >
-          {children}
-        </pre>
-      </div>
+      <CodeBlock {...props}>{children}</CodeBlock>
     ),
 
     // Table

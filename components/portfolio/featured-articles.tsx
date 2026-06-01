@@ -269,7 +269,7 @@ export function FeaturedArticlesSection({ articles }: FeaturedArticlesProps) {
       id="writing"
       ref={ref}
       aria-labelledby="writing-heading"
-      className="py-24 md:py-32"
+      className="py-16 md:py-24"
     >
       <div className="container max-w-6xl mx-auto px-6">
         {/* ── Section header ─────────────────────────────────────────── */}
@@ -277,7 +277,7 @@ export function FeaturedArticlesSection({ articles }: FeaturedArticlesProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-12 md:mb-16"
+          className="mb-10 md:mb-14"
         >
           {/* Label pill */}
           <div className="flex items-center gap-2 mb-4">
