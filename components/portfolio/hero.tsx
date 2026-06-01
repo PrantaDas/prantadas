@@ -109,7 +109,10 @@ export function HeroSection() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+      transition: {
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+      },
     },
   };
 
@@ -117,6 +120,7 @@ export function HeroSection() {
     <section
       ref={heroRef}
       onMouseMove={handleMouseMove}
+      aria-label="Hero — Pranta Das, Backend Developer"
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden grid-pattern"
     >
       {/* Background orbs */}
@@ -152,15 +156,15 @@ export function HeroSection() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 container max-w-5xl mx-auto px-6 text-center"
+        className="relative z-10 container max-w-5xl mx-auto px-6 text-center pb-24"
       >
         {/* Status badge */}
         <motion.div
           variants={itemVariants}
           className="flex justify-center mb-8"
         >
-          {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-sm font-mono text-primary/80">
-            <span className="relative flex h-2 w-2">
+          {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-sm font-mono text-primary/80 backdrop-blur-sm">
+            <span className="relative flex h-2 w-2" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
             </span>
@@ -191,9 +195,12 @@ export function HeroSection() {
           variants={itemVariants}
           className="text-white/50 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed"
         >
-          Building scalable backend systems, intelligent bots, and distributed
-          services. Passionate about clean architecture and engineering
-          excellence.
+          Team Lead & Backend Engineer from{" "}
+          <span className="text-white/75 font-medium">
+            Dhaka, Bangladesh 🇧🇩
+          </span>
+          . Building scalable systems, intelligent bots, and high-performance
+          APIs that power real products.
         </motion.p>
 
         {/* CTA buttons */}
@@ -233,27 +240,30 @@ export function HeroSection() {
             href="https://github.com/Prantadas"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Pranta Das on GitHub"
             className="flex items-center gap-2 text-white/40 hover:text-white/80 transition-colors text-sm"
           >
-            <Github className="w-4 h-4" />
+            <Github className="w-4 h-4" aria-hidden="true" />
             <span className="hidden sm:inline">GitHub</span>
           </Link>
-          <div className="w-px h-4 bg-white/10" />
+          <div className="w-px h-4 bg-white/10" aria-hidden="true" />
           <Link
             href="https://linkedin.com/in/pranta-das7"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Pranta Das on LinkedIn"
             className="flex items-center gap-2 text-white/40 hover:text-white/80 transition-colors text-sm"
           >
-            <Linkedin className="w-4 h-4" />
+            <Linkedin className="w-4 h-4" aria-hidden="true" />
             <span className="hidden sm:inline">LinkedIn</span>
           </Link>
-          <div className="w-px h-4 bg-white/10" />
+          <div className="w-px h-4 bg-white/10" aria-hidden="true" />
           <Link
             href="mailto:prantodas043@gmail.com"
+            aria-label="Email Pranta Das"
             className="flex items-center gap-2 text-white/40 hover:text-white/80 transition-colors text-sm"
           >
-            <Mail className="w-4 h-4" />
+            <Mail className="w-4 h-4" aria-hidden="true" />
             <span className="hidden sm:inline">Email</span>
           </Link>
         </motion.div>
@@ -265,6 +275,7 @@ export function HeroSection() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5, duration: 0.6 }}
         onClick={scrollDown}
+        aria-label="Scroll to About section"
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 hover:text-white/60 transition-colors group"
       >
         <span className="text-xs font-mono tracking-widest uppercase">
@@ -286,6 +297,10 @@ export function HeroSection() {
         </div>
         <div>
           &nbsp;&nbsp;role: <span className="text-white/30">"engineer"</span>,
+        </div>
+        <div>
+          &nbsp;&nbsp;location:{" "}
+          <span className="text-white/30">"Dhaka, BD 🇧🇩"</span>,
         </div>
         <div>
           &nbsp;&nbsp;status:{" "}

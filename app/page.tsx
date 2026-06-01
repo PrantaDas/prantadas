@@ -1,38 +1,35 @@
 import { Metadata } from "next";
 import { connection } from "next/server";
 import { projectsData } from "@/data/projects";
+import { getCuratedPosts } from "@/lib/blog";
 import { PortfolioClient } from "@/components/portfolio/portfolio-client";
 
 export const metadata: Metadata = {
-  title: "Pranta Das — Backend Developer",
+  title: "Pranta Das — Backend Developer & Team Lead | Bangladesh",
   description:
-    "Backend Developer specializing in Node.js, TypeScript, REST APIs, and scalable distributed systems. Team Lead at Root Devs.",
-  keywords: [
-    "Backend Developer",
-    "Node.js",
-    "TypeScript",
-    "REST API",
-    "Software Engineer",
-    "Pranta Das",
-  ],
-  authors: [{ name: "Pranta Das" }],
+    "Backend Developer & Team Lead from Dhaka, Bangladesh with 3+ years of experience. Expert in Node.js, TypeScript, NestJS, REST APIs, PostgreSQL, and distributed systems. Open to senior engineering roles.",
   openGraph: {
-    title: "Pranta Das — Backend Developer",
+    title: "Pranta Das — Backend Developer & Team Lead | Bangladesh",
     description:
-      "Backend Developer specializing in Node.js, TypeScript, REST APIs, and scalable distributed systems.",
+      "Backend Developer & Team Lead from Dhaka, Bangladesh. Node.js · TypeScript · NestJS · PostgreSQL · 3+ years building scalable platforms.",
     url: "https://prantadas.vercel.app",
     siteName: "Pranta Das",
     images: [
-      { url: "/photo.webp", width: 800, height: 600, alt: "Pranta Das" },
+      {
+        url: "/photo.webp",
+        width: 1200,
+        height: 630,
+        alt: "Pranta Das — Backend Developer from Dhaka, Bangladesh",
+      },
     ],
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pranta Das — Backend Developer",
+    title: "Pranta Das — Backend Developer & Team Lead",
     description:
-      "Backend Developer specializing in Node.js, TypeScript, REST APIs, and scalable distributed systems.",
+      "Backend Developer from Dhaka, Bangladesh. Node.js · TypeScript · NestJS · 3+ years building scalable systems.",
     images: ["/photo.webp"],
   },
 };
@@ -104,11 +101,34 @@ async function getYear(): Promise<number> {
   return new Date().getFullYear();
 }
 
+const CURATED_SLUGS = [
+  "the-most-dangerous-phrase-in-software-engineering",
+  "decisions-before-first-line-of-code",
+  "hidden-cost-of-overengineering",
+  "ai-in-production-software",
+  "mvps-dont-need-kubernetes",
+];
+
 export default async function Home() {
   const [repositories, year] = await Promise.all([
     getRepositories(),
     getYear(),
   ]);
 
-  return <PortfolioClient repositories={repositories} year={year} />;
+  const articles = getCuratedPosts(CURATED_SLUGS).map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    description: p.description,
+    date: p.date,
+    tags: p.tags,
+    readingTime: p.readingTime,
+  }));
+
+  return (
+    <PortfolioClient
+      repositories={repositories}
+      year={year}
+      articles={articles}
+    />
+  );
 }

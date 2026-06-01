@@ -42,7 +42,12 @@ export function AboutSection() {
   };
 
   return (
-    <section id="about" ref={ref} className="relative py-24 md:py-32">
+    <section
+      id="about"
+      ref={ref}
+      className="relative py-24 md:py-32"
+      aria-label="About Pranta Das"
+    >
       <div className="container max-w-6xl mx-auto px-6">
         <motion.div
           variants={containerVariants}
@@ -61,7 +66,7 @@ export function AboutSection() {
               <div className="relative rounded-2xl overflow-hidden aspect-[4/5] border border-white/5">
                 <Image
                   src="/photo.webp"
-                  alt="Pranta Das"
+                  alt="Pranta Das — Backend Developer from Dhaka, Bangladesh"
                   fill
                   className="object-cover"
                   priority
@@ -101,9 +106,12 @@ export function AboutSection() {
                 className="absolute -top-5 -left-5 glass-card rounded-xl p-3 border border-white/5"
               >
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-primary" />
+                  <MapPin
+                    className="w-3.5 h-3.5 text-primary"
+                    aria-hidden="true"
+                  />
                   <span className="text-xs font-mono text-white/60">
-                    Dhaka, BD
+                    Dhaka, 🇧🇩 BD
                   </span>
                 </div>
               </motion.div>
@@ -120,16 +128,17 @@ export function AboutSection() {
               </h2>
               <div className="space-y-4 text-white/55 leading-relaxed">
                 <p>
-                  I'm a backend developer with a deep love for building
-                  reliable, performant systems. From REST APIs to real-time
-                  messaging platforms, I engineer solutions that don't just work
-                  — they <span className="text-white/80">last</span>.
+                  I'm a backend developer based in{" "}
+                  <span className="text-white/75">Dhaka, Bangladesh</span> with
+                  a deep love for building reliable, performant systems. From
+                  REST APIs to real-time messaging platforms, I engineer
+                  solutions that don't just work — they{" "}
+                  <span className="text-white/80">last</span>.
                 </p>
                 <p>
-                  An edacious programming enthusiast who loves the art of
-                  coding. Always looking for perfection in my craft, but never
-                  satisfied with what I have done, so I bring improvisation
-                  every day.
+                  An avid programming enthusiast who thrives on the art of clean
+                  architecture. Always chasing perfection in my craft, bringing
+                  improvisation and rigour every single day.
                 </p>
                 <blockquote className="border-l-2 border-primary/40 pl-4 my-6 italic text-white/40">
                   "We do this not because it is easy, but because we thought it

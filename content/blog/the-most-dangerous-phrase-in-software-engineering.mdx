@@ -1,0 +1,182 @@
+---
+title: "The Most Dangerous Phrase in Software Engineering: 'I Know I'm Right'"
+description: "Engineering maturity is not about being right more often. It is about updating your beliefs faster when the evidence says you should."
+date: "2026-06-01"
+updatedAt: "2026-06-01"
+tags: ["Career", "Engineering", "Team Lead", "Architecture", "System Design"]
+readingTime: "9 min read"
+featured: false
+---
+
+There is a phrase I have heard in code reviews, architecture discussions, post-mortems, and hiring interviews more times than I can count. Sometimes it is spoken out loud. More often it is unspoken — buried inside a tone, a dismissal, a refusal to reconsider.
+
+The phrase is simple: _I know I'm right._
+
+It is arguably the most dangerous phrase in software engineering. Not because confidence is bad. Confidence is necessary. Shipping product requires conviction. But there is a specific, corroding kind of confidence that does not leave room for evidence. That kind refuses to update when circumstances change. That one will damage your team, your systems, and your career in ways that are often invisible until it is too late.
+
+I have been on both sides of this. I have been the engineer who was so certain about a technical decision that I stopped listening. And I have sat across from engineers whose absolute certainty caused them to dismiss production data, ignore teammates, and ship systems that failed in predictable ways.
+
+What follows is what I have learned about ego in engineering — where it comes from, what it costs, and what intellectual flexibility actually looks like in practice.
+
+---
+
+## The Ego Trap: Why Smart Engineers Fall Into It
+
+Engineering culture rewards being right. You get hired because you solved a hard problem. You earn credibility by catching bugs in pull requests. You get promoted because your architectural instincts proved sound. All of this creates a reinforcement loop where being right starts to feel like your _identity_.
+
+And then something subtle happens. You stop thinking "I might be correct here" and start thinking "I am the kind of person who is correct." Your confidence is no longer about the specific problem in front of you — it is about protecting a self-image.
+
+This is the ego trap. It is not arrogance in the cartoon villain sense. It is the very human tendency to conflate your track record with your current judgment.
+
+The trap manifests in concrete ways:
+
+**Absolute language when describing opinions.** There is a meaningful difference between "I think this approach has risks" and "This is the wrong architecture." The first invites discussion. The second forecloses it. Pay attention to how often you use words like _obviously_, _clearly_, _always_, and _never_ in technical conversations. These words are rarely descriptive — they are usually defensive.
+
+**Resistance to information that contradicts the decision already made.** A team builds a caching layer, and the metrics show it is not helping. The engineer who championed it now finds reasons why the metrics are wrong, the test conditions are flawed, or the timeline is too short to judge. They do everything except consider that the original decision was incorrect.
+
+**Conflating disagreement with incompetence.** When a junior engineer raises a concern about a design decision and the response is "they just don't understand the system yet," that is the ego trap in action. Sometimes they do not understand the system. And sometimes they are seeing something clearly precisely _because_ they do not carry the assumptions that familiarity breeds.
+
+---
+
+## Opinions vs. Evidence: Where the Real Work Happens
+
+Most technical debates in the industry are not actually about evidence. They are about preferences dressed up as arguments.
+
+Someone prefers microservices because they read that Netflix uses them. Someone prefers monoliths because they read that DHH wrote a blog post about them. Someone prefers GraphQL because they used it on their last project. Someone prefers REST because they have always used REST.
+
+None of these are wrong starting points. Initial preferences are fine. The problem is when preferences are treated as conclusions rather than hypotheses to test.
+
+In production environments, the question is never abstract. You are not arguing about microservices. You are arguing about _your_ team, _your_ traffic patterns, _your_ operational maturity, _your_ deployment pipeline. And for those specific questions, there is usually real data available.
+
+At Root Devs, I have made architectural decisions that I was confident about and turned out to be wrong. Not catastrophically wrong — but wrong in ways that cost us time and complexity. The pattern was always the same: I made the decision based on general principles, and the specific numbers of our situation eventually made the general principle irrelevant.
+
+The correction that has helped me most is simple but genuinely difficult to apply consistently: **separate your initial opinion from the decision-making process.** You can still hold an opinion. Have a position. Make a recommendation. But then actively look for data that would _disprove_ your position, not data that confirms it.
+
+This is not a new idea — it is basically the scientific method applied to engineering decisions. But in practice, under deadline pressure, with team dynamics and status on the line, it is remarkably hard to do. The engineers who do it consistently are the ones I trust the most.
+
+A few practices that make this concrete:
+
+**Set decision criteria before you gather evidence.** Before you benchmark two databases, write down what result would change your recommendation. If you cannot articulate what evidence would change your mind, you are not actually evaluating — you are building a case.
+
+**Use production data, not synthetic benchmarks.** Benchmarks run on your laptop or in a vacuum tell you something. Production data with your actual request patterns, your actual concurrency, your actual failure modes, tells you everything. Opinions formed from synthetic benchmarks should be held loosely.
+
+**Create reversible decisions where possible.** The confidence you need to carry an irreversible architectural decision is much higher than the confidence needed for something you can undo in a sprint. See also: [why overengineering costs more than you think](/blog/hidden-cost-of-overengineering).
+
+---
+
+## Technology Tribalism and Why It Gets Worse Online
+
+Software engineering has factions the way sports teams have fans. Framework wars. Language wars. Editor wars. Methodology wars. On any given day, you can find people on the internet arguing with complete conviction about whether tabs or spaces, TypeScript or Go, Postgres or MongoDB, Docker or bare metal is the obviously correct choice.
+
+This is mostly harmless when it stays online. It becomes genuinely damaging when it enters decision-making on real teams.
+
+Technology tribalism is ego at scale. It is the same dynamic — identity conflated with technical preference — but amplified by community validation. When your framework of choice is also the framework that your community celebrates and your conference talks defend, disagreeing with it does not just feel wrong. It feels like betrayal.
+
+I have seen this play out in hiring. An engineer who has spent five years deep in one ecosystem will often evaluate candidates not on their problem-solving ability, but on whether they think the way the ecosystem trained them to think. The candidate who says "it depends" gets marked down. The candidate who confidently recites the ecosystem's preferred pattern gets marked up.
+
+I have also seen it play out in architecture reviews. A senior engineer champions a solution because it aligns with their background, not because it is the right fit for the problem. The meeting becomes about defending a worldview rather than solving a constraint.
+
+The antidote is not neutrality. You are allowed to have preferences. You are allowed to advocate for the tools you believe in. The distinction is between preference and prescription.
+
+Preference: "I have had good results with Postgres for this type of workload. Here is why."
+Prescription: "We use Postgres. That is what I know and what I trust."
+
+One of these is a contribution. The other is a constraint you are placing on your team.
+
+The engineers I have respected most are unusually comfortable saying things like: "I do not have experience with this technology, and I want to understand why you are proposing it." That sentence is not weakness. It is intellectual honesty. And it turns adversarial discussions into collaborative ones.
+
+For more on this: [stop choosing technology based on popularity](/blog/stop-choosing-tech-for-popularity).
+
+---
+
+## Being Correct vs. Being Effective
+
+Here is an uncomfortable truth: you can be technically correct and still be wrong.
+
+The most common version of this is the engineer who is right about a problem but proposes a solution that is more complex, more expensive, or more disruptive than the problem justifies. Being correct about the diagnosis does not make the prescription appropriate.
+
+I have seen this with security. An engineer correctly identifies a theoretical SQL injection vector in a low-traffic internal admin tool. Their correct solution? A full authentication refactor, a new database abstraction layer, and three sprints of work. The actual appropriate solution? Two lines of parameterized query.
+
+I have seen this with performance. An engineer correctly identifies that the database query is the bottleneck. Their correct solution? Migrate to a distributed cache, implement write-behind patterns, stand up a Redis cluster. The actual appropriate solution? Add an index, reduce result set size, move on.
+
+The pattern is: the engineer's assessment of the problem is sound, but their intuition about the _proportionate_ response is miscalibrated. Often this happens because fixing problems in a technically interesting way is more engaging than fixing them in a simple way. We reach for complex solutions because we have learned those solutions in depth, and applying them feels like demonstrating competence.
+
+The most experienced engineers I have worked with have a different reflex. When they identify a problem, their first question is: "what is the smallest change that solves this?" They are not looking for simplicity because they are lazy. They are looking for simplicity because they understand that every line of code is a liability, every new system component has an operational cost, and every increase in complexity makes the system harder for everyone on the team to understand and maintain.
+
+Being effective is not the same as being correct. Effectiveness requires understanding the problem, understanding the constraints, understanding the team, and choosing a solution that fits all of those — even if a theoretically superior solution exists.
+
+---
+
+## The Best Engineers Change Their Minds
+
+I want to be specific about this because I think the way it is usually framed undersells what it actually requires.
+
+Changing your mind in engineering is not about being wishy-washy or lacking conviction. It is about updating beliefs in response to evidence, not in response to social pressure.
+
+The distinction matters. Changing your position because someone pushed back harder is not intellectual flexibility — it is social compliance. The engineer who folds whenever a senior person disagrees is not demonstrating good judgment. Neither is the engineer who digs in harder the more someone pushes.
+
+What I mean by changing your mind is more specific: **when the evidence changes, your position changes, and you can point to the evidence that changed it.**
+
+"We deployed this approach to 10% of traffic last week. Latency p99 went from 40ms to 180ms. That tells me my assumption about read frequency was wrong. I would like to revisit the design."
+
+That is what updating a belief looks like in practice. It is precise. It is grounded in data. It does not require an apology or a retreat from your original reasoning — you reasoned correctly from the information you had, and now you have new information.
+
+I think about engineers I have worked with who demonstrated this consistently. What they had in common was not that they were less confident. They were often the most confident people in the room. What they had was a clear separation between their confidence in their _process_ and their confidence in their _current conclusions_. They trusted their ability to reason about systems. They did not trust any particular conclusion so much that they could not let it go.
+
+This is the trait I look for most in senior engineers. Not domain knowledge, not system design vocabulary, not years of experience. The ability to hold a strong technical opinion and update it cleanly when evidence demands.
+
+---
+
+## What This Looks Like in Code Reviews
+
+Code reviews are where engineering ego becomes most visible, and most consequential.
+
+The reviewer who is protecting their identity cannot respond to a pull request as a pure evaluation of code quality. They have stakes. If their original architecture allowed for this kind of mistake, the review is also implicitly an evaluation of them.
+
+The author who conflates their code with their intelligence cannot receive feedback cleanly. A comment on the implementation feels like a comment on their competence.
+
+These dynamics are so common that most teams have normalized them. Code reviews become political acts. Authors respond defensively. Reviewers soften feedback until it loses useful signal. Or the opposite — reviewers establish dominance through criticism without explanation.
+
+A few things I have found that help:
+
+**Separate the code from the author in your language.** "This function will return null for empty inputs" is better than "you did not handle empty inputs." The first is about the code. The second is about the person.
+
+**Require reasoning, not just verdict.** "This should use a Set instead" is incomplete feedback. "This should use a Set instead because the current implementation has O(n) lookup and this will run on datasets with millions of records" teaches something. It also creates a surface for dialogue — maybe the dataset is not large, and the simpler approach is fine.
+
+**Make it normal to push back on reviews with evidence.** An author who disagrees with feedback should be able to respond with a measurement, a test case, or a reference — and that response should be treated as contribution, not insubordination.
+
+The best code review culture I have been part of was one where changing your mind mid-review — as reviewer or author — was not just accepted but expected. The review process was understood to be collaborative reasoning, not a verdict.
+
+---
+
+## A Practical Standard for Yourself
+
+I want to end with something concrete rather than abstract.
+
+The standard I try to hold myself to is this: before I state a strong technical opinion, I ask myself whether I can articulate what would change my mind. If I cannot, then I am not reasoning — I am asserting. And assertions dressed as arguments waste everyone's time, including my own.
+
+In practice this sounds like:
+
+- "My current recommendation is X. I would revisit this if we see Y in the load test."
+- "I think this is the right approach for our current scale. If we are at 10x traffic by Q4, the tradeoffs change."
+- "I do not have strong evidence for this — it is based on intuition from a previous system. We should validate it before committing."
+
+None of these sentences communicate uncertainty. They communicate calibrated confidence. There is a difference.
+
+Great engineers are not defined by how often they are right. They are defined by how quickly they can recognize when they are wrong, adapt to new information, and make better decisions because of it.
+
+Engineering is not a competition to prove intelligence. It is a discipline focused on solving problems effectively, with the team you have, within the constraints you are given, using the best information available at the time.
+
+That last phrase is important: _at the time_. The information available tomorrow will be different. The engineer who knows this builds systems — and teams — that can adapt.
+
+---
+
+## Key Takeaways
+
+- The ego trap conflates track record with current judgment — being someone who is usually right does not make you right in this specific case.
+- Opinions and evidence are different things. Set decision criteria before gathering data, and actively look for what would disprove your position.
+- Technology tribalism enters real decisions when engineers evaluate solutions based on identity rather than fit. Preference is fine; prescription is a constraint.
+- Being technically correct and being effective are different. The most experienced engineers optimize for the smallest change that solves the problem, not the most thorough solution.
+- Real intellectual flexibility means updating beliefs in response to evidence, not social pressure. You can point to exactly what changed your mind.
+- In code reviews: separate the code from the author, require reasoning not just verdict, and make pushing back with evidence a normal part of the process.
+- A practical test: can you articulate what would change your mind? If not, you are not reasoning — you are asserting.

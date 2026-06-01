@@ -1,0 +1,319 @@
+---
+title: "Type-Safe APIs at Scale: How tRPC Eliminated an Entire Class of Bugs in Our TypeScript Backend"
+description: "A deep dive into adopting tRPC in a production Node.js/TypeScript backend — covering router design, context patterns, middleware chaining, error handling, and the trade-offs you won't read in the docs."
+date: "2025-11-14"
+updatedAt: "2026-05-20"
+tags: ["TypeScript", "tRPC", "Node.js", "API Design", "NestJS", "Backend"]
+featured: true
+excerpt: "After shipping REST APIs for two years, our team at Root Devs made a deliberate bet on tRPC. Here's what the production reality looked like — the wins, the sharp edges, and the architecture patterns that survived contact with real traffic."
+---
+
+After two years of shipping REST APIs with handwritten Zod schemas, manually kept-in-sync OpenAPI specs, and the recurring Friday-night bug where a backend field rename silently broke the frontend — our team at Root Devs made a deliberate architectural bet on tRPC.
+
+This isn't a tutorial on _what_ tRPC is. If you're reading this, you already know it generates end-to-end type-safe APIs by sharing a TypeScript router type between your server and client. What I want to talk about is the **production reality** — the patterns that scaled, the footguns we hit, and the decisions we'd make differently.
+
+## The Problem We Were Actually Solving
+
+Before tRPC, our typical API lifecycle looked like this:
+
+1. Define a Zod schema for the request body
+2. Write a controller that calls the schema and a service
+3. Document the endpoint in an OpenAPI YAML file (that nobody trusted after week two)
+4. Write a matching TypeScript interface on the frontend, manually
+5. Hope nobody renames a field without updating both sides
+
+The silent breakage problem was the worst. TypeScript would happily compile a frontend `user.userName` access while the backend had renamed the field to `user.username`. Zod caught runtime shape mismatches, but only at the boundary — not at build time on the consumer.
+
+tRPC solves this by making the contract the code. There is no documentation to keep in sync because the types _are_ the documentation.
+
+## Router Architecture in Practice
+
+The naive approach — one giant router file — breaks down fast. Here's the modular structure that worked for us:
+
+```typescript
+// server/routers/_app.ts
+import { router } from "../trpc";
+import { authRouter } from "./auth";
+import { userRouter } from "./user";
+import { projectRouter } from "./project";
+import { notificationRouter } from "./notification";
+
+export const appRouter = router({
+  auth: authRouter,
+  user: userRouter,
+  project: projectRouter,
+  notification: notificationRouter,
+});
+
+export type AppRouter = typeof appRouter;
+```
+
+Each sub-router lives in its own file and owns its domain completely. The `AppRouter` type is the only thing exported to the client package. No runtime data crosses that boundary — only types.
+
+The sub-router pattern also made code reviews much cleaner. A PR touching `projectRouter` was immediately scoped in the diff.
+
+## Context: Where Most tRPC Architectures Go Wrong
+
+Context is where tRPC's flexibility becomes a liability if you're not careful. The canonical example shows a `session` in context — and stops there. Production systems need more:
+
+```typescript
+// server/context.ts
+import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { prisma } from "@/lib/prisma";
+import { redis } from "@/lib/redis";
+import { getSession } from "@/lib/auth";
+import type { Session } from "@/types/auth";
+
+export interface Context {
+  session: Session | null;
+  prisma: typeof prisma;
+  redis: typeof redis;
+  requestId: string;
+  ipAddress: string | null;
+}
+
+export async function createContext(
+  opts: CreateNextContextOptions,
+): Promise<Context> {
+  const session = await getSession(opts.req);
+  const requestId = crypto.randomUUID();
+
+  return {
+    session,
+    prisma,
+    redis,
+    requestId,
+    ipAddress: opts.req.headers["x-forwarded-for"]?.toString() ?? null,
+  };
+}
+```
+
+The critical insight here: **inject your database and cache clients through context, not as module-level imports inside procedures**. This makes procedures trivially testable — you pass a mock context, not mock modules.
+
+We caught this pattern late and had to refactor ~40 procedures. Do it right from day one.
+
+## Middleware Chaining for Authorization
+
+tRPC's middleware system maps well to the auth patterns you'd write manually anyway:
+
+```typescript
+// server/trpc.ts
+import { initTRPC, TRPCError } from "@trpc/server";
+import type { Context } from "./context";
+
+const t = initTRPC.context<Context>().create();
+
+export const router = t.router;
+export const publicProcedure = t.procedure;
+
+// Require authentication
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session?.userId) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You must be signed in to perform this action",
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      // Narrow the type — session is now non-nullable downstream
+      session: ctx.session,
+    },
+  });
+});
+
+// Require a specific role
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.session.role !== "admin") {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next({ ctx });
+});
+
+// Rate-limit sensitive operations
+export const rateLimitedProcedure = protectedProcedure.use(
+  async ({ ctx, next }) => {
+    const key = `rate:${ctx.session.userId}`;
+    const count = await ctx.redis.incr(key);
+    if (count === 1) await ctx.redis.expire(key, 60);
+
+    if (count > 30) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Slow down — you're sending requests too fast.",
+      });
+    }
+    return next({ ctx });
+  },
+);
+```
+
+The type narrowing in `protectedProcedure` is subtle but important. After the middleware runs, TypeScript _knows_ `ctx.session` is non-null inside any procedure using it. You eliminate dozens of defensive null checks from your procedure implementations.
+
+## Input Validation: Zod as the Contract
+
+tRPC doesn't impose a validation library — but Zod is the obvious choice in a TypeScript codebase because the inferred types compose naturally:
+
+```typescript
+// routers/project.ts
+import { z } from "zod";
+import { router, protectedProcedure } from "../trpc";
+
+const createProjectInput = z.object({
+  name: z.string().min(1).max(100).trim(),
+  description: z.string().max(500).optional(),
+  visibility: z.enum(["public", "private", "team"]),
+  tags: z.array(z.string().max(30)).max(10).default([]),
+});
+
+export const projectRouter = router({
+  create: protectedProcedure
+    .input(createProjectInput)
+    .mutation(async ({ ctx, input }) => {
+      // input is fully typed — no casting, no runtime surprises
+      const project = await ctx.prisma.project.create({
+        data: {
+          ...input,
+          ownerId: ctx.session.userId,
+          slug: slugify(input.name),
+        },
+      });
+      return project;
+    }),
+
+  list: protectedProcedure
+    .input(
+      z.object({
+        cursor: z.string().optional(),
+        limit: z.number().min(1).max(100).default(20),
+        visibility: z.enum(["public", "private", "team", "all"]).default("all"),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const items = await ctx.prisma.project.findMany({
+        where: {
+          ownerId: ctx.session.userId,
+          ...(input.visibility !== "all" && { visibility: input.visibility }),
+        },
+        take: input.limit + 1,
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        orderBy: { createdAt: "desc" },
+      });
+
+      const hasMore = items.length > input.limit;
+      return {
+        items: items.slice(0, input.limit),
+        nextCursor: hasMore ? items[input.limit - 1].id : null,
+      };
+    }),
+});
+```
+
+Notice the cursor-based pagination. Offset pagination at scale is a performance trap — `OFFSET 10000` forces the database to scan and discard rows. Cursor pagination is O(log n) with the right index.
+
+## Error Handling That Doesn't Leak Internals
+
+The default tRPC error serialization works in development. In production you need a custom error formatter that sanitizes internal details:
+
+```typescript
+const t = initTRPC.context<Context>().create({
+  errorFormatter({ shape, error }) {
+    const isProd = process.env.NODE_ENV === "production";
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        // Never leak stack traces in production
+        stack: isProd ? undefined : shape.data?.stack,
+        // Map internal errors to generic messages
+        message:
+          error.code === "INTERNAL_SERVER_ERROR" && isProd
+            ? "An unexpected error occurred. Please try again."
+            : shape.message,
+      },
+    };
+  },
+});
+```
+
+We also added a global logger middleware that captures every TRPC error with its `requestId` for correlation in our observability stack:
+
+```typescript
+const loggingMiddleware = t.middleware(async ({ ctx, next, path, type }) => {
+  const start = Date.now();
+  const result = await next({ ctx });
+  const duration = Date.now() - start;
+
+  if (!result.ok) {
+    logger.error({
+      requestId: ctx.requestId,
+      path,
+      type,
+      duration,
+      error: result.error.message,
+      code: result.error.code,
+    });
+  } else if (duration > 500) {
+    logger.warn(
+      { requestId: ctx.requestId, path, type, duration },
+      "Slow procedure",
+    );
+  }
+
+  return result;
+});
+```
+
+## The Subscription Pattern for Real-Time Features
+
+tRPC supports subscriptions over WebSockets, which we used for real-time project activity feeds. The ergonomics are surprisingly clean:
+
+```typescript
+// Server
+notifications: protectedProcedure
+  .input(z.object({ projectId: z.string() }))
+  .subscription(async function* ({ ctx, input }) {
+    for await (const event of ctx.eventEmitter.on(
+      `project:${input.projectId}:activity`
+    )) {
+      if (event.userId === ctx.session.userId || event.isPublic) {
+        yield event;
+      }
+    }
+  }),
+
+// Client — fully typed, no hand-written event schemas
+const { data } = api.notifications.useSubscription(
+  { projectId },
+  { onData: (event) => addToFeed(event) }
+);
+```
+
+The alternative — a raw WebSocket with manual JSON parsing and string-typed event names — has burned us enough times that we don't miss it.
+
+## Where tRPC Still Has Rough Edges
+
+I want to be honest about the trade-offs:
+
+**1. File upload UX is painful.** tRPC's serialization doesn't handle `multipart/form-data`. For file uploads we still run a separate Express endpoint with `multer`. The inconsistency is annoying.
+
+**2. OpenAPI interoperability requires extra tooling.** External partners who want a REST API can't consume a tRPC router directly. We use `trpc-openapi` to generate an OpenAPI spec from our router — it works but the generated docs are sometimes awkward.
+
+**3. The learning curve is real for junior engineers.** Concepts like procedure types, context narrowing, and router composition aren't obvious without TypeScript intuition. Budget onboarding time.
+
+**4. Debugging reactive client issues** (React Query's cache invalidation in particular) is harder to trace than a simple `fetch`. When a mutation fires and a query doesn't re-fetch as expected, the tRPC + React Query combination adds layers to debug.
+
+## The Measurable Win
+
+After six months in production with our primary product at Root Devs, the impact was concrete:
+
+- **Zero type-mismatch bugs** between frontend and backend in that period. Previously we'd averaged 2–3 per sprint.
+- **~40% less boilerplate** per new API endpoint. No separate schema file, no OpenAPI update, no frontend type to write.
+- **Refactors became safe.** Renaming a procedure input field produces a compile error on every consumer. The TypeScript compiler is now part of our regression test suite.
+
+The investment was worth it. But go in knowing it's a TypeScript-first tool — if your team isn't bought into strong typing, you won't get the benefits.
+
+---
+
+_Working on a similar system or evaluating tRPC for your team? I'm [@prantadas](https://github.com/Prantadas) — the `tRPC-starter` template I maintain on GitHub might save you a few hours of setup._

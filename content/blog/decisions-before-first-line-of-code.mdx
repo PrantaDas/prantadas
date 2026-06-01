@@ -1,0 +1,186 @@
+---
+title: "The Most Important Decisions Happen Before Development Starts"
+description: "Why software projects are usually won or lost during planning — covering problem definition, scope management, MVP thinking, technical risk assessment, and stakeholder alignment before a single line of code is written."
+date: "2025-12-10"
+updatedAt: "2025-12-10"
+tags: ["Architecture", "Team Lead", "System Design", "Career", "Engineering"]
+featured: false
+excerpt: "Great software projects are usually decided before anyone opens their IDE. After leading projects at Root Devs that failed in planning and ones that succeeded because of it, I've come to believe that the most consequential engineering work isn't technical at all."
+---
+
+The worst software project I've been part of didn't fail because of bad code. It failed because nobody could clearly answer the question: _what problem are we actually solving?_
+
+The codebase was clean. The architecture was reasonable. The team was capable. The deployment worked. But six weeks into development, we were building something nobody needed — and the signs were there from week one. The requirements were vague. The success metrics were undefined. The stakeholders had different mental models of what "done" meant, and nobody had forced that conversation.
+
+We shipped. Nobody used it. We rebuilt.
+
+That project taught me more about software engineering than any technical challenge I've faced since. Because the failures I've encountered most often in production aren't in the system — they're in the assumptions made before the system was designed.
+
+## The Problem Behind the Problem
+
+When a product manager or stakeholder hands you a feature request, what they give you is a solution proposal, not a problem description. The instinct of many engineers — especially earlier in their careers — is to take that proposal at face value and start designing.
+
+The better instinct is to ask: _what outcome does this actually need to produce?_
+
+Consider the difference:
+
+**What was asked:** "We need a user dashboard that shows activity statistics."
+
+**What the problem actually was:** The sales team needed evidence of user engagement to reduce churn in renewal conversations.
+
+These sound similar. They lead to completely different systems. The first framing sends you building a rich frontend data visualization. The second framing might be solved with a weekly email digest — ten times faster to build, and arguably more effective at the actual goal.
+
+I've started keeping a short pre-flight document before any significant feature work. The document has exactly five questions:
+
+1. What business outcome does this produce if successful?
+2. How will we measure whether it succeeded?
+3. What is the smallest version of this that produces that outcome?
+4. What existing behaviour are we changing or replacing?
+5. Who else is affected by this, and have they been consulted?
+
+Five questions. Written answers. In writing — because vague verbal alignment is not alignment. This document has stopped bad projects before they started more times than I can count.
+
+## Defining Success Metrics Is Non-Negotiable
+
+Software is not done when it's deployed. It's done when it produces the intended outcome.
+
+This sounds obvious. But the number of projects I've seen "completed" without any plan for how to know if they worked is remarkable. The consequence is that you deploy, and you either intuitively feel it worked or you intuitively feel it didn't — neither of which is a measurement.
+
+Success metrics need to be defined before development starts, not after deployment. Here's why: if you define metrics at the end, you will unconsciously define them to confirm what you built worked. The framing has already shifted from "what should this achieve" to "what can I claim my achievement was."
+
+Good success metrics are:
+
+- **Measurable with real data**, not subjective judgments
+- **Time-bounded** — when will we evaluate?
+- **Tied to the business outcome**, not proxy metrics
+- **Agreed on by all stakeholders** before work starts
+
+For a feature we built at Root Devs — a notification scheduling system — the success metric was not "notifications are sent." It was "notifications sent during user's active hours increase open rate by at least 15% within 60 days." That specificity changed the implementation. We built preference learning, not just timezone detection. Without the metric defined upfront, we would have built the simpler thing and never known whether it worked.
+
+## Scope Management Is a Technical Skill
+
+Engineers are often told that scope management is the product manager's job. I disagree. Scope inflation is a technical risk, and engineers are often best positioned to identify it.
+
+The pattern I see repeatedly: a feature starts clear and bounded. Then it grows. A stakeholder asks for "just one more thing." A design review surfaces a related problem that "we should solve while we're here." The original two-week estimate becomes four, then six, then a delayed launch.
+
+Scope inflation is usually invisible until it's expensive. The counter to it is ruthless precision about what is and isn't in scope — and that requires an engineer willing to have a direct conversation about trade-offs.
+
+The most useful tool I've found is the explicit **scope boundary document**: a written list of what this project does NOT do. Not an implicit list — an explicit one. A document that says:
+
+> This notification system will schedule and deliver notifications. It will not:
+>
+> - Handle notification content management (out of scope, separate system)
+> - Support A/B testing of notification content (future phase)
+> - Provide analytics beyond delivery confirmation (separate dashboard feature)
+
+When someone asks for the excluded features, you have a document to point to — not a verbal agreement that nobody remembers the same way.
+
+## MVP Planning: Validated Learning, Not Minimized Effort
+
+The term "MVP" has been so badly misused in most engineering cultures that it now commonly means "the same product, built faster and worse."
+
+The original meaning matters: a **Minimum Viable Product** is the smallest experiment that produces validated learning about whether you're solving the right problem.
+
+An MVP is not:
+
+- A half-built version of the final product
+- A prototype you intend to throw away (though sometimes that's right)
+- A justification for cutting corners on the things that matter
+
+An MVP is a deliberate bet: "we believe that if users can do X, they will do Y — and here is the smallest version of X that we can build quickly enough to test that belief before committing to the full system."
+
+The most important word in that sentence is "believe." An MVP forces you to state your assumptions explicitly. Which assumptions, if wrong, would make this entire project worthless? Build to test those first.
+
+At Root Devs, before building a full project collaboration feature, we built a manual version: a shared Notion workspace manually maintained by a team member, promoted to the same users who would use the real feature. The engagement signals from that experiment changed the real product's design significantly. We learned which parts of "collaboration" users actually cared about before writing infrastructure for it.
+
+## Technical Risk Assessment Before Architecture
+
+Most architecture discussions happen too late — after requirements are already locked and the team is eager to start. By that point, the framing biases toward "how do we build this?" rather than "should we build this, and what are the risks?"
+
+The technical risks worth explicit assessment before development:
+
+**Integration risk.** Every external dependency you take on is a risk surface. A third-party API that can go down, rate-limit you, change its contract, or raise its price is a production liability. The question isn't whether to integrate — it's whether the integration is on the critical path, and what your fallback is.
+
+**Performance assumptions.** Many systems are designed for an implicit traffic model that was never stated. "Works well" at 100 requests/day may fall apart at 10,000. If the business goal requires scale, the architecture needs to be designed for it — but designed for the right scale, not a mythical one.
+
+**Data irreversibility.** Some operations are easy to build but expensive to undo. A user deletion feature sounds simple until you discover that user IDs are embedded in audit logs, message threads, and billing records across five systems. Data operations that can't be reversed need more upfront design than operations that can.
+
+**Team capability.** This is the risk assessment nobody wants to do explicitly, but it matters enormously. If the proposed architecture requires deep Kafka expertise and nobody on the team has operated Kafka in production, that's a real risk. Not a reason to avoid Kafka — but a reason to either invest in learning time or reconsider the architecture.
+
+I've started asking explicitly in pre-project reviews: _what would have to be true for this to fail?_ Answers to that question surface the risks that optimism papers over.
+
+## The Buy vs. Build Decision
+
+Every software project contains hidden build-vs-buy decisions that most teams make implicitly and therefore poorly.
+
+The common bias is toward building. Engineers like building things. Building feels more productive than evaluating vendors. Custom solutions feel safer because you control them. None of these instincts are wrong — but they lead to a systematic underweighting of the cost of building.
+
+When you build something custom, you're not just paying the initial development cost. You're paying for:
+
+- Ongoing maintenance as requirements change
+- Bug fixes that affect only your custom implementation
+- Documentation and knowledge transfer as engineers leave
+- The opportunity cost of not building something else
+
+The question isn't "can we build this?" You almost always can. The question is: "is the delta between a purchased solution and our custom solution worth the total ownership cost?"
+
+In my experience, the answer is yes when the feature is genuinely differentiating — it's the thing that makes your product uniquely valuable. The answer is usually no when the feature is infrastructure: authentication, billing, email delivery, search, file storage. These are solved problems. Building custom solutions for them is expensive pride.
+
+At Root Devs, we spent three weeks building a custom document generation system before someone asked whether we'd evaluated the existing tools. We had not. We evaluated, found a solution that covered 90% of our needs, and saved an estimated two months of future maintenance. The custom system never shipped.
+
+## Stakeholder Alignment Is Pre-Flight Clearance
+
+A project with technical alignment but organizational misalignment will fail. The engineers are building one thing. The business is expecting another. The gap is discovered at demo time.
+
+I've found that misalignment usually isn't deceptive — it's linguistic. The same words mean different things to different people. "Real-time" means sub-100ms to an engineer and "refreshes when I check it" to a product manager. "Scalable" means handles 10x traffic to an engineer and "can grow with the business" to a CEO. "Done" means deployed to an engineer and "shipped to all users with analytics working" to a product manager.
+
+The fix is not more meetings. It's more precise language, earlier. Before significant work starts, I now write a **shared glossary** for the project: the five or ten most ambiguous terms in the project, with explicit definitions agreed on by all parties. It takes an hour. It prevents a week of rework.
+
+The harder alignment problem is priority conflicts. Engineering teams are often pulled between competing stakeholders with different ideas about what matters. The pre-development phase is the time to surface those conflicts explicitly — not through politics, but through trade-off documentation. "If we build feature A now, feature B is delayed by three weeks. Which is the higher priority?" Written, answered, signed off. That's the conversation you want in week one, not week six.
+
+## Timeline Estimation Is Hypothesis, Not Commitment
+
+Every estimate is a hypothesis about a future state. The problem is that organizations often treat engineering estimates as commitments, which creates a pressure to be optimistic at the expense of being accurate.
+
+The result: deadlines that were never realistic, teams that work overtime to hit them, and a culture where being right about complexity is treated as a failure of planning.
+
+The estimate I give at the start of a project is not the same as the estimate I give after a week of investigation. The first estimate is based on surface-level understanding. The second is based on having actually opened the codebase, looked at the integration documentation, and identified the unknown unknowns. These are different estimates. They should be different numbers.
+
+I've moved toward **tiered estimates**: a rough order of magnitude estimate before any investigation, a refined estimate after a spike or discovery phase, and explicit identification of what would cause the estimate to change. This sets expectations correctly and gives engineering teams room to surface complexity without being penalized for it.
+
+## The Trap of Optimistic Architecture
+
+There's a failure mode I see specifically in pre-development architecture discussions: the architecture is designed for a scale the product has never reached, with capabilities the business hasn't yet validated, solving problems that don't yet exist.
+
+I wrote about this more directly in my post on [avoiding premature complexity as a new team lead](/blog/engineer-to-team-lead-architecture-decisions) — the instinct to design for where you want to go rather than where you are. The fix isn't to design a system that can't scale. It's to design a system that solves today's problem cleanly and can be extended when tomorrow's problem is real.
+
+The question to ask about every architectural decision: "what evidence do we have that we actually need this?" If the answer is "intuition" or "it might become necessary," that's a premature decision. Design for the proven need. Leave headroom for the plausible need. Don't build for the hypothetical need.
+
+## What Good Pre-Development Work Looks Like
+
+The work product of a well-run pre-development phase isn't a thick specification document. It's a set of answered questions:
+
+| Question                                             | Why It Matters                             |
+| ---------------------------------------------------- | ------------------------------------------ |
+| What problem does this solve for which user?         | Ensures the solution addresses real need   |
+| How will we measure success?                         | Creates accountability and a feedback loop |
+| What are we explicitly not building?                 | Prevents scope inflation                   |
+| What external dependencies does this introduce?      | Surfaces integration risk                  |
+| What's the smallest version that produces value?     | Forces MVP thinking                        |
+| What assumptions, if wrong, would kill this project? | Surfaces pre-mortems                       |
+| Who needs to approve this before development starts? | Ensures alignment                          |
+| What's the total ownership cost of this decision?    | Prevents hidden build-vs-buy mistakes      |
+
+None of these questions are technically sophisticated. All of them change outcomes dramatically if answered honestly before development starts.
+
+## Key Takeaways
+
+The belief that engineering is primarily a technical discipline leads engineers to underinvest in the pre-technical work that determines whether their technical work matters.
+
+The projects that have gone best in my experience share a pattern: the problem was clearly defined before the solution was designed, the success metrics were agreed on before the first PR was opened, the scope was bounded explicitly, and the team had a shared understanding of what they were building and why before they started building it.
+
+The projects that went worst share a different pattern: everyone was eager to start, the requirements were vague enough that people filled in gaps with assumptions, and the misalignments were discovered in production rather than in planning.
+
+Great software is written by engineers who ask hard questions before they write code. That capacity — to sit with ambiguity and resolve it deliberately rather than coding your way through it — is one of the most valuable skills a software engineer can develop.
+
+The IDE can wait. The questions can't.

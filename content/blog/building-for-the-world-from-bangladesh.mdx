@@ -1,0 +1,108 @@
+---
+title: "Building for the World from Bangladesh: A Software Engineer's Global Perspective"
+description: "Reflections on building globally-distributed software products from Dhaka — the technical challenges of serving international users, the growing tech ecosystem in Bangladesh, and what it means to be a Bangladeshi engineer on a global stage."
+date: "2026-05-01"
+updatedAt: "2026-05-30"
+tags:
+  ["Career", "Bangladesh", "Remote Work", "Open Source", "Global Engineering"]
+excerpt: "Bangladesh's software engineering community is quiet on the global stage — not because of a lack of talent, but because we've been building for the world while underrepresenting ourselves in it. That's changing."
+---
+
+I've been writing backend systems from Dhaka for over three years now. The systems serve users across multiple continents. The team I lead ships code that runs on infrastructure in regions far from where any of us live. And yet the default assumption, in most international technical circles, is that serious software engineering happens elsewhere.
+
+That assumption is wrong. I want to talk about why — and about the technical reality of building international-grade software from Bangladesh.
+
+## The Technical Reality of Global-First Systems
+
+Building software for an international user base from Bangladesh is not meaningfully different from building it from San Francisco or Berlin. The code runs in the same cloud regions. The latency to a US East Coast server from a Dhaka developer's machine is ~190ms — annoying for interactive development, irrelevant for the production system serving actual users.
+
+What matters is the same in every timezone:
+
+- Does your API return in under 100ms for the 95th percentile?
+- Does your system handle the failure modes of distributed infrastructure?
+- Does your data model scale as the product grows?
+
+These are engineering questions, not geography questions.
+
+What _is_ different about building in Bangladesh is the **context you bring to global product decisions**:
+
+**1. Cost sensitivity is a design input, not an afterthought.** Bangladesh is a price-sensitive market. Engineers who've built for local users understand deeply that a paywall at the wrong place, a SMS verification that costs money, or a 3MB JavaScript bundle on a 3G connection are not UX problems — they're user acquisition problems. This intuition transfers directly to building globally inclusive products.
+
+**2. Payment infrastructure complexity is real.** Stripe is unavailable in Bangladesh. Building payment flows means understanding bKash, Nagad, and SSLCOMMERZ alongside international payment gateways. Engineers who've navigated this have a deeper appreciation for payment system design than those who've only integrated Stripe's happy path.
+
+**3. Timezone-aware system design is a lived experience.** Our team's on-call rotation spans different timezones from our primary users. Building alert routing, escalation policies, and runbooks with timezone awareness isn't an abstract exercise — it's our daily operational reality.
+
+## Open Source as a Global Voice
+
+The most effective way I've found to have a presence in the international engineering community is through open source. Code is the universal language — a library with good documentation, good tests, and a solved problem doesn't carry a geographic accent.
+
+The [al-quran-sdk](https://github.com/Prantadas/al-quran-sdk) I published is a TypeScript SDK for Quran data — verses, chapters, audio recitations, translations. It's used by developers building Islamic apps globally. The code comes from a Bangladeshi engineer in Dhaka. The users are in Malaysia, Pakistan, Indonesia, the US, the UK.
+
+The technical implementation choices — TypeScript for type safety across ecosystems, ESM + CJS dual module output, comprehensive JSDoc, semantic versioning — were made because I wanted the library to be as useful as a library maintained by an engineer at any well-resourced company. Not better than its category. Just unconditionally good.
+
+That's the bar. Not "good for Bangladesh." Just good.
+
+```typescript
+// al-quran-sdk: The API surface I designed to be intuitive across cultures
+import { Quran } from "al-quran-sdk";
+
+const quran = new Quran();
+
+// Accessing by familiar names, not arbitrary numeric IDs
+const fatiha = await quran.getSurah("Al-Fatihah");
+
+// Audio with reciter preference — culturally significant choice
+const audio = await quran.getAudio("Al-Fatihah", {
+  reciter: "Mishary Rashid Alafasy",
+  format: "mp3",
+});
+
+// Multi-language translation support
+const translations = await quran.getTranslations("Al-Fatihah", {
+  languages: ["en", "bn", "ur", "id"],
+});
+```
+
+The `bn` translation key in that example — Bengali/Bangla — is there because Bangladesh has one of the largest Bengali-speaking populations in the world, and most Quran APIs I surveyed didn't prioritise it. Building the thing you needed is the most honest form of product design.
+
+## Bangladesh's Tech Ecosystem: The Reality Beyond Headlines
+
+The international perception of Bangladesh's tech sector is still largely shaped by the RMG (ready-made garment) economy narrative. The IT sector doesn't generate comparable export volume yet — but the trajectory is clear.
+
+A few data points from the ground:
+
+**The talent pool is real and growing.** Daffodil International University, BUET, and North South University produce thousands of CS graduates annually. The caliber at the top is internationally competitive — several Bangladeshi engineers work at FAANG companies. The pipeline is there.
+
+**The startup ecosystem is building genuine product companies.** Shohoz (mobility), Shajgoj (beauty commerce), and a growing cohort of B2B SaaS companies are building for regional and international markets. Root Devs, where I work, builds digital products for clients and for our own portfolio. These aren't outsourcing shops — they're product companies.
+
+**Remote work changed the economics.** Before distributed work was normalized, a Bangladeshi engineer's options were: work locally at a local salary, or emigrate. Now the third option — work remotely for international companies at international salaries, while living in Dhaka — is increasingly viable. This is keeping talent in the ecosystem and funding the next generation of local company-building.
+
+**The infrastructure gap is narrowing.** Fiber internet penetration in Dhaka is excellent. Cloud providers — AWS, GCP, Azure — all have presence within reasonable latency distance. The operational constraints of building serious software from Dhaka in 2024+ are minimal compared to five years ago.
+
+## The Engineer's Responsibility
+
+I want to be careful not to overstate what national identity means for software engineering. Good code is good code. TypeScript doesn't compile differently because of who wrote it.
+
+But representation matters for a different reason: **role models compound**. When junior engineers in Bangladesh see that it's possible to lead engineering teams, publish widely-used open source libraries, and write content that reaches international audiences — from Dhaka — they adjust their ambition. They set larger goals. Some of them build the companies and the systems that matter at scale.
+
+That compounding effect is why I write, why I open source, and why I try to be explicit about where I'm building from.
+
+The framing I've settled on:
+
+> I'm a software engineer who happens to be Bangladeshi. My location is not a constraint — it's context. The systems I build are held to the same standard as systems built anywhere.
+
+## What This Means Practically for Engineers in Bangladesh
+
+If you're a software engineer in Bangladesh figuring out how to position yourself for an international career without leaving:
+
+**Build in public.** Open source a library. Write about a problem you solved. Contribute to an existing project. Your GitHub profile is a global portfolio.
+
+**Specialise, don't generalise.** The "full stack developer who knows everything" positioning is undifferentiated everywhere. Deep expertise in a specific domain — distributed systems, blockchain, real-time infrastructure, type-safe APIs — is what makes you findable and compelling internationally.
+
+**Write English technical content.** Most of the world's programming knowledge is in English. If you have strong technical knowledge and can communicate it clearly in English, you can reach a global audience. The bar for technical writing is clarity, not eloquence.
+
+**Find communities, not just clients.** Freelance marketplaces commoditise your time. Communities — Discord servers, open source projects, conference talks — build reputation. Reputation compounds.
+
+---
+
+_I'm Pranta Das, Backend Developer & Team Lead at Root Devs, based in Dhaka, Bangladesh. If you're an engineer in Bangladesh building for an international audience, or an international team looking for a Bangladeshi technical perspective — I'd enjoy the conversation. [LinkedIn](https://linkedin.com/in/pranta-das7) or [prantodas043@gmail.com](mailto:prantodas043@gmail.com)._

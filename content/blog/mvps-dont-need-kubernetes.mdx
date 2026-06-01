@@ -1,0 +1,182 @@
+---
+title: "MVPs Don't Need Kubernetes: How Engineers Delay Products by Solving Problems They Don't Have"
+description: "Teams spending months designing perfect architecture while the product should already be in users' hands is one of the most expensive mistakes in modern software development. Here's how to stop engineering for a company that doesn't exist yet."
+date: "2026-05-14"
+updatedAt: "2026-05-14"
+tags: ["Architecture", "Engineering", "System Design", "Career", "Backend"]
+featured: false
+excerpt: "Many developers claim to be building an MVP. Their infrastructure tells a different story. After watching teams spend four months preparing to scale a product that had zero users, I want to make the case for something unfashionable: doing less on purpose."
+---
+
+Here's a pattern I've seen repeat across multiple teams, including teams I've been part of:
+
+A group of engineers sits down to build a product. The idea is solid. The market opportunity is real. The technical expertise is there. And then — before a single user has seen the product, before a single assumption has been validated, before there is any evidence that people want what is being built — the team starts designing the infrastructure.
+
+Kubernetes. Service mesh. Event-driven microservices. Multi-region failover. Separate databases for separate domains. A CI/CD pipeline that would impress a principal engineer at a major tech company.
+
+Four months later, the infrastructure is impressive. The product is still not in users' hands. The market window has narrowed. The team is exhausted. The runway is shorter. And the fundamental question — does anyone actually want this? — remains unanswered.
+
+This is not a hypothetical. I've watched it happen. I've contributed to it happening. The engineering looks excellent. The product strategy is a disaster.
+
+## What "Building an MVP" Actually Means in Practice
+
+The term "minimum viable product" was coined to describe a specific discipline: build the smallest version of something that lets you test a specific hypothesis with real users. The emphasis is on _minimum_ and on _learning_. An MVP is not a poorly built version of your full product. It is a deliberately scoped instrument for validation.
+
+In practice, I see "building an MVP" used to describe something very different: building a production-grade system for a product that has no users yet.
+
+The tell is in the questions teams are asking at each stage.
+
+**At genuine MVP stage, the questions should be:**
+
+- Does anyone actually want this?
+- Will users change their behaviour because of this product?
+- Is this problem painful enough that people will pay to solve it?
+- Can we learn something in the next two weeks?
+
+**The questions I usually hear instead:**
+
+- Should we use PostgreSQL or MongoDB?
+- Do we need a separate service for notifications from the start?
+- What's our Kubernetes cluster strategy?
+- How do we design the event schema so it's forward-compatible?
+- Should we use gRPC or REST for internal service communication?
+
+These are legitimate engineering questions. They are the wrong questions when you have no validated customers.
+
+## Why This Happens
+
+It would be convenient if this were simply incompetence. It isn't. The engineers building premature infrastructure are often technically excellent. The problem is more interesting than that.
+
+**Fear of technical debt.** Engineers have internalised the lesson that technical debt is expensive — and it is. But the lesson over-applied becomes: "we should design this correctly from the start." The problem is "correctly" is often interpreted as "at the scale of a mature product," not "correctly for the current stage." A design that's correct for one user is wrong for a million users. A design that's correct for an unvalidated MVP is also wrong — but wrong in a very cheap, very reversible way.
+
+**Resume-driven development.** I wrote about this in [Stop Choosing Technology for Popularity](/blog/stop-choosing-tech-for-popularity), but it bears repeating here specifically. Kubernetes, service meshes, distributed event systems — these are interesting to work on and impressive to talk about. An engineer who has designed a sophisticated microservices architecture has something to show for their time, even if the product never launched. An engineer who built a simple monolith that shipped in three weeks and immediately generated user feedback has done more valuable work, but has less to show on a CV. The incentive structure is misaligned.
+
+**Big-tech engineering content.** The engineering blogs published by large technology companies describe how those companies solve problems at enormous scale: millions of users, billions of events, globally distributed infrastructure. This content is useful for engineers working at that scale. For an early-stage product, it's a template for solving problems you don't have yet. Netflix had to build what Netflix built because they had Netflix's problems. You don't.
+
+**Perfectionism misidentified as engineering excellence.** There's a version of perfectionism that feels like thoroughness but is actually procrastination. Endless architecture discussions, weeks of R&D on infrastructure options, comprehensive technical specifications for systems that haven't been validated by a single user — this looks like careful engineering. It is often fear of launching disguised as engineering rigour. A system that ships has a chance of succeeding. A system that's still being designed cannot.
+
+**Conference hype and social media.** Technology conferences amplify the most technically sophisticated solutions. Twitter/X architecture content celebrates complexity. The dopamine hit of a well-liked architecture diagram is real. None of this is calibrated to your product stage.
+
+## The Cost of Premature Complexity
+
+The costs are concrete, not theoretical.
+
+**Slower development.** Every layer of infrastructure you add before it's needed is a layer of complexity that every subsequent feature has to navigate. Adding a feature to a straightforward monolith takes hours. Adding that same feature to a premature microservices architecture — finding the right service, updating the service contract, deploying the individual service, updating any consumers — takes days.
+
+**Delayed launch.** The most direct cost. Every week spent on infrastructure is a week not spent in front of users. Markets move. Competitors ship. The longer the gap between idea and user feedback, the more decisions are made on assumption rather than evidence.
+
+**Higher costs, earlier.** Kubernetes on a cloud provider is not cheap. A multi-service architecture requires more compute than a single application. Running infrastructure for zero users is spending real money to solve a problem you don't have.
+
+**More bugs.** Distributed systems have failure modes that monolithic systems don't. Network partitions. Message ordering. Eventual consistency. Race conditions between services. These are engineering problems worth solving when you have the scale that necessitates distribution. Before that point, you've added surface area for bugs without the benefit that justifies it.
+
+**Longer onboarding.** The next engineer who joins the team has to understand the entire distributed system before they can contribute effectively. A new engineer can be productive in a simple codebase within days. A new engineer joining a premature microservices architecture spends weeks understanding the infrastructure before writing meaningful product code.
+
+**Disguised technical debt.** This is the most insidious cost. Teams often treat their complex infrastructure as an asset — "we're ready to scale." In reality, premature complexity that hasn't been validated against real load patterns is technical debt with a sophisticated appearance. When your actual scale arrives, it will look nothing like what you anticipated, and the architecture that was designed speculatively may solve the wrong problems.
+
+## A Real Scenario
+
+Here's a scenario that is a composite of real situations I've observed:
+
+A team of three engineers is building a B2B SaaS product. The idea: a tool that helps small businesses manage their invoicing. Total addressable market: substantial. Technical complexity: moderate. Time to build a basic version: four to six weeks.
+
+The team makes the following infrastructure decisions before writing a line of product code:
+
+- Separate microservices for auth, invoices, payments, and notifications
+- Kubernetes for container orchestration, with staging and production environments
+- Kafka for asynchronous communication between services
+- PostgreSQL for invoices and payments, Redis for sessions, a separate MongoDB instance for "future flexibility"
+- A sophisticated CI/CD pipeline with automated staging deployments on every PR
+
+Week one: infrastructure setup. Week two: getting services to communicate correctly. Week three: debugging Kubernetes networking. Week four: CI/CD pipeline refinement. Week five: finally writing product code.
+
+Month four: the basic invoicing flow works. The team is exhausted. There are three paying customers — from personal network referrals — who have been waiting since month one and are now using a competitor.
+
+The alternative: a Next.js application with a single PostgreSQL database, deployed on Vercel and Neon. Auth from a managed service. Payments from Stripe. Total infrastructure decisions made: effectively none. This version could have been in front of real customers in week three.
+
+The point is not that Kafka and Kubernetes are bad. The point is that they were solutions to problems the team didn't have — and the cost of those solutions was the product.
+
+## The R&D Trap
+
+There is a particular variant of premature complexity that deserves its own examination: the R&D trap.
+
+A team recognises (correctly) that choosing the right technology matters. They invest in research: comparing frameworks, evaluating databases, reading technical documentation, attending webinars, running benchmarks. The research is thorough. The analysis is careful.
+
+The problem: the research is answering questions about a product that doesn't exist yet. The optimal database for your system depends on your access patterns. Your access patterns emerge from your users' behaviour. Your users' behaviour can only be observed after you have users. You cannot research your way to the right infrastructure choices before you have real data about real usage.
+
+The uncomfortable truth about early-stage technical uncertainty is that most of it can only be resolved by launching. Not by more research. Not by more architecture review. Not by better documentation. By putting something in front of real people and observing what happens.
+
+**At some point, uncertainty can only be resolved by shipping.**
+
+Research has diminishing returns when the unknowns are empirical. You can choose a reasonable starting point — PostgreSQL is a safe database choice for almost any early-stage product — and iterate as you learn. What you cannot do is research your way to certainty about a system that doesn't exist yet.
+
+## MVP Thinking vs. Scale Thinking
+
+The distinction I try to maintain — imperfectly — is between the questions appropriate to each stage.
+
+At the MVP stage, the product is a hypothesis. The engineering is in service of testing that hypothesis as fast as possible. Speed of learning is the optimization target. Complexity that slows learning is the enemy, regardless of how technically impressive it is.
+
+At the growth stage, the hypothesis has been validated. There are users. There is revenue. There is evidence of what the system is actually doing under real load with real usage patterns. Now the engineering questions change: how do we scale? How do we improve reliability? Where are the actual bottlenecks? The infrastructure decisions made at this stage are made with evidence rather than speculation.
+
+Most teams I've seen get into trouble are doing growth-stage engineering on MVP-stage products. They are optimising for scale before proving the product deserves to scale.
+
+```
+MVP Stage: "Ship something. Learn fast. Keep options open."
+Growth Stage: "Optimise what's proven. Scale what's working."
+
+The mistake: starting with growth-stage engineering
+before the MVP stage is complete.
+```
+
+The transition between stages is gradual and contextual — there's no precise threshold. But a useful heuristic: if you don't have users who are actively using and paying for the product, you're in MVP stage. Engineer accordingly.
+
+## What Good Engineering Looks Like at MVP Stage
+
+I want to be careful here not to advocate for sloppy code. The argument is not "quality doesn't matter." The argument is that quality should be calibrated to the stage.
+
+**Ship early.** The earlier you can get something in front of real users, the earlier you can start learning. An imperfect product in front of users is worth more than a perfect product in development.
+
+**Keep the architecture boring.** For an early-stage product, the most valuable architectural property is simplicity. A monolith that the whole team understands, can change quickly, and can deploy in minutes is the right architecture. It is not the architecture you'll keep forever — but it is the architecture that gives you options. You can extract services from a monolith when you have evidence that specific components need different scaling characteristics. You cannot easily merge microservices back into a monolith when you realise you distributed prematurely.
+
+**Build for current requirements.** The phrase "future-proof architecture" should trigger scepticism. You don't know what the future looks like. Your assumptions about what will need to scale, what access patterns will emerge, what features will matter — these are speculation. Build what you need now, with enough structure that you can change it later.
+
+**Make decisions reversible.** Where you have a genuine choice between two approaches of similar complexity, prefer the one that's easier to change. This is the real meaning of "flexible architecture" — not an architecture that anticipated every future requirement, but one whose decisions are cheap to revise as you learn.
+
+**Scale when evidence demands it.** Not before. The right time to add complexity to a system is when a specific, measured problem requires it. "We might need this" is not evidence. "Our database queries are taking 800ms under current load" is evidence.
+
+## The Principle That Reframes Everything
+
+Your first bottleneck as a product is almost never database throughput.
+
+Most startups fail because nobody wants the product, not because the architecture couldn't handle a million users. The risk you're managing at the pre-validation stage is not technical risk — it's market risk. The question is not "can our infrastructure handle growth?" The question is "will there be growth?"
+
+These require different responses. Technical risk is managed by better architecture. Market risk is managed by faster learning. And faster learning requires getting the product in front of users — which means the architecture should be as simple as possible to ship as quickly as possible.
+
+Once you have validated that the product is something people want and will pay for, the engineering investment in infrastructure is justified. You're no longer building infrastructure speculatively — you're building it for a product that has demonstrated it deserves to scale.
+
+The sequence matters: validate first, then scale. Not: design for scale, then validate.
+
+## A Note on Context
+
+I want to be precise about scope. There are contexts where significant upfront infrastructure investment is warranted: regulated industries with compliance requirements, products where failure has safety consequences, systems that must integrate with enterprise infrastructure on day one. If you're building healthcare software, financial infrastructure, or a product for a signed enterprise customer, the constraints are different.
+
+The argument here is specifically about the common case: a team building a product to find product-market fit. In that case — the most common case — premature infrastructure complexity is a product failure risk masquerading as engineering thoroughness.
+
+I've seen this tendency lead teams to over-engineer systems even when I addressed it in the context of [the hidden cost of overengineering](/blog/hidden-cost-of-overengineering) more broadly. But there's something specific about the MVP stage that deserves its own examination: it's not just that the complexity is unnecessary. It's that it actively works against the primary objective of the stage, which is to validate whether the product is worth building at all.
+
+## Key Takeaways
+
+A successful MVP is not the one with the most impressive architecture. It is the one that reaches real users fastest, validates assumptions, and creates learning. Engineering at this stage should accelerate product discovery, not delay it.
+
+Practically:
+
+- If you don't have users yet, you don't need Kubernetes. You probably don't need microservices. You probably need a monolith deployed on a managed platform.
+- R&D paralysis is real. At some point, the only way to resolve uncertainty is to launch.
+- "Future-proof" is speculation. Build for current requirements with structure that's changeable.
+- The questions to ask at MVP stage are product questions, not infrastructure questions. Does anyone want this? Will they pay for it? Can I learn something this week?
+- Move to growth-stage engineering when you have evidence that justifies it — paying users, measured bottlenecks, real load patterns.
+
+The engineers I respect most are not the ones who design the most sophisticated systems. They are the ones who understand what level of sophistication is appropriate for the current stage — and have the discipline to resist going beyond it.
+
+That discipline is harder than it sounds. Building a complex system is often more interesting than shipping a simple one. The craft of deciding what not to build requires a different kind of confidence than the craft of building it. But in the context of product development, knowing what to leave out is the more valuable skill.
+
+Ship the simple thing. Learn from real users. Build what the evidence demands.

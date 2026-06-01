@@ -1,0 +1,228 @@
+---
+title: "Engineering an NFT Minting Bot: Race Conditions, Gas Wars, and Mempool Mechanics"
+description: "A technical post-mortem on building production NFT minting bots — covering Ethereum mempool mechanics, gas price strategies, Python vs Go implementation trade-offs, and the race conditions that determine whether you get an NFT or an empty wallet."
+date: "2025-06-18"
+updatedAt: "2025-12-03"
+tags: ["Web3", "Ethereum", "Go", "Python", "Blockchain", "Bots"]
+excerpt: "Building an NFT minting bot taught me more about Ethereum's transaction mechanics than any course or documentation. This is the technical reality: the mempool game, the gas auction, and why Go beat Python on the critical path."
+---
+
+Building the [Miintfun NFT minting bot](https://github.com/Prantadas/Miintfun-NFT-Buy-Bot) started as a weekend project and became an education in distributed systems, timing, and adversarial engineering that I couldn't have gotten anywhere else.
+
+The premise is simple: when a popular NFT collection opens for public mint, thousands of bots and humans compete to submit transactions in the same few-second window. The Ethereum network processes transactions based on gas price, not first-come-first-served. The outcome is an auction — often called a **gas war** — where the highest bidder gets their transaction included in the next block.
+
+Understanding this at a mechanical level changes how you architect the bot.
+
+## The Ethereum Transaction Lifecycle (What Actually Matters)
+
+When you call `contract.mint()` via ethers.js, here's what really happens:
+
+1. Your transaction is broadcast to your connected node's **mempool** — a local transaction pool
+2. The node gossips it to its peers, propagating across the network
+3. The mempool is public — anyone running a node can see pending transactions
+4. Block proposers (validators) select transactions from the mempool, prioritizing by `maxPriorityFeePerGas` (the "tip")
+5. Your transaction is included in a block — or replaced, or dropped
+
+This pipeline has several properties that directly affect bot design:
+
+**Propagation delay is non-zero.** A transaction broadcast from a node in Singapore takes ~150ms to reach nodes in New York. If the mint is first-come-first-served (as some contracts are), geography matters.
+
+**The mempool is observable.** Tools like Blocknative and Alchemy's mempool watch let you detect pending transactions targeting a contract — including other bots' mint transactions. This is how front-running bots work.
+
+**Transaction replacement is possible.** If you broadcast a transaction and then broadcast another with the same nonce and a higher gas price, the second transaction replaces the first in most mempools. This is how "gas bumping" works.
+
+## The Gas Strategy Problem
+
+The naive gas strategy — "just set a high gas limit" — is wrong in two ways:
+
+1. `gasLimit` is the _computational ceiling_, not what you actually pay. You pay `gasUsed × effectiveGasPrice`. Over-setting the limit doesn't help you get included faster.
+2. `maxFeePerGas` and `maxPriorityFeePerGas` (EIP-1559) are what drive transaction priority. `maxPriorityFeePerGas` is the tip to the validator — this is the auction variable.
+
+The dynamic gas strategy we ended up with:
+
+```python
+# Python implementation for the initial prototype
+import asyncio
+from web3 import Web3
+from web3.middleware import geth_poa_middleware
+
+async def get_optimal_gas_params(w3: Web3, urgency: str = "fast") -> dict:
+    """
+    Fetch current base fee and compute priority fee based on urgency.
+    urgency: 'safe' | 'standard' | 'fast' | 'instant'
+    """
+    block = w3.eth.get_block("latest")
+    base_fee = block["baseFeePerGas"]
+
+    # Estimate percentile priority fees from recent blocks
+    fee_history = w3.eth.fee_history(
+        block_count=10,
+        newest_block="latest",
+        reward_percentiles=[10, 50, 75, 90, 99],
+    )
+
+    percentile_map = {
+        "safe": 0,      # 10th percentile
+        "standard": 1,  # 50th percentile
+        "fast": 2,      # 75th percentile
+        "instant": 4,   # 99th percentile
+    }
+    idx = percentile_map.get(urgency, 2)
+
+    # Median priority fee across recent blocks at chosen percentile
+    priority_fees = [
+        rewards[idx]
+        for rewards in fee_history["reward"]
+        if rewards
+    ]
+    priority_fee = sorted(priority_fees)[len(priority_fees) // 2]
+
+    # Max fee = 2× base fee buffer + priority fee
+    # The 2× buffer ensures inclusion even if base fee spikes one block
+    max_fee = (base_fee * 2) + priority_fee
+
+    return {
+        "maxFeePerGas": max_fee,
+        "maxPriorityFeePerGas": priority_fee,
+        "type": 2,  # EIP-1559
+    }
+```
+
+The `base_fee * 2` buffer deserves explanation. Ethereum's EIP-1559 mechanism allows base fee to increase by up to 12.5% per block. If your `maxFeePerGas` is set exactly at the current base fee, any upward movement prices you out before you're included. The 2× buffer means you stay competitive through 7+ blocks of maximum base fee growth.
+
+## The Race: Python vs Go
+
+The Python prototype worked. Then we benchmarked it against a Go-implemented competitor bot during a test mint.
+
+The result was stark: **our Python bot was consistently 200–400ms slower** on the critical path from "mint opens" to "transaction broadcast."
+
+The bottleneck was not network I/O — Python's async event loop handled that fine. It was the transaction signing path. Signing an Ethereum transaction involves ECDSA on secp256k1. Python's `web3.py` uses a pure-Python fallback when the `coincurve` C extension isn't installed, and even with the C extension, CPython's overhead adds up in a tight loop.
+
+The Go rewrite — [MintfunGO](https://github.com/Prantadas/MintfunGO) — eliminated that overhead:
+
+```go
+// Go implementation: transaction construction and broadcast
+package main
+
+import (
+    "context"
+    "crypto/ecdsa"
+    "math/big"
+
+    "github.com/ethereum/go-ethereum/accounts/abi/bind"
+    "github.com/ethereum/go-ethereum/common"
+    "github.com/ethereum/go-ethereum/core/types"
+    "github.com/ethereum/go-ethereum/crypto"
+    "github.com/ethereum/go-ethereum/ethclient"
+)
+
+type MintBot struct {
+    client     *ethclient.Client
+    privateKey *ecdsa.PrivateKey
+    address    common.Address
+    chainID    *big.Int
+}
+
+func (b *MintBot) Mint(
+    ctx context.Context,
+    contractAddr common.Address,
+    quantity uint64,
+    gasParams GasParams,
+) (*types.Transaction, error) {
+    nonce, err := b.client.PendingNonceAt(ctx, b.address)
+    if err != nil {
+        return nil, fmt.Errorf("nonce fetch: %w", err)
+    }
+
+    // ABI-encode the mint call
+    parsed, err := abi.JSON(strings.NewReader(MintABI))
+    if err != nil {
+        return nil, err
+    }
+    data, err := parsed.Pack("mint", quantity)
+    if err != nil {
+        return nil, err
+    }
+
+    tx := types.NewTx(&types.DynamicFeeTx{
+        ChainID:   b.chainID,
+        Nonce:     nonce,
+        To:        &contractAddr,
+        Value:     big.NewInt(0), // Free mint
+        Gas:       estimateGas(quantity),
+        GasTipCap: gasParams.MaxPriorityFeePerGas,
+        GasFeeCap: gasParams.MaxFeePerGas,
+        Data:      data,
+    })
+
+    signer := types.LatestSignerForChainID(b.chainID)
+    signed, err := types.SignTx(tx, signer, b.privateKey)
+    if err != nil {
+        return nil, fmt.Errorf("sign: %w", err)
+    }
+
+    if err := b.client.SendTransaction(ctx, signed); err != nil {
+        return nil, fmt.Errorf("broadcast: %w", err)
+    }
+
+    return signed, nil
+}
+```
+
+The Go version was **faster to compile, faster at runtime, and had deterministic garbage collection** — no GC pauses at the worst moment. For a latency-sensitive competitive task, these properties matter.
+
+## The Race Condition That Actually Matters
+
+The real race condition isn't between your code paths — it's between your transaction and the block boundary.
+
+Ethereum produces a block approximately every 12 seconds. If a mint opens at block N, you want your transaction included in block N. If you miss it, you're competing in block N+1 alongside everyone who also missed, and the base fee has likely spiked.
+
+The architectural implication: your bot must be **pre-warmed**. By the time the mint opens, you should have:
+
+1. A live WebSocket connection to an Ethereum node (not HTTP polling)
+2. The current nonce cached (fetched 30s before mint)
+3. The gas estimate pre-computed from a `eth_estimateGas` call against the contract
+4. The signed transaction ready to broadcast, only needing the gas price updated
+
+This is what a "pre-signed transaction with late gas fill" looks like:
+
+```go
+// Pre-compute everything except gas, then inject gas at mint time
+func (b *MintBot) PrepareTransaction(ctx context.Context, contract common.Address, qty uint64) (*PreparatedTx, error) {
+    nonce, _ := b.client.PendingNonceAt(ctx, b.address)
+    gasEstimate, _ := b.estimateGas(ctx, contract, qty)
+
+    return &PreparatedTx{
+        To:          contract,
+        Nonce:       nonce,
+        GasEstimate: gasEstimate,
+        Data:        b.encodeMintCall(qty),
+    }, nil
+}
+
+// At mint time: inject live gas, sign, broadcast — all in < 50ms
+func (b *MintBot) ExecuteMint(ctx context.Context, prep *PreparatedTx, gasParams GasParams) (*types.Transaction, error) {
+    tx := types.NewTx(&types.DynamicFeeTx{
+        // ... use prep.Nonce, prep.Data, prep.GasEstimate
+        GasTipCap: gasParams.MaxPriorityFeePerGas,
+        GasFeeCap: gasParams.MaxFeePerGas,
+    })
+    // Sign and broadcast
+}
+```
+
+The time between "mint opens" and "transaction broadcast" dropped from ~800ms in our Python prototype to ~45ms in the Go version. That's the margin of victory in a competitive mint.
+
+## What the Bot Taught Me About Distributed Systems
+
+Building this was an applied distributed systems education:
+
+**Monotonic clocks matter.** We synchronised bot server time against Ethereum node timestamps using NTP with high-precision servers. A 100ms clock drift is a significant competitive disadvantage.
+
+**Connection pooling is critical.** Each `eth_sendRawTransaction` call over HTTP means a TCP handshake + TLS negotiation — ~100ms. WebSocket multiplexing eliminated this for monitoring calls. For the final broadcast, we used multiple HTTP endpoints in parallel and took the first success.
+
+**Failure modes are adversarial.** Unlike typical backend systems where failures are accidental, competing bots actively create conditions that degrade your performance (mempool flooding, gas price manipulation). Defense requires monitoring and adaptive gas strategies, not just error handling.
+
+---
+
+_The Miintfun bot and MintfunGO are on my GitHub. The codebases reflect the evolution from prototype to production — including the debugging commits that are educational in their own way._

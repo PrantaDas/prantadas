@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CustomCursor } from "@/components/portfolio/cursor";
 import { SmoothScroll } from "@/components/portfolio/smooth-scroll";
 import { Navigation } from "@/components/portfolio/navigation";
 import { HeroSection } from "@/components/portfolio/hero";
@@ -13,6 +12,10 @@ import { ContactSection } from "@/components/portfolio/contact";
 import { SiteFooter } from "@/components/portfolio/footer";
 import { Terminal } from "@/components/portfolio/terminal";
 import { ProjectsSection } from "@/components/portfolio/projects";
+import {
+  FeaturedArticlesSection,
+  type ArticleSummary,
+} from "@/components/portfolio/featured-articles";
 
 interface Repository {
   id: number;
@@ -33,9 +36,14 @@ interface Repository {
 interface PortfolioClientProps {
   repositories: Repository[];
   year: number;
+  articles: ArticleSummary[];
 }
 
-export function PortfolioClient({ repositories, year }: PortfolioClientProps) {
+export function PortfolioClient({
+  repositories,
+  year,
+  articles,
+}: PortfolioClientProps) {
   const [terminalOpen, setTerminalOpen] = useState(false);
 
   // Toggle terminal with backtick key
@@ -57,9 +65,13 @@ export function PortfolioClient({ repositories, year }: PortfolioClientProps) {
   }, [terminalOpen]);
 
   return (
-    <div className="relative min-h-screen bg-background noise-overlay custom-cursor-active">
+    <div className="relative min-h-screen bg-background noise-overlay">
+      {/* Skip to main content — keyboard accessibility */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       <SmoothScroll />
-      <CustomCursor />
 
       {/* Ambient background */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -69,13 +81,14 @@ export function PortfolioClient({ repositories, year }: PortfolioClientProps) {
 
       <Navigation onTerminalOpen={() => setTerminalOpen(true)} />
 
-      <main className="relative z-10">
+      <main id="main-content" className="relative z-10" tabIndex={-1}>
         <HeroSection />
         <AboutSection />
         <ProjectsSection repositories={repositories} />
         <CertificationsSection />
         <SkillsSection />
         <ExperienceSection />
+        <FeaturedArticlesSection articles={articles} />
         <ContactSection />
       </main>
 

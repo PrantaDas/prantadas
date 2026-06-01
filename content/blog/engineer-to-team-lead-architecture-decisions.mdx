@@ -1,0 +1,210 @@
+---
+title: "From Engineer to Team Lead: The Architecture Decisions That Actually Defined Our Backend"
+description: "A candid account of transitioning from Senior Software Engineer to Team Lead at Root Devs — the system design trade-offs, the team culture decisions, and the production incidents that forced us to build better systems."
+date: "2026-02-20"
+updatedAt: "2026-05-28"
+tags:
+  ["Architecture", "Team Lead", "Node.js", "NestJS", "System Design", "Career"]
+excerpt: "When you move from writing code to being responsible for the code other engineers write, the problems that matter change completely. Here's what I learned in my first six months as Team Lead at Root Devs."
+---
+
+In January 2026, my title changed from Senior Software Engineer to Team Lead (Backend) at Root Devs. The change felt incremental on paper. The reality was a fundamentally different job.
+
+As a senior engineer, your primary leverage is the quality of your own code. As a team lead, your leverage is the quality of the systems and standards that shape how other engineers write theirs. The mental shift is significant — and the architecture decisions you make carry different weight when you're making them for an entire team.
+
+Six months in, here's what I've learned.
+
+## The First Big Decision: Service Boundaries
+
+The most consequential architectural decision I made in my first month wasn't about databases or frameworks — it was about where to draw service boundaries on a system that had grown organically.
+
+We had a monolith. Not a big-ball-of-mud monolith, but a NestJS application with ~15 modules where the boundaries were blurry. Over time, modules had accumulated cross-imports that made them impossible to extract cleanly. The `UserModule` knew about `NotificationModule` which knew about `UserModule`. Circular dependencies, patched with `forwardRef()`.
+
+The question I faced: **microservices now, or disciplined monolith?**
+
+The microservices-first instinct is a trap I almost fell into. Microservices introduce distribution overhead, network failures, serialisation costs, and operational complexity that a small engineering team can't absorb while also shipping product. We had four backend engineers. We were not Google.
+
+The decision: **modular monolith with enforced domain isolation**.
+
+```
+src/
+  modules/
+    user/
+      user.module.ts
+      user.controller.ts
+      user.service.ts
+      user.repository.ts     # Only this file touches the DB for users
+      user.events.ts         # Domain events emitted by this module
+    order/
+      order.module.ts
+      order.service.ts
+      order.repository.ts
+    notification/
+      notification.module.ts
+      notification.service.ts
+  shared/
+    events/
+      event-bus.ts           # Internal event bus for cross-module communication
+    infrastructure/
+      prisma.service.ts
+      redis.service.ts
+```
+
+The key rule: **modules communicate via events, not direct service injection** (except for explicitly declared facades). The `OrderModule` doesn't import `NotificationModule`. When an order is created, it emits an `OrderCreated` event on the internal bus. `NotificationModule` listens and acts. Zero direct coupling.
+
+```typescript
+// order/order.service.ts
+@Injectable()
+export class OrderService {
+  constructor(
+    private readonly orderRepo: OrderRepository,
+    private readonly events: EventBus,
+  ) {}
+
+  async createOrder(dto: CreateOrderDto, userId: string): Promise<Order> {
+    const order = await this.orderRepo.create({ ...dto, userId });
+
+    // Fire and forget — notification service handles this asynchronously
+    this.events.emit(new OrderCreatedEvent(order));
+
+    return order;
+  }
+}
+```
+
+When we eventually need to extract a service, the domain boundary is already clean. The event-based coupling means the extraction is a matter of moving a message from an in-process bus to RabbitMQ — not a refactor.
+
+## Database Access Patterns: The Consistency vs Performance Tension
+
+The second major decision: **Prisma vs raw SQL for complex queries**.
+
+Prisma is excellent for 80% of queries. The type safety, the migration system, and the readable query builder are genuine productivity multipliers for a team. But Prisma has a well-known N+1 problem in nested includes, and its aggregation queries generate SQL that's sometimes 5× slower than the equivalent raw query.
+
+The pattern we settled on:
+
+```typescript
+// repository/user.repository.ts
+@Injectable()
+export class UserRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  // Standard CRUD via Prisma
+  async findById(id: string) {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
+
+  // Complex analytics query — raw SQL
+  async getActivityStats(userId: string, days: number) {
+    const result = await this.prisma.$queryRaw<ActivityRow[]>`
+      SELECT
+        DATE_TRUNC('day', created_at) AS day,
+        COUNT(*) AS total_events,
+        COUNT(*) FILTER (WHERE event_type = 'order') AS orders
+      FROM events
+      WHERE user_id = ${userId}
+        AND created_at > NOW() - INTERVAL '${days} days'
+      GROUP BY 1
+      ORDER BY 1 DESC
+    `;
+    return result;
+  }
+}
+```
+
+The repository pattern here is intentional — it hides whether a query uses Prisma or raw SQL from the service layer. When we optimise a query, we change one method in one file. The service doesn't know or care.
+
+## The Incident That Rewired How We Think About Caching
+
+Three months into the role, we had our first serious production incident. A reporting endpoint that had worked fine in staging caused a database CPU spike to 100% under real traffic.
+
+The query involved a LEFT JOIN across three tables, an ORDER BY on a non-indexed column, and was being called 60 times per second because the dashboard auto-refreshed. Query execution time: 400ms. Total: 24 seconds of DB CPU per second of real time. The math doesn't work.
+
+The fix was a two-layer cache:
+
+```typescript
+@Injectable()
+export class ReportService {
+  constructor(
+    private readonly reportRepo: ReportRepository,
+    private readonly redis: Redis,
+  ) {}
+
+  async getProjectStats(projectId: string): Promise<ProjectStats> {
+    const cacheKey = `stats:project:${projectId}`;
+
+    // Layer 1: Redis cache — 30s TTL for near-real-time freshness
+    const cached = await this.redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
+    const stats = await this.reportRepo.computeProjectStats(projectId);
+
+    await this.redis.setex(cacheKey, 30, JSON.stringify(stats));
+    return stats;
+  }
+
+  // Invalidate on writes — called from the mutation path
+  async invalidateProjectStats(projectId: string): Promise<void> {
+    await this.redis.del(`stats:project:${projectId}`);
+  }
+}
+```
+
+But the real lesson wasn't "add a cache." It was **test with production-representative data volume and query patterns**. Our staging database had 500 rows. Production had 2.4 million. The query planner chose completely different execution plans.
+
+After the incident, we added `EXPLAIN ANALYZE` output to all new complex queries as a mandatory PR checklist item, run against a staging database with production-scale data dumps (anonymised). This caught four similar issues before they reached production.
+
+## Code Review Culture: The Standard I Wish We'd Set Earlier
+
+The most impactful non-technical decision was establishing explicit code review standards.
+
+Before: reviews were "looks good to me" plus catching typos. This created hidden quality debt — code that compiled and passed tests but that nobody could safely modify six months later.
+
+After: a written review checklist that every reviewer actually uses:
+
+```
+Code Review Checklist
+─────────────────────
+□ Does it solve the right problem?
+  - Is the stated PR purpose what the code actually does?
+  - Is there a simpler solution we're missing?
+
+□ Is it correct?
+  - Edge cases handled (null, empty, boundary values)?
+  - Error paths handled and logged appropriately?
+  - No silent failures (uncaught promise rejections)?
+
+□ Is it observable?
+  - Key operations emit structured logs with correlation IDs?
+  - Performance-sensitive paths have timing metrics?
+
+□ Will it perform?
+  - DB queries have appropriate indexes?
+  - Loops aren't hiding N+1 patterns?
+  - No unbounded in-memory accumulation?
+
+□ Is it safe?
+  - User input validated at the boundary?
+  - No direct string concatenation in SQL?
+  - Sensitive data (PII, tokens) not logged?
+
+□ Is it maintainable?
+  - Would a new team member understand this in 6 months?
+  - Magic numbers have named constants?
+  - Complex logic has a comment explaining *why*, not what?
+```
+
+The checklist changed our PR culture. Engineers started self-reviewing against it before posting for review, which meant issues were caught earlier and review conversations became more substantive.
+
+## What I Didn't Expect About the Role
+
+The hardest part of being a team lead isn't architecture. It's the asymmetry of information.
+
+As a senior engineer, you have full context on your own work. As a team lead, you have partial context on four people's work simultaneously. The decisions you make with incomplete information — which issue to prioritise, which design to approve, which debt to carry — compound over months.
+
+The mitigation is process: regular architecture reviews, documented decision records (ADRs), and explicit "debt tickets" that make the compromise visible rather than hidden in code comments.
+
+I've been wrong about which things to prioritise. I've approved designs that needed revisiting. What I've tried to do is make those calls transparent enough that the team can give input and that we can course-correct quickly when the feedback arrives.
+
+---
+
+_Root Devs is a software company based in Dhaka, Bangladesh. We're building products that serve users internationally. If you're a backend engineer in Bangladesh thinking about architecture or distributed systems, I'm happy to talk — reach out on [LinkedIn](https://linkedin.com/in/pranta-das7)._

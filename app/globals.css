@@ -212,10 +212,48 @@
   background-size: 32px 32px;
 }
 
-/* Custom cursor hide */
-.custom-cursor-active {
-  cursor: none;
+/* Focus ring override for keyboard a11y */
+:focus-visible {
+  outline: 2px solid rgba(0, 212, 255, 0.6);
+  outline-offset: 2px;
 }
-.custom-cursor-active * {
-  cursor: none !important;
+
+/* Reduced motion: honour user system preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-ping,
+  .animate-pulse,
+  .animate-marquee,
+  .animate-marquee-slow,
+  .animate-marquee-reverse,
+  .terminal-cursor,
+  .shimmer-text {
+    animation: none !important;
+  }
+}
+
+/* Skip to main content link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  padding: 0.75rem 1.5rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 600;
+  font-size: 0.875rem;
+  z-index: 9999;
+  border-radius: 0 0 0.5rem 0;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
 }

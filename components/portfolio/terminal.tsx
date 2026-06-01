@@ -1,8 +1,19 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Minus, Square, Terminal as TerminalIcon } from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  useDragControls,
+  useMotionValue,
+} from "framer-motion";
+import {
+  X,
+  Minus,
+  Maximize2,
+  Minimize2,
+  Terminal as TerminalIcon,
+} from "lucide-react";
 
 // ============================================================
 // Terminal command registry
@@ -344,20 +355,118 @@ export function Terminal({ isOpen, onClose }: TerminalProps) {
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [size, setSize] = useState({ width: 680, height: 480 });
+
+  // Drag motion values — separate from framer-motion's animate/initial y
+  const dragX = useMotionValue(0);
+  const dragY = useMotionValue(0);
+  const dragControls = useDragControls();
+  const savedPosition = useRef({ x: 0, y: 0 });
+  const resizeState = useRef({
+    active: false,
+    startX: 0,
+    startY: 0,
+    startW: 0,
+    startH: 0,
+  });
 
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const idRef = useRef(1);
 
+  // Reset state when terminal closes
+  useEffect(() => {
+    if (!isOpen) {
+      dragX.set(0);
+      dragY.set(0);
+      setIsFullscreen(false);
+      setIsMinimized(false);
+    }
+  }, [isOpen, dragX, dragY]);
+
+  // Focus input when opened / restored
   useEffect(() => {
     if (isOpen && !isMinimized) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen, isMinimized]);
 
+  // Auto-scroll to bottom on new output
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [history]);
+
+  // Escape exits fullscreen first; if not fullscreen, portfolio-client closes it
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        dragX.set(savedPosition.current.x);
+        dragY.set(savedPosition.current.y);
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener("keydown", handler, true);
+    return () => window.removeEventListener("keydown", handler, true);
+  }, [isFullscreen, dragX, dragY]);
+
+  const handleToggleFullscreen = useCallback(() => {
+    setIsFullscreen((prev) => {
+      if (prev) {
+        dragX.set(savedPosition.current.x);
+        dragY.set(savedPosition.current.y);
+        return false;
+      } else {
+        savedPosition.current = { x: dragX.get(), y: dragY.get() };
+        dragX.set(0);
+        dragY.set(0);
+        setIsMinimized(false);
+        return true;
+      }
+    });
+  }, [dragX, dragY]);
+
+  const startResize = useCallback(
+    (e: React.MouseEvent) => {
+      if (isFullscreen) return;
+      e.preventDefault();
+      e.stopPropagation();
+      resizeState.current = {
+        active: true,
+        startX: e.clientX,
+        startY: e.clientY,
+        startW: size.width,
+        startH: size.height,
+      };
+      const onMove = (ev: MouseEvent) => {
+        if (!resizeState.current.active) return;
+        setSize({
+          width: Math.max(
+            400,
+            resizeState.current.startW +
+              ev.clientX -
+              resizeState.current.startX,
+          ),
+          height: Math.max(
+            300,
+            resizeState.current.startH +
+              ev.clientY -
+              resizeState.current.startY,
+          ),
+        });
+      };
+      const onUp = () => {
+        resizeState.current.active = false;
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    },
+    [isFullscreen, size],
+  );
 
   const runCommand = useCallback((raw: string) => {
     const trimmed = raw.trim().toLowerCase();
@@ -414,82 +523,126 @@ export function Terminal({ isOpen, onClose }: TerminalProps) {
     }
   };
 
+  const windowedStyle = {
+    bottom: 24,
+    right: 24,
+    width: size.width,
+    height: isMinimized ? 44 : size.height,
+    maxWidth: "calc(100vw - 48px)",
+    maxHeight: "calc(100vh - 48px)",
+    borderRadius: "0.75rem",
+  } as const;
+
+  const fullscreenStyle = {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+    borderRadius: 0,
+  } as const;
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 40 }}
-          animate={
-            isMinimized
-              ? { opacity: 1, scale: 0.95, y: 0, height: 48 }
-              : { opacity: 1, scale: 1, y: 0, height: "auto" }
-          }
-          exit={{ opacity: 0, scale: 0.9, y: 40 }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="fixed bottom-6 right-6 z-[9990] w-full max-w-xl md:max-w-2xl rounded-xl border border-white/10 overflow-hidden shadow-2xl"
+          drag={!isFullscreen && !isMinimized}
+          dragControls={dragControls}
+          dragListener={false}
+          dragMomentum={false}
+          dragElastic={0}
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.92 }}
+          transition={{ type: "spring", damping: 28, stiffness: 320 }}
+          className="fixed z-[9990] flex flex-col border border-white/10 shadow-2xl overflow-hidden"
           style={{
-            background: "rgba(6, 8, 14, 0.92)",
-            backdropFilter: "blur(24px)",
-            maxHeight: isMinimized ? 48 : "70vh",
+            x: dragX,
+            y: dragY,
+            background: "rgba(6, 8, 14, 0.93)",
+            backdropFilter: "blur(28px)",
+            WebkitBackdropFilter: "blur(28px)",
+            ...(isFullscreen ? fullscreenStyle : windowedStyle),
           }}
         >
-          {/* Title bar */}
+          {/* ── Title bar ── */}
           <div
-            className="flex items-center justify-between px-4 py-3 border-b border-white/5 select-none"
-            onClick={() => isMinimized && setIsMinimized(false)}
+            className="relative flex-shrink-0 flex items-center px-4 h-11 border-b border-white/[0.06] select-none"
+            style={{ cursor: isFullscreen || isMinimized ? "default" : "grab" }}
+            onPointerDown={
+              !isFullscreen && !isMinimized
+                ? (e) => dragControls.start(e)
+                : undefined
+            }
           >
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onClose();
-                  }}
-                  className="w-3 h-3 rounded-full bg-red-500/70 hover:bg-red-400 transition-colors"
-                />
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsMinimized(!isMinimized);
-                  }}
-                  className="w-3 h-3 rounded-full bg-yellow-500/70 hover:bg-yellow-400 transition-colors"
-                />
-                <div className="w-3 h-3 rounded-full bg-green-500/70 hover:bg-green-400 transition-colors" />
-              </div>
-              <div className="flex items-center gap-2">
-                <TerminalIcon className="w-3 h-3 text-primary/50" />
-                <span className="text-xs font-mono text-white/40">
-                  {OWNER}@{HOST} — portfolio-cli
-                </span>
-              </div>
+            {/* macOS traffic lights */}
+            <div className="flex items-center gap-1.5 group/tl relative z-10">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                title="Close"
+                className="w-3 h-3 rounded-full bg-[#ff5f57] flex items-center justify-center hover:brightness-110 transition-all"
+              >
+                <X className="w-1.5 h-1.5 text-[#820005] opacity-0 group-hover/tl:opacity-100 transition-opacity" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMinimized((v) => !v);
+                }}
+                title={isMinimized ? "Restore" : "Minimize"}
+                className="w-3 h-3 rounded-full bg-[#febc2e] flex items-center justify-center hover:brightness-110 transition-all"
+              >
+                <Minus className="w-1.5 h-1.5 text-[#6d4e00] opacity-0 group-hover/tl:opacity-100 transition-opacity" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleFullscreen();
+                }}
+                title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                className="w-3 h-3 rounded-full bg-[#28c840] flex items-center justify-center hover:brightness-110 transition-all"
+              >
+                {isFullscreen ? (
+                  <Minimize2 className="w-1.5 h-1.5 text-[#004d12] opacity-0 group-hover/tl:opacity-100 transition-opacity" />
+                ) : (
+                  <Maximize2 className="w-1.5 h-1.5 text-[#004d12] opacity-0 group-hover/tl:opacity-100 transition-opacity" />
+                )}
+              </button>
             </div>
-            <button
-              onClick={onClose}
-              className="text-white/30 hover:text-white/60 transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+
+            {/* Center title — pointer-events-none so drag still works */}
+            <div className="absolute inset-0 flex items-center justify-center gap-1.5 pointer-events-none">
+              <TerminalIcon className="w-3 h-3 text-white/30" />
+              <span className="text-xs font-mono text-white/40 tracking-wide">
+                {OWNER}@{HOST} — zsh
+              </span>
+            </div>
           </div>
 
-          {/* Output area */}
+          {/* ── Body (output + input) ── */}
           {!isMinimized && (
-            <div
-              className="flex flex-col overflow-y-auto font-mono text-xs leading-relaxed"
-              style={{ maxHeight: "calc(70vh - 96px)" }}
-              onClick={() => inputRef.current?.focus()}
-            >
-              <div className="p-4 space-y-1">
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* Scrollable output — wheel events isolated from page */}
+              <div
+                className="flex-1 overflow-y-auto overflow-x-hidden font-mono text-xs leading-relaxed p-4 space-y-1 select-text"
+                onWheel={(e) => e.stopPropagation()}
+                onClick={() => inputRef.current?.focus()}
+              >
                 {history.map((entry) => (
                   <div key={entry.id}>
                     {entry.command !== undefined && (
                       <div className="flex items-center gap-1 mb-1">
-                        <span className="text-emerald-400/70">
+                        <span className="text-emerald-400/80 shrink-0">
                           {OWNER}@{HOST}
                         </span>
-                        <span className="text-white/20">:</span>
+                        <span className="text-white/25">:</span>
                         <span className="text-blue-400/70">~</span>
-                        <span className="text-white/20">$</span>
-                        <span className="text-white/80 ml-1">
+                        <span className="text-white/25">$</span>
+                        <span className="text-white/85 ml-1 break-all">
                           {entry.command}
                         </span>
                       </div>
@@ -503,24 +656,47 @@ export function Terminal({ isOpen, onClose }: TerminalProps) {
               </div>
 
               {/* Input line */}
-              <div className="sticky bottom-0 flex items-center gap-1 px-4 py-3 border-t border-white/5 bg-[rgba(6,8,14,0.95)]">
-                <span className="text-emerald-400/70">
+              <div className="flex-shrink-0 flex items-center gap-1 px-4 py-2.5 border-t border-white/[0.06] bg-[rgba(6,8,14,0.98)]">
+                <span className="text-emerald-400/80 font-mono text-xs shrink-0">
                   {OWNER}@{HOST}
                 </span>
-                <span className="text-white/20">:</span>
-                <span className="text-blue-400/70">~</span>
-                <span className="text-white/20">$</span>
+                <span className="text-white/25 font-mono text-xs">:</span>
+                <span className="text-blue-400/70 font-mono text-xs">~</span>
+                <span className="text-white/25 font-mono text-xs">$</span>
                 <input
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="flex-1 ml-2 bg-transparent outline-none text-white/90 caret-primary"
+                  className="flex-1 ml-2 bg-transparent border-0 border-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none text-white/90 caret-primary font-mono text-xs"
                   spellCheck={false}
                   autoComplete="off"
                   autoCorrect="off"
+                  autoCapitalize="off"
                 />
               </div>
+            </div>
+          )}
+
+          {/* ── SE resize grip ── */}
+          {!isFullscreen && !isMinimized && (
+            <div
+              className="absolute bottom-0 right-0 w-5 h-5 z-20 cursor-se-resize flex items-end justify-end p-1"
+              onMouseDown={startResize}
+            >
+              <svg
+                width="8"
+                height="8"
+                viewBox="0 0 8 8"
+                className="text-white/20 pointer-events-none"
+              >
+                <path
+                  d="M7 1L1 7M7 4L4 7"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
             </div>
           )}
         </motion.div>

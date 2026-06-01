@@ -1,0 +1,261 @@
+---
+title: "Mistakes Most Junior Developers Make on Real Projects"
+description: "A candid, supportive look at the patterns that hold junior developers back on real production projects — from coding before understanding requirements to weak debugging habits and ignoring business context. Written for engineers who want to grow faster."
+date: "2026-03-05"
+updatedAt: "2026-03-05"
+tags: ["Career", "Engineering", "Node.js", "TypeScript", "Team Lead"]
+featured: false
+excerpt: "The gap between writing code that works and being a productive member of a professional engineering team is not primarily technical. It's a collection of habits, instincts, and mindsets that take time and feedback to develop — unless someone names them clearly."
+---
+
+I want to start with something important: this article is not a criticism of junior developers. It's a letter to them.
+
+Every engineer who is now senior was once junior. The gap between junior and senior isn't intelligence or talent — it's accumulated experience with real production systems, real teams, and real consequences. The patterns I'm going to describe aren't character flaws. They're completely predictable behaviours from engineers who haven't yet had the experience that corrects them.
+
+What I want to offer is that experience, compressed. Not as a lecture — but as a honest account of what I've observed leading teams at Root Devs, what I remember from my own early career, and what the fastest-growing junior engineers I've worked with have learned to do differently.
+
+## Coding Before Understanding the Problem
+
+The most common mistake I see from junior developers on real projects is starting to write code before they understand what they're building.
+
+The instinct makes sense. Code is what engineers do. When you receive a ticket or a task description, the natural impulse is to open your IDE, create a branch, and start. Movement feels like progress.
+
+But writing code to solve a problem you don't fully understand is almost always slower than spending twenty minutes to fully understand the problem first. The code you write is shaped by the model you have of the problem. A wrong or incomplete model produces code that needs to be rewritten, often substantially.
+
+The pattern I've seen repeatedly: a junior developer picks up a task, builds what they understood the task to require, submits a PR, and then the review reveals they built the wrong thing entirely. Not a bad implementation — the wrong implementation. Two days of work, back to the drawing board.
+
+The discipline that prevents this is simple: before writing code, write down what you understand the task to require, the success condition, and any assumptions you're making. Show it to the person who assigned the task. Get agreement before you build.
+
+This doesn't have to be a formal document. A Slack message: "Before I start on this, I want to confirm my understanding — the goal is X, the expected outcome is Y, and I'm assuming Z. Does that match your thinking?" takes five minutes. It prevents two days of rework.
+
+## Not Asking Questions
+
+There's a myth in some engineering cultures that asking questions is a sign of incompetence. Junior developers absorb this myth and become reluctant to ask for clarification, believing that figuring things out independently is what's expected.
+
+The result: they spend hours stuck on problems that could be unblocked in five minutes of conversation. They make assumptions that turn out to be wrong and discover it late. They build systems that don't match the actual requirements because they filled in ambiguities with guesses.
+
+The engineers I most respect ask excellent questions. Not lazy questions — not "how do I do X?" when X is in the documentation — but specific, well-formed questions that demonstrate they've done the relevant thinking. "I'm working on the payment retry logic and I want to confirm: should retried payments use the original transaction amount, or recalculate against the current product price? I'm assuming original, but I want to verify before I write the DB transaction."
+
+That question shows you've thought about the problem deeply. It shows you've identified an ambiguity that matters. It shows you care about correctness. The person you ask will not think less of you for asking. They'll trust you more.
+
+The rule of thumb I use: if you've been stuck for more than an hour without progress, ask. If you've identified an ambiguity in the requirements, ask before you assume. Blocked time is expensive. Wrong assumptions are expensive. Questions are cheap.
+
+## Ignoring Business Context
+
+Software is built to produce business outcomes. When an engineer doesn't understand the business context of what they're building, they make technical decisions that are locally reasonable but globally wrong.
+
+The simplest version: implementing pagination on a user list endpoint where the list will never exceed twenty items. Technically sound. Completely unnecessary. A more important version: building a delete feature that permanently removes records when the business uses those records for compliance reporting — permanently. You've just created a compliance violation.
+
+Understanding business context doesn't mean developers need to know every aspect of the company's strategy. It means understanding: who uses what you're building, what they're trying to accomplish, what the consequences are if it fails, and what makes your feature important relative to other priorities.
+
+This understanding changes technical decisions. When I know that a feature is in an MVP being shown to investors next week, I make different trade-off decisions than when I know it's a foundational system that will be in production for years. Both are legitimate — but they require different approaches, and an engineer who doesn't know the context can't make the right trade-off.
+
+Ask about context. "What's this feature for? Who will use it?" is always a legitimate question. The answer will make your implementation better.
+
+## Debugging by Intuition Instead of Method
+
+Everyone encounters bugs. The difference between junior and senior engineers isn't that seniors encounter fewer bugs — it's that they resolve them faster, because they debug methodically.
+
+The junior developer debugging pattern: change something that seems related, run the code, see if the error changes. Change something else. Run the code again. Repeat until something accidentally fixes it, or until two hours have passed and they ask for help.
+
+This is debugging by random perturbation. It occasionally works. It's slow, doesn't build understanding, and doesn't prevent the same bug from returning.
+
+The methodical debugging approach:
+
+```
+1. Reproduce the bug reliably — know the exact steps that trigger it
+2. Form a hypothesis about the cause
+3. Design an experiment to test the hypothesis (a log, an assertion, a unit test)
+4. Run the experiment
+5. Either confirm the hypothesis or eliminate it and form a new one
+6. Repeat until the root cause is found
+7. Fix the root cause, not the symptom
+```
+
+The most valuable debugging tool is often a `console.log` in the right place, or a debugger breakpoint in the right scope. Before changing any code, understand what's actually happening. Look at the actual values, not the expected values.
+
+```typescript
+// Instead of guessing why this fails:
+async function processOrder(orderId: string): Promise<void> {
+  const order = await orderRepo.findById(orderId);
+  await paymentService.charge(order.amount, order.userId);
+}
+
+// Add observability first:
+async function processOrder(orderId: string): Promise<void> {
+  console.log("processOrder called with:", orderId);
+  const order = await orderRepo.findById(orderId);
+  console.log("Found order:", JSON.stringify(order, null, 2));
+  // Is order null? Is order.amount what you expect?
+  // Is order.userId correct?
+  await paymentService.charge(order.amount, order.userId);
+}
+```
+
+I'm not suggesting you leave console.logs in production code. I'm saying that before you change anything, you should know exactly what the values are at the point of failure. Debugging is a science — you need data before you have a hypothesis.
+
+## Poor Git Practices
+
+Git is not just a file synchronization tool. On a team, it's the shared history of the codebase — a record of why decisions were made, what changed when, and who to ask when something is confusing.
+
+Poor Git practices make the team slower and the codebase harder to maintain. The common patterns:
+
+**Commit messages that say nothing:**
+
+```
+git commit -m "fix"
+git commit -m "update"
+git commit -m "changes"
+git commit -m "asdfgh"
+```
+
+These are not commit messages. They're placeholders. When someone (`git blame`) tries to understand why a specific line was changed, these messages provide zero information.
+
+**Commits that contain multiple unrelated changes:**
+A commit that "fixes a bug in user authentication, updates the project README, adds a new field to the order schema, and refactors the payment service" is impossible to review, impossible to revert cleanly, and impossible to cherry-pick.
+
+**Good Git practice:**
+
+```
+# Atomic commits — one logical change per commit
+git commit -m "feat(auth): add rate limiting to login endpoint
+
+Limit login attempts to 5 per minute per IP address using Redis
+sorted sets. Exceeded attempts return 429 with Retry-After header.
+
+Fixes #342"
+
+# Feature branches with clear names
+git checkout -b fix/order-processing-race-condition
+git checkout -b feat/user-notification-preferences
+git checkout -b refactor/payment-service-error-handling
+```
+
+A commit message is a letter to the engineer who will read this code six months from now, trying to understand why this change was made. Write it for them.
+
+## Copy-Paste Development Without Understanding
+
+Stack Overflow, GitHub Copilot, and the internet at large are extraordinary resources. They're also responsible for a pattern I call "copy-paste development" — where code is lifted from external sources and integrated without the engineer understanding what it does.
+
+The code might work. It might also be solving a subtly different problem, using a deprecated API, missing a security consideration, or containing performance characteristics that are catastrophic in your context.
+
+```typescript
+// Code from Stack Overflow for "how to hash a password in Node.js"
+const crypto = require("crypto");
+const hash = crypto.createHash("md5").update(password).digest("hex");
+
+// This "works." MD5 is cryptographically broken for password hashing.
+// bcrypt or argon2 is what you actually want. The copy-paste
+// solution is working code with a critical security flaw.
+```
+
+The discipline is: understand before you integrate. If you copy code, read it line by line and understand what each line does. If you don't understand a line, look it up. If you can't explain the code to someone else, you don't understand it well enough to put it in production.
+
+This is especially important for security-sensitive code: authentication, cryptography, input validation, SQL queries, file operations, external API calls. These are areas where superficially correct code can have severe security implications.
+
+## Writing Code Without Thinking About Failures
+
+Happy-path thinking is one of the most pervasive junior developer patterns. The code works when everything goes right. What happens when things go wrong?
+
+```typescript
+// Happy path only — what happens if userId is undefined?
+// What if the DB is down? What if the user doesn't exist?
+async function getUserProfile(userId: string) {
+  const user = await db.user.findUnique({ where: { id: userId } });
+  return {
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+  };
+}
+
+// With real-world consideration:
+async function getUserProfile(userId: string): Promise<UserProfile> {
+  if (!userId) {
+    throw new BadRequestError("userId is required");
+  }
+
+  const user = await db.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    throw new NotFoundError(`User ${userId} not found`);
+  }
+
+  if (user.deletedAt) {
+    throw new GoneError(`User ${userId} account has been deleted`);
+  }
+
+  return {
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+  };
+}
+```
+
+Production systems are not called with correct inputs by well-behaved clients. They're called with null values, expired tokens, malformed data, race conditions, and every combination of bad state you didn't anticipate. Writing code that handles these cases — with appropriate errors, appropriate logging, and appropriate recovery — is not optional.
+
+The mental model that helps: as you write each function, ask "what are all the ways this can fail?" and handle the most likely ones explicitly. You won't catch everything. You'll catch most of the important things.
+
+## Not Writing Tests
+
+Testing is not optional in professional software development. It's not something you do when you have time. It's part of the job.
+
+The common junior developer position: "I'll add tests later." Later never comes. The code goes to production without tests, the codebase grows around it, and eventually it becomes one of those functions that nobody dares touch because there are no tests and it's not clear what it does.
+
+You don't need 100% coverage. You need tests for the logic that matters: the code that processes money, that changes user state, that makes irreversible operations, that has complex branching.
+
+```typescript
+// This function has six code paths. Without tests, you cannot
+// confidently refactor it. With tests, you can.
+describe("OrderProcessor.calculateTotal", () => {
+  it("applies discount code when valid and not expired", () => {
+    const order = createOrder({ subtotal: 100, discountCode: "SAVE10" });
+    expect(calculateTotal(order)).toBe(90);
+  });
+
+  it("ignores expired discount codes", () => {
+    const order = createOrder({
+      subtotal: 100,
+      discountCode: "EXPIRED",
+      discountExpiry: pastDate(),
+    });
+    expect(calculateTotal(order)).toBe(100);
+  });
+
+  it("applies tax after discount", () => {
+    const order = createOrder({
+      subtotal: 100,
+      discountCode: "SAVE10",
+      taxRate: 0.1,
+    });
+    expect(calculateTotal(order)).toBe(99); // 90 * 1.1
+  });
+});
+```
+
+Tests are also documentation. They tell the next engineer what the intended behaviour of a function is, in executable form. They tell you when you've accidentally broken something. They're the safety net that allows confident refactoring.
+
+Write tests. Not later. Now.
+
+## Overcomplicating Simple Solutions
+
+A counterintuitive mistake that junior developers make after gaining initial confidence: writing overly complex solutions to simple problems. Having learned design patterns, they apply them everywhere. Having seen real-world abstractions, they mimic them before they're necessary.
+
+The discipline is: solve the problem in front of you with the simplest code that correctly solves it. Complexity earns its place by solving real problems, not by demonstrating knowledge. A function that does one thing, clearly, is a better function than a class hierarchy that demonstrates architectural awareness.
+
+This is related to the overengineering problem I've written about separately — but it manifests differently in individual code. It's the junior developer who writes a factory, a strategy pattern, and three levels of inheritance to handle a problem that a switch statement would solve.
+
+The right question: if you showed this code to a senior engineer and asked "is this the right level of complexity for this problem?" what would they say?
+
+## What Growing Faster Actually Looks Like
+
+The junior developers who grow fastest share a pattern: they are radically curious about understanding before building, they ask good questions early rather than late, they write down their understanding and verify it, and they are genuinely interested in the business context of what they're building.
+
+They also do the less glamorous work reliably: write commit messages that say something, add tests for the code they write, read error messages carefully before changing code, clean up after themselves.
+
+None of these are difficult. All of them compound. An engineer who does these things consistently for two years will be a dramatically better engineer than one who doesn't — not because of intelligence, but because of the discipline of doing the basics well every day.
+
+The career path of a software engineer is not primarily defined by knowing the most advanced technologies or the cleverest algorithms. It's defined by being someone your team can rely on: someone whose code works as described, whose estimates are honest, whose PRs are reviewable, and whose questions are good ones.
+
+That's the foundation. Everything else builds on top of it.

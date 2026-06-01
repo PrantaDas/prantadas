@@ -1,0 +1,258 @@
+---
+title: "Why Programming Fundamentals Still Matter in the Age of Frameworks and AI"
+description: "On data structures, algorithms, networking, databases, and operating systems — the knowledge that compounds quietly beneath every framework and every AI tool, surfacing when systems get complex and hype doesn't help."
+date: "2026-04-02"
+updatedAt: "2026-04-02"
+tags:
+  ["Engineering", "Career", "System Design", "Backend", "TypeScript", "Node.js"]
+featured: false
+excerpt: "I've watched engineers who skipped fundamentals hit the same invisible walls — at scale, in production, in architecture discussions — where frameworks stop providing answers and the underlying mental models are all that's left. Technologies change. Fundamentals compound."
+---
+
+There's a pattern I've seen enough times to call it a rule: engineers who built their skills on frameworks, without understanding the fundamentals beneath them, hit invisible walls at a predictable point in their career.
+
+The walls show up at different moments. Sometimes it's a performance problem in production that the framework's documentation doesn't address — because the problem is in the database query plan, not the framework. Sometimes it's a system design interview where the conversation moves to distributed systems trade-offs and the engineer realizes they've been building distributed systems without understanding the concepts that explain why their choices worked. Sometimes it's joining a project without a framework, or a project where the framework is doing something unexpected, and discovering that years of framework expertise translate poorly to raw problem-solving.
+
+The fundamentals that are "boring" early in a career become the compound interest that separates great engineers from framework specialists.
+
+## Data Structures: The Foundation That Appears Everywhere
+
+Most professional software doesn't require you to implement a red-black tree. That's not why data structures matter. They matter because understanding the complexity properties of fundamental data structures changes how you read and write code at every level.
+
+The most practically important question: "for this operation, what's the access pattern, and does the data structure I'm using match it?"
+
+```typescript
+// If you don't understand data structures, you write this:
+function findDuplicateOrders(orders: Order[]): Order[] {
+  const duplicates: Order[] = [];
+  for (const order of orders) {
+    for (const other of orders) {
+      if (order.id !== other.id && order.externalRef === other.externalRef) {
+        if (!duplicates.find((d) => d.id === order.id)) {
+          duplicates.push(order);
+        }
+      }
+    }
+  }
+  return duplicates;
+}
+// O(n³) — starts to lag at a few thousand orders, unusable at scale
+
+// If you understand data structures, you write this:
+function findDuplicateOrders(orders: Order[]): Order[] {
+  const seen = new Map<string, string>(); // externalRef -> orderId
+  const duplicateIds = new Set<string>();
+
+  for (const order of orders) {
+    if (seen.has(order.externalRef)) {
+      duplicateIds.add(order.id);
+      duplicateIds.add(seen.get(order.externalRef)!);
+    } else {
+      seen.set(order.externalRef, order.id);
+    }
+  }
+
+  return orders.filter((o) => duplicateIds.has(o.id));
+}
+// O(n) — works at any scale
+```
+
+The second version didn't require knowing an advanced algorithm. It required knowing that `Map` has O(1) lookup, and that a single pass through the array with appropriate tracking is sufficient. That knowledge comes from understanding data structures — not from knowing any specific framework.
+
+In production Node.js backends, the data structure questions that matter most are:
+
+- When should I use a `Map` vs a plain object?
+- When does database indexing act like a B-tree vs a hash index, and when does that matter?
+- When is O(n) fine and when do I need to think?
+- How does JavaScript's event loop interact with heavy computation?
+
+These questions don't have framework-specific answers. They have fundamental answers.
+
+## Algorithms: Not LeetCode, Real Reasoning
+
+I want to distinguish between two things: the LeetCode/competitive programming version of algorithms (implemented from scratch, optimised to the constant), and algorithmic thinking (the mental model for how computation scales with input size, and what tradeoffs exist between approaches).
+
+Most engineers don't need to implement quicksort. Almost all engineers need to understand why sorting is O(n log n) rather than O(n), why that matters at certain data scales, and what it means when their system has a quadratic operation that's fine at 100 records but catastrophic at 100,000.
+
+The practical application is **identifying the complexity of operations in your system** and knowing when it matters.
+
+```typescript
+// An example from a real performance incident:
+// Sending notifications to all users who have a specific preference
+async function notifyUsersWithPreference(
+  preference: string,
+  message: string,
+): Promise<void> {
+  const allUsers = await userRepo.findAll(); // Load all users
+  const targets = allUsers.filter(
+    (u) => u.preferences.includes(preference), // In-memory filter — O(n×m)
+  );
+  await Promise.all(
+    targets.map((u) => notificationService.send(u.id, message)),
+  );
+}
+
+// Fine at 1,000 users. Slow at 100,000. Down at 1,000,000.
+// The fix requires understanding: push the filter to the database.
+
+async function notifyUsersWithPreference(
+  preference: string,
+  message: string,
+): Promise<void> {
+  // Let the database do what databases are designed to do
+  const targets = await userRepo.findByPreference(preference);
+  await Promise.all(
+    targets.map((u) => notificationService.send(u.id, message)),
+  );
+}
+```
+
+The engineer who fixed this second version wasn't implementing an algorithm. They were applying algorithmic thinking: recognize the O(n) database load, recognize the O(n×m) filter, reason about where computation should live. That reasoning is a fundamental skill.
+
+## Databases: The System Engineers Most Often Get Wrong
+
+Databases are the most common source of production performance problems in the systems I've worked on. Not because the database is a bad product — because most engineers use it without understanding its internals well enough to use it well.
+
+The fundamentals that pay dividends:
+
+**Indexes.** An index is a data structure — typically a B-tree — that allows the database to locate rows without scanning the full table. A query that uses an index runs in O(log n). A query that doesn't scan the full table in O(n). The difference at a million rows is between milliseconds and seconds.
+
+```sql
+-- This query scans every row in orders:
+SELECT * FROM orders WHERE status = 'PENDING' AND created_at > NOW() - INTERVAL '7 days';
+
+-- With a composite index on (status, created_at), it uses the index:
+CREATE INDEX idx_orders_status_created ON orders (status, created_at DESC);
+-- Now the query is fast at any table size
+```
+
+Understanding this changes how you design schemas. You start thinking about access patterns before you create tables, not after you hit a slow query in production.
+
+**Transaction isolation.** Four isolation levels (read uncommitted, read committed, repeatable read, serializable) trade off between consistency guarantees and concurrency. Most ORMs default to read committed, which produces anomalies like non-repeatable reads and phantom reads that can cause subtle bugs in concurrent systems.
+
+```typescript
+// Without understanding transaction isolation, this has a race condition:
+async function transferBalance(
+  fromId: string,
+  toId: string,
+  amount: number,
+): Promise<void> {
+  const from = await db.account.findUnique({ where: { id: fromId } });
+  if (from.balance < amount) throw new Error("Insufficient balance");
+
+  // Another transaction might have deducted from `from.balance`
+  // between the read above and the update below
+  await db.account.update({
+    where: { id: fromId },
+    data: { balance: { decrement: amount } },
+  });
+  await db.account.update({
+    where: { id: toId },
+    data: { balance: { increment: amount } },
+  });
+}
+
+// With a serializable transaction:
+await db.$transaction(
+  async (tx) => {
+    const from = await tx.account.findUnique({
+      where: { id: fromId },
+      // In PostgreSQL, FOR UPDATE locks the row for the duration of the transaction
+    });
+    if (from.balance < amount) throw new Error("Insufficient balance");
+    await tx.account.update({
+      where: { id: fromId },
+      data: { balance: { decrement: amount } },
+    });
+    await tx.account.update({
+      where: { id: toId },
+      data: { balance: { increment: amount } },
+    });
+  },
+  { isolationLevel: "Serializable" },
+);
+```
+
+The framework doesn't teach you this. Understanding concurrent transactions does.
+
+## Networking: What Actually Happens Over the Wire
+
+Every web application is a networking application. The HTTP request your API handles isn't magic — it's bytes sent over TCP, parsed as an HTTP message, processed by your application, and bytes sent back. Understanding the layers explains behaviour that otherwise seems random.
+
+**TCP connection overhead.** Every new TCP connection requires a three-way handshake before data can flow. HTTP/1.1's keep-alive and HTTP/2's multiplexing exist specifically to amortise this overhead. Understanding this explains why database connection pools exist (avoiding new TCP connections for every query), why your Redis client has a connection pool, and why `fetch` performance varies with connection reuse.
+
+**DNS resolution.** DNS lookups are cached by TTL, but the first lookup to a new hostname takes 20–100ms. In a microservices architecture with many internal service calls, DNS lookup overhead accumulates. This is one of the reasons service meshes exist — and why engineers who understand networking are less surprised by the latency of distributed systems than those who don't.
+
+**TLS handshake cost.** A TLS handshake adds approximately one round-trip latency to the first request on a new connection. This is why TLS session resumption matters for high-frequency clients, and why HTTPS in a tight loop with a naively implemented client is slower than engineers expect.
+
+These aren't academic facts. They're the explanations for production behaviour that engineers without networking fundamentals have to investigate empirically, one mystery at a time.
+
+## Operating Systems: The Context Your Code Runs In
+
+Most web developers don't need to write kernel modules. But understanding process model, memory management, and I/O has practical value.
+
+**Node.js's single-threaded event loop** is a property of how the process model works. JavaScript runs in one thread. I/O operations are non-blocking and managed by libuv. CPU-intensive computation blocks the event loop — which is why computationally heavy work in a Node.js request handler makes your entire server unresponsive.
+
+```typescript
+// This blocks the event loop for every other request while it runs:
+app.get("/analyze", (req, res) => {
+  const result = performHeavyComputation(req.body.data); // Synchronous, CPU-bound
+  res.json(result);
+});
+
+// The fix: offload to a worker thread
+import { Worker } from "worker_threads";
+
+app.get("/analyze", async (req, res) => {
+  const result = await runInWorker("./workers/analysis.js", req.body.data);
+  res.json(result);
+});
+```
+
+Understanding why this matters requires understanding what "event loop" and "single-threaded" actually mean at the operating system level. Without that understanding, the symptom — "server becomes unresponsive under certain requests" — is mysterious. With it, it's obvious.
+
+**Memory pressure and garbage collection.** JavaScript's V8 engine has a garbage collector. When you hold large objects in memory — large arrays, deeply nested objects, closures that reference large outer scopes — the GC has to do more work. In production, memory leaks (objects that are referenced and thus never collected) manifest as slowly increasing memory usage, eventually triggering OOM crashes.
+
+The engineer who understands memory management can diagnose a memory leak. The engineer who doesn't has to wait for someone else to explain it.
+
+## Design Principles: The Vocabulary for Good Code
+
+SOLID, DRY, YAGNI, separation of concerns — these principles describe patterns that make code maintainable. Understanding them gives you a vocabulary for design discussions that goes beyond personal preference.
+
+The most important in practice:
+
+**Single Responsibility Principle** — a module should have one reason to change. The violation I see most: a service that fetches data from the database, transforms it, calls external APIs, sends emails, and logs audit events. When any of those things need to change, the entire service is in scope. Each concern decomposed into its own module makes change safer and tests simpler.
+
+**YAGNI (You Aren't Gonna Need It)** — don't build capabilities you don't currently need. This is the principle that fights overengineering. It's mentioned in the [hidden cost of overengineering](/blog/hidden-cost-of-overengineering) context — the design principle that keeps systems honest about what they actually need.
+
+**Separation of concerns** — the principle behind the architecture of frameworks you use. Why controllers don't do database operations. Why business logic doesn't live in route handlers. Understanding the principle explains why the framework's conventions make sense — and what goes wrong when you violate them.
+
+## The Compound Effect
+
+Fundamentals are not one-time learning. They're a lens that changes how you interpret everything you build.
+
+The engineer with database fundamentals looks at a Prisma query and thinks about the SQL it generates and whether the generated SQL is optimal. The engineer without those fundamentals treats the ORM as magic. Both systems may work initially. Under load, at scale, with complex queries, the first engineer can reason about what's happening. The second cannot.
+
+The engineer with networking fundamentals instruments their service mesh latency and sees the pattern. The engineer without it files a ticket saying "service B is sometimes slow."
+
+The engineer with OS fundamentals profiles a memory leak in production using `process.memoryUsage()` and heap dumps, correlates it to a specific code pattern, and fixes it. The engineer without that foundation escalates to someone who can.
+
+Working in Bangladesh, where you often can't throw more expensive infrastructure at problems, has sharpened my appreciation for this. When compute is constrained and every query optimization matters, the engineers who understand what their code is doing at a fundamental level are the ones who find the solutions.
+
+## What This Means in the Age of AI
+
+AI coding assistants are very good at generating code that follows framework conventions. They are less good at telling you when the code they've generated has a performance problem, a security issue, or is architecturally wrong for your system.
+
+The engineer who understands data structures looks at AI-generated code and recognises the O(n²) loop. The engineer who understands transaction isolation recognizes the race condition. The engineer who understands networking recognizes the unnecessary new connection.
+
+AI tools are multipliers. They amplify what you can produce. That includes amplifying mistakes made without understanding. The engineer with strong fundamentals uses AI to move faster. The engineer without them uses AI to make more mistakes faster.
+
+## Key Takeaways
+
+No technology stays current for five years. The JavaScript ecosystem today is unrecognisable from five years ago. The frameworks, the tooling, the deployment targets, the testing approaches — all different. The data structures are the same. The networking protocols are the same. The database internals are the same. The operating system model is the same.
+
+Fundamentals compound because they apply to every new technology you learn. They transfer from Node.js to Go to Rust. They transfer from REST to GraphQL to tRPC. They transfer from monoliths to microservices to serverless. The engineer who understands the fundamentals doesn't start from zero with each new technology — they start from a strong foundation that the new technology is built on.
+
+The engineers who worry me are the ones who are very productive in their current stack and have no curiosity about what's beneath it. They're productive right up until the moment the system gets complex, the scale gets real, or the framework doesn't have an answer — and then they're stuck.
+
+Technologies change. Fundamentals compound.

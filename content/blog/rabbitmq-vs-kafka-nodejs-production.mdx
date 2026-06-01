@@ -1,0 +1,277 @@
+---
+title: "Message Queues in Production: RabbitMQ vs Kafka for Node.js Backends"
+description: "A practical engineering guide to choosing and operating RabbitMQ and Apache Kafka in Node.js microservices — covering consumer patterns, dead-letter queues, backpressure, exactly-once semantics, and the failure modes that will keep you up at night."
+date: "2025-09-02"
+updatedAt: "2026-04-10"
+tags:
+  ["Node.js", "RabbitMQ", "Kafka", "Microservices", "Backend", "Architecture"]
+excerpt: "RabbitMQ and Kafka are both message queues in the same way a scalpel and a cleaver are both kitchen tools. Here's the production playbook for when to use each and how to operate them without incident."
+---
+
+There's a question I see frequently in engineering forums: _"Should I use RabbitMQ or Kafka?"_
+
+The answer that actually matters in production isn't which is "better" — it's which matches your delivery semantics, your consumer topology, and your failure tolerance model. After running both in production at Root Devs, I want to give you the decision framework I wish I'd had early on.
+
+## The Mental Model First
+
+**RabbitMQ** is a message broker. It moves messages from producers to consumers and then — crucially — **forgets them**. Once acknowledged, a message is gone. The broker owns the routing logic: exchanges, bindings, queues, and consumer competition.
+
+**Kafka** is a distributed commit log. Messages are written to immutable, ordered partitions and **retained** according to a policy (time or size). Consumers track their own offset. The broker does not care about consumers — it just holds the log.
+
+This fundamental difference drives most of the decision:
+
+|                    | RabbitMQ                    | Kafka                                |
+| ------------------ | --------------------------- | ------------------------------------ |
+| Message lifetime   | Until acknowledged          | Until retention expires              |
+| Who tracks offset  | Broker (delivery state)     | Consumer (offset)                    |
+| Replay capability  | No (by default)             | Yes                                  |
+| Routing complexity | High (exchanges, patterns)  | Low (topic + partition key)          |
+| Throughput ceiling | ~50k msg/s                  | Millions msg/s                       |
+| Consumer groups    | Competing consumers         | Independent consumer groups          |
+| Best for           | Task queues, RPC, workflows | Event streaming, audit logs, fan-out |
+
+## RabbitMQ in Practice: The Patterns That Matter
+
+### Dead-Letter Queues Are Non-Negotiable in Production
+
+A dead-letter queue (DLQ) is what separates a resilient system from a broken one. Without it, a poison message — one that always fails processing — loops forever, blocking your queue and triggering your alerting.
+
+```typescript
+// lib/rabbitmq.ts
+import amqplib from "amqplib";
+
+const MAIN_QUEUE = "order.process";
+const DLQ = "order.process.dead";
+const DLX = "order.dlx";
+
+async function setupQueues(channel: amqplib.Channel) {
+  // Dead-letter exchange
+  await channel.assertExchange(DLX, "direct", { durable: true });
+
+  // DLQ — where failed messages land
+  await channel.assertQueue(DLQ, { durable: true });
+  await channel.bindQueue(DLQ, DLX, MAIN_QUEUE);
+
+  // Main queue — routes to DLX after max retries
+  await channel.assertQueue(MAIN_QUEUE, {
+    durable: true,
+    arguments: {
+      "x-dead-letter-exchange": DLX,
+      "x-dead-letter-routing-key": MAIN_QUEUE,
+      "x-message-ttl": 60_000, // Messages expire after 60s if unprocessed
+    },
+  });
+}
+```
+
+A message moves to the DLQ when:
+
+- It's `nack`'d with `requeue: false`
+- Its TTL expires
+- The queue reaches its max-length limit
+
+We process the DLQ with a separate, lower-priority consumer that logs failures and triggers human review for anything that survives three processing attempts.
+
+### Retry With Exponential Backoff
+
+The naive retry pattern — nack immediately, requeue immediately — hammers your downstream service during its outage. You need backoff.
+
+The RabbitMQ way to implement delayed retry is with a separate "retry" queue whose TTL routes dead messages back to the main queue:
+
+```typescript
+async function publishWithRetry(
+  channel: amqplib.Channel,
+  queue: string,
+  message: Buffer,
+  attempt = 0,
+) {
+  const maxAttempts = 5;
+  if (attempt >= maxAttempts) {
+    // Route to DLQ explicitly
+    await channel.sendToQueue(`${queue}.dead`, message, {
+      persistent: true,
+      headers: { "x-final-attempt": attempt },
+    });
+    return;
+  }
+
+  const delayMs = Math.min(1000 * 2 ** attempt, 30_000); // cap at 30s
+
+  // Publish to delay queue with TTL equal to delay
+  const delayQueue = `${queue}.retry.${delayMs}`;
+
+  await channel.assertQueue(delayQueue, {
+    durable: true,
+    arguments: {
+      "x-dead-letter-exchange": "",
+      "x-dead-letter-routing-key": queue,
+      "x-message-ttl": delayMs,
+      "x-expires": delayMs * 2, // Auto-delete the delay queue when idle
+    },
+  });
+
+  await channel.sendToQueue(delayQueue, message, {
+    persistent: true,
+    headers: { "x-retry-attempt": attempt + 1 },
+  });
+}
+```
+
+### Prefetch: The Most Impactful Single Line of Config
+
+By default, RabbitMQ will push all available messages to a connected consumer at once. If processing takes 500ms per message and you have 10,000 messages queued, your Node.js process will be holding 10,000 in-memory before it acknowledges the first one.
+
+```typescript
+// Limit to 5 unacked messages per consumer
+await channel.prefetch(5);
+```
+
+Setting `prefetch` to a sane value — typically 1–10 depending on processing time — is the single change that most dramatically improves throughput and reduces memory pressure. It also enables fair dispatch across multiple consumers of the same queue.
+
+## Kafka in Practice: The Patterns That Matter
+
+### Partition Key Design Determines Everything
+
+Kafka's partitioning is its most powerful and most misunderstood feature. Messages with the same key always go to the same partition, guaranteeing ordering for that key. Choosing the wrong key destroys throughput or ordering guarantees simultaneously.
+
+```typescript
+import { Kafka, Partitioners } from "kafkajs";
+
+const kafka = new Kafka({
+  clientId: "order-service",
+  brokers: ["kafka-1:9092", "kafka-2:9092"],
+});
+
+const producer = kafka.producer({
+  createPartitioner: Partitioners.LegacyPartitioner,
+});
+
+// Key = userId ensures all events for a user land in the same partition
+// This guarantees processing order per user
+await producer.send({
+  topic: "user.events",
+  messages: [
+    {
+      key: userId,
+      value: JSON.stringify({
+        type: "ORDER_PLACED",
+        orderId,
+        userId,
+        timestamp: Date.now(),
+      }),
+    },
+  ],
+});
+```
+
+Bad partition key choices we've seen:
+
+- **Constant key** — all messages go to partition 0. You have a Kafka cluster with one effective worker.
+- **Random key** — no ordering guarantees at all. Fine for pure fan-out, catastrophic if order matters.
+- **Timestamp as key** — creates "hot" recent partitions and cold historical ones.
+
+The right key is usually the **entity ID** whose event stream must be ordered: `userId`, `orderId`, `deviceId`.
+
+### Consumer Group Rebalancing and Idempotency
+
+Every time a consumer joins or leaves a consumer group, Kafka triggers a rebalance — it reassigns partitions across the group. During a rebalance, **consumption pauses**. In a Kubernetes deployment where pod restarts are frequent, this can cause noticeable latency spikes.
+
+Two mitigations:
+
+**1. Use static membership IDs** to reduce unnecessary rebalances:
+
+```typescript
+const consumer = kafka.consumer({
+  groupId: "order-processor",
+  sessionTimeout: 30_000,
+  // Stable ID tied to the pod name — rebalances only on actual failures
+  memberId: `order-processor-${process.env.POD_NAME ?? "local"}`,
+});
+```
+
+**2. Make your consumers idempotent**, because during a rebalance you may receive messages you've already processed:
+
+```typescript
+async function processMessage(message: KafkaMessage) {
+  const { orderId, type } = JSON.parse(message.value!.toString());
+  const offset = message.offset;
+
+  // Idempotency check via Redis
+  const dedupKey = `kafka:processed:${orderId}:${offset}`;
+  const alreadyProcessed = await redis.set(dedupKey, "1", "NX", "EX", 3600);
+
+  if (!alreadyProcessed) {
+    logger.debug({ orderId, offset }, "Duplicate message, skipping");
+    return;
+  }
+
+  await handleOrderEvent(orderId, type);
+}
+```
+
+### Manual Offset Commits for At-Least-Once Guarantees
+
+The default autocommit in KafkaJS commits the offset before you've finished processing. If your process crashes between the commit and the `await processMessage()`, you've silently lost a message.
+
+```typescript
+const consumer = kafka.consumer({
+  groupId: "order-processor",
+});
+
+await consumer.run({
+  // Disable autocommit
+  autoCommit: false,
+
+  eachMessage: async ({ topic, partition, message }) => {
+    try {
+      await processMessage(message);
+
+      // Only commit AFTER successful processing
+      await consumer.commitOffsets([
+        { topic, partition, offset: (BigInt(message.offset) + 1n).toString() },
+      ]);
+    } catch (err) {
+      // Don't commit — this message will be redelivered
+      logger.error({ err, offset: message.offset }, "Processing failed");
+      throw err; // Let KafkaJS handle the error
+    }
+  },
+});
+```
+
+This gives you at-least-once delivery. Combined with idempotent consumers, it's the practical substitute for exactly-once semantics in most systems.
+
+## The Decision Framework
+
+After running both, here's when I'd choose each:
+
+**Choose RabbitMQ when:**
+
+- You need complex routing (topics, fan-out, header matching)
+- Messages should disappear after processing (no audit trail needed)
+- You're building task queues where exactly-one-consumer processing is the goal
+- Your team is smaller and you want operational simplicity
+- Throughput is under 50k messages/second
+
+**Choose Kafka when:**
+
+- You need replay (debugging, rebuilding projections, backfilling new consumers)
+- Multiple independent services need to consume the same events
+- You're building event sourcing or CQRS architectures
+- You need strong ordering guarantees per entity
+- Throughput exceeds what RabbitMQ can handle comfortably
+
+**Use both when** (this is often the right answer for larger systems):
+
+- Kafka for the event backbone (high-throughput, replayable stream)
+- RabbitMQ for task dispatch (specific worker queues, prioritization, TTL-based expiry)
+
+## What We Actually Run at Root Devs
+
+Our current setup uses both. Kafka handles the primary event stream — user actions, system events, audit logs — where replay and fan-out matter. RabbitMQ handles job queues for operations that are naturally task-shaped: email delivery, PDF generation, webhook dispatch, scheduled jobs.
+
+The operational overhead of both is real. We run managed Kafka (Confluent Cloud) for production and self-hosted RabbitMQ. The Kafka operational complexity on self-hosted clusters is non-trivial; if you're small team, use a managed offering or start with RabbitMQ.
+
+---
+
+_Interested in the actual NestJS integration patterns for either broker? The microservices package in NestJS abstracts most of this, but knowing the primitives matters when you're debugging at 2am._
