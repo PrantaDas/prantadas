@@ -159,13 +159,13 @@ export function HeroSection() {
           variants={itemVariants}
           className="flex justify-center mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-sm font-mono text-primary/80">
+          {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-sm font-mono text-primary/80">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
             </span>
             Available for new opportunities
-          </div>
+          </div> */}
         </motion.div>
 
         {/* Main heading */}
