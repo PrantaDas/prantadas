@@ -63,7 +63,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const url = `${BASE_URL}/blog/${slug}`;
 
-  const ogImage = { url: `${BASE_URL}/photo.webp`, width: 1200, height: 630, alt: post.title };
+  const ogImage = {
+    url: `${BASE_URL}/blog.webp`,
+    width: 1200,
+    height: 630,
+    alt: post.title,
+  };
 
   return {
     title: post.title,
@@ -71,7 +76,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     authors: [{ name: post.author.name, url: BASE_URL }],
     keywords: post.tags,
     category: post.tags[0] ?? "Engineering",
-    robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
     openGraph: {
       type: "article",
       url,
@@ -92,7 +101,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: [`${BASE_URL}/photo.webp`],
+      images: [`${BASE_URL}/blog.webp`],
       creator: "@prantadas",
       site: "@prantadas",
     },
@@ -179,7 +188,7 @@ export default async function BlogPostPage({ params }: Props) {
     },
     url: `${BASE_URL}/blog/${slug}`,
     mainEntityOfPage: `${BASE_URL}/blog/${slug}`,
-    image: `${BASE_URL}/photo.webp`,
+    image: `${BASE_URL}/blog.webp`,
     keywords: post.tags.join(", "),
     wordCount: post.content.split(/\s+/).length,
     inLanguage: "en-US",
@@ -328,7 +337,8 @@ export default async function BlogPostPage({ params }: Props) {
                     </span>
                     <span className="flex items-center gap-1.5">
                       <Eye className="w-3.5 h-3.5" aria-hidden="true" />
-                      {viewCount.toLocaleString()} {viewCount === 1 ? "view" : "views"}
+                      {viewCount.toLocaleString()}{" "}
+                      {viewCount === 1 ? "view" : "views"}
                     </span>
                     {comments.length > 0 && (
                       <a
@@ -336,8 +346,12 @@ export default async function BlogPostPage({ params }: Props) {
                         className="flex items-center gap-1.5 hover:text-primary transition-colors"
                         aria-label={`Jump to ${comments.length} comment${comments.length !== 1 ? "s" : ""}`}
                       >
-                        <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
-                        {comments.length} comment{comments.length !== 1 ? "s" : ""}
+                        <MessageSquare
+                          className="w-3.5 h-3.5"
+                          aria-hidden="true"
+                        />
+                        {comments.length} comment
+                        {comments.length !== 1 ? "s" : ""}
                       </a>
                     )}
                   </div>
@@ -481,13 +495,15 @@ export default async function BlogPostPage({ params }: Props) {
                   </div>
                 </section>
               )}
-
             </div>
 
             {/* Sticky ToC sidebar */}
             <aside className="hidden lg:block">
               <div className="sticky top-20">
-                <TableOfContents content={post.content} commentCount={comments.length} />
+                <TableOfContents
+                  content={post.content}
+                  commentCount={comments.length}
+                />
               </div>
             </aside>
           </div>
