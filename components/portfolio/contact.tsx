@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback, useTransition } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { submitContactForm } from "@/app/actions/contact";
 import {
   Mail,
@@ -14,9 +14,15 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  Copy,
+  Check,
+  Clock,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+
+const MESSAGE_LIMIT = 1000;
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -35,25 +41,40 @@ const contactLinks = [
     label: "Email",
     value: "prantodas043@gmail.com",
     href: "mailto:prantodas043@gmail.com",
+    copyable: true,
+    color: "text-sky-400 bg-sky-400/8 border-sky-400/15 group-hover:bg-sky-400/15",
   },
   {
     icon: Phone,
     label: "Phone",
     value: "+8801708088432",
     href: "tel:+8801708088432",
+    copyable: true,
+    color: "text-emerald-400 bg-emerald-400/8 border-emerald-400/15 group-hover:bg-emerald-400/15",
   },
-  { icon: MapPin, label: "Location", value: "Dhaka, Bangladesh", href: null },
+  {
+    icon: MapPin,
+    label: "Location",
+    value: "Dhaka, Bangladesh",
+    href: null,
+    copyable: false,
+    color: "text-amber-400 bg-amber-400/8 border-amber-400/15 group-hover:bg-amber-400/15",
+  },
   {
     icon: Github,
     label: "GitHub",
     value: "github.com/Prantadas",
     href: "https://github.com/Prantadas",
+    copyable: false,
+    color: "text-white/50 bg-white/5 border-white/10 group-hover:bg-white/10",
   },
   {
     icon: Linkedin,
     label: "LinkedIn",
     value: "linkedin.com/in/pranta-das7",
     href: "https://linkedin.com/in/pranta-das7",
+    copyable: false,
+    color: "text-blue-400 bg-blue-400/8 border-blue-400/15 group-hover:bg-blue-400/15",
   },
 ];
 
@@ -129,6 +150,7 @@ function FloatingInput({
   const [focused, setFocused] = useState(false);
   const hasValue = value.length > 0;
   const showError = !!error;
+  const atLimit = multiline && value.length >= MESSAGE_LIMIT * 0.9;
 
   const borderClass = showError
     ? "border-red-400/50 ring-1 ring-red-400/20"
@@ -151,18 +173,27 @@ function FloatingInput({
         {label}
       </label>
       {multiline ? (
-        <textarea
-          id={id}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder={focused ? placeholder : ""}
-          rows={4}
-          aria-invalid={showError}
-          aria-describedby={showError ? `${id}-error` : undefined}
-          className={`${baseClass} pt-3.5 pb-3`}
-        />
+        <div className="relative">
+          <textarea
+            id={id}
+            value={value}
+            onChange={(e) => onChange(e.target.value.slice(0, MESSAGE_LIMIT))}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder={focused ? placeholder : ""}
+            rows={4}
+            aria-invalid={showError}
+            aria-describedby={showError ? `${id}-error` : undefined}
+            className={`${baseClass} pt-3.5 pb-7`}
+          />
+          <span
+            className={`absolute bottom-2.5 right-3.5 text-[10px] font-mono transition-colors ${
+              atLimit ? "text-amber-400/60" : "text-white/20"
+            } ${focused || hasValue ? "opacity-100" : "opacity-0"}`}
+          >
+            {value.length}/{MESSAGE_LIMIT}
+          </span>
+        </div>
       ) : (
         <input
           id={id}
@@ -193,6 +224,87 @@ function FloatingInput({
   );
 }
 
+// ─── Copyable contact link ────────────────────────────────────────────────────
+function ContactLinkItem({
+  icon: Icon,
+  label,
+  value,
+  href,
+  copyable,
+  color,
+  index,
+  inView,
+}: (typeof contactLinks)[0] & { index: number; inView: boolean }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={inView ? { opacity: 1, x: 0 } : {}}
+      transition={{ duration: 0.45, delay: 0.25 + index * 0.07 }}
+      className="group flex items-center gap-4 p-4 glass-card rounded-xl border border-white/5 hover:border-white/10 transition-all duration-300"
+    >
+      <div className={`w-10 h-10 rounded-lg border flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${color}`}>
+        <Icon className="w-4 h-4" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-xs font-mono text-white/30 mb-0.5">{label}</div>
+        {href ? (
+          <Link
+            href={href}
+            target={href.startsWith("http") ? "_blank" : undefined}
+            rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+            className="text-sm text-white/65 hover:text-white/90 transition-colors truncate block"
+          >
+            {value}
+          </Link>
+        ) : (
+          <span className="text-sm text-white/65 truncate block">{value}</span>
+        )}
+      </div>
+      {copyable && (
+        <button
+          onClick={handleCopy}
+          className="flex-shrink-0 w-7 h-7 rounded-lg border border-white/8 hover:border-white/20 bg-white/3 hover:bg-white/8 flex items-center justify-center transition-all duration-200"
+          title={`Copy ${label}`}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            {copied ? (
+              <motion.span
+                key="check"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Check className="w-3 h-3 text-emerald-400" />
+              </motion.span>
+            ) : (
+              <motion.span
+                key="copy"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Copy className="w-3 h-3 text-white/30" />
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </button>
+      )}
+    </motion.div>
+  );
+}
+
 // ─── Contact section ─────────────────────────────────────────────────────────
 export function ContactSection() {
   const ref = useRef(null);
@@ -208,7 +320,6 @@ export function ContactSection() {
     (field: keyof FormValues) => (val: string) => {
       setValues((prev) => ({ ...prev, [field]: val }));
       setTouched((prev) => ({ ...prev, [field]: true }));
-      // Clear error for this field as user types
       if (errors[field]) {
         setErrors((prev) => ({ ...prev, [field]: undefined }));
       }
@@ -218,7 +329,6 @@ export function ContactSection() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     setTouched({ name: true, email: true, subject: true, message: true });
 
     const validationErrors = validate(values);
@@ -248,7 +358,6 @@ export function ContactSection() {
     });
   };
 
-  // Show errors only for touched fields
   const visibleErrors: FormErrors = {
     name: touched.name ? errors.name : undefined,
     email: touched.email ? errors.email : undefined,
@@ -279,47 +388,52 @@ export function ContactSection() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Left: Contact links */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-3"
-          >
-            {contactLinks.map(({ icon: Icon, label, value, href }) => (
-              <div
-                key={label}
-                className="group flex items-center gap-4 p-4 glass-card rounded-xl border border-white/5 hover:border-primary/15 transition-all duration-300"
-              >
-                <div className="w-10 h-10 rounded-lg bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors">
-                  <Icon className="w-4 h-4 text-primary/60" />
+          {/* Left: Status + Contact links */}
+          <div className="space-y-3">
+            {/* Availability badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="flex items-center justify-between p-4 glass-card rounded-xl border border-emerald-400/15 bg-emerald-400/3 mb-5"
+            >
+              <div className="flex items-center gap-3">
+                <div className="relative flex-shrink-0">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 flex" />
+                  <motion.span
+                    className="absolute inset-0 rounded-full bg-emerald-400"
+                    animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-xs font-mono text-white/30 mb-0.5">
-                    {label}
-                  </div>
-                  {href ? (
-                    <Link
-                      href={href}
-                      target={href.startsWith("http") ? "_blank" : undefined}
-                      rel={
-                        href.startsWith("http")
-                          ? "noopener noreferrer"
-                          : undefined
-                      }
-                      className="text-sm text-white/70 hover:text-primary transition-colors truncate block"
-                    >
-                      {value}
-                    </Link>
-                  ) : (
-                    <span className="text-sm text-white/70 truncate block">
-                      {value}
-                    </span>
-                  )}
+                <div>
+                  <div className="text-sm font-medium text-emerald-400/90">Available for opportunities</div>
+                  <div className="text-xs text-white/30 font-mono mt-0.5">Open to full-time & freelance roles</div>
                 </div>
               </div>
+              <div className="flex items-center gap-1.5 text-xs font-mono text-white/25 bg-white/4 border border-white/8 rounded-lg px-2.5 py-1">
+                <Zap className="w-3 h-3" />
+                Active
+              </div>
+            </motion.div>
+
+            {contactLinks.map((link, i) => (
+              <ContactLinkItem key={link.label} {...link} index={i} inView={inView} />
             ))}
-          </motion.div>
+
+            {/* Response time */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.6, duration: 0.4 }}
+              className="flex items-center gap-2 pt-1 pl-1"
+            >
+              <Clock className="w-3 h-3 text-white/20" />
+              <span className="text-xs font-mono text-white/25">
+                Typical response within 24 hours
+              </span>
+            </motion.div>
+          </div>
 
           {/* Right: Form */}
           <motion.div
@@ -327,78 +441,95 @@ export function ContactSection() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="glass-card rounded-2xl border border-white/5 p-6 sm:p-7">
-              <h3 className="font-display text-lg font-semibold text-white/80 mb-6">
-                Send a Message
-              </h3>
-
-              <form
-                onSubmit={handleSubmit}
-                noValidate
-                className="space-y-5"
-                aria-label="Contact form"
-              >
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <FloatingInput
-                    id="contact-name"
-                    label="Name *"
-                    placeholder="Your name"
-                    value={values.name}
-                    error={visibleErrors.name}
-                    onChange={setField("name")}
-                  />
-                  <FloatingInput
-                    id="contact-email"
-                    label="Email *"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={values.email}
-                    error={visibleErrors.email}
-                    onChange={setField("email")}
-                  />
+            <div className="glass-card rounded-2xl border border-white/5 overflow-hidden">
+              {/* Form card header */}
+              <div className="px-6 pt-6 pb-5 border-b border-white/5 bg-white/2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-display text-base font-semibold text-white/80">
+                      Send a Message
+                    </h3>
+                    <p className="text-xs text-white/30 font-mono mt-0.5">
+                      I read every message personally
+                    </p>
+                  </div>
+                  <div className="flex gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-primary/30" />
+                  </div>
                 </div>
-                <FloatingInput
-                  id="contact-subject"
-                  label="Subject *"
-                  placeholder="What's this about?"
-                  value={values.subject}
-                  error={visibleErrors.subject}
-                  onChange={setField("subject")}
-                />
-                <FloatingInput
-                  id="contact-message"
-                  label="Message *"
-                  placeholder="Tell me about your project..."
-                  multiline
-                  value={values.message}
-                  error={visibleErrors.message}
-                  onChange={setField("message")}
-                />
+              </div>
 
-                <motion.button
-                  type="submit"
-                  disabled={submitting}
-                  whileHover={{ scale: submitting ? 1 : 1.02 }}
-                  whileTap={{ scale: submitting ? 1 : 0.98 }}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary text-background font-semibold text-sm transition-all duration-200 hover:bg-primary/90 glow-cyan disabled:opacity-60 disabled:cursor-not-allowed"
+              <div className="p-6 sm:p-7">
+                <form
+                  onSubmit={handleSubmit}
+                  noValidate
+                  className="space-y-5"
+                  aria-label="Contact form"
                 >
-                  {submitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Sending…
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      Send Message
-                    </>
-                  )}
-                </motion.button>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <FloatingInput
+                      id="contact-name"
+                      label="Name *"
+                      placeholder="Your name"
+                      value={values.name}
+                      error={visibleErrors.name}
+                      onChange={setField("name")}
+                    />
+                    <FloatingInput
+                      id="contact-email"
+                      label="Email *"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={values.email}
+                      error={visibleErrors.email}
+                      onChange={setField("email")}
+                    />
+                  </div>
+                  <FloatingInput
+                    id="contact-subject"
+                    label="Subject *"
+                    placeholder="What's this about?"
+                    value={values.subject}
+                    error={visibleErrors.subject}
+                    onChange={setField("subject")}
+                  />
+                  <FloatingInput
+                    id="contact-message"
+                    label="Message *"
+                    placeholder="Tell me about your project..."
+                    multiline
+                    value={values.message}
+                    error={visibleErrors.message}
+                    onChange={setField("message")}
+                  />
 
-                <p className="text-center text-[11px] text-white/20 font-mono">
-                  * Required fields
-                </p>
-              </form>
+                  <motion.button
+                    type="submit"
+                    disabled={submitting}
+                    whileHover={{ scale: submitting ? 1 : 1.02 }}
+                    whileTap={{ scale: submitting ? 1 : 0.98 }}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary text-background font-semibold text-sm transition-all duration-200 hover:bg-primary/90 glow-cyan disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Sending…
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        Send Message
+                      </>
+                    )}
+                  </motion.button>
+
+                  <p className="text-center text-[11px] text-white/20 font-mono">
+                    * Required fields
+                  </p>
+                </form>
+              </div>
             </div>
           </motion.div>
         </div>

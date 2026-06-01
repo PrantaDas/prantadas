@@ -19,67 +19,79 @@ export interface ArticleSummary {
 
 // ─── Tag colour palette ───────────────────────────────────────────────────────
 
-const TAG_PALETTE: Record<string, { text: string; bg: string; ring: string }> =
+const TAG_PALETTE: Record<string, { text: string; bg: string; ring: string; color: string }> =
   {
     Architecture: {
       text: "text-cyan-400",
       bg: "bg-cyan-400/10",
       ring: "border-cyan-400/20",
+      color: "#22d3ee",
     },
     "System Design": {
       text: "text-cyan-400",
       bg: "bg-cyan-400/10",
       ring: "border-cyan-400/20",
+      color: "#22d3ee",
     },
     Engineering: {
       text: "text-emerald-400",
       bg: "bg-emerald-400/10",
       ring: "border-emerald-400/20",
+      color: "#34d399",
     },
     Backend: {
       text: "text-emerald-400",
       bg: "bg-emerald-400/10",
       ring: "border-emerald-400/20",
+      color: "#34d399",
     },
     Career: {
       text: "text-violet-400",
       bg: "bg-violet-400/10",
       ring: "border-violet-400/20",
+      color: "#a78bfa",
     },
     "Team Lead": {
       text: "text-violet-400",
       bg: "bg-violet-400/10",
       ring: "border-violet-400/20",
+      color: "#a78bfa",
     },
     Leadership: {
       text: "text-violet-400",
       bg: "bg-violet-400/10",
       ring: "border-violet-400/20",
+      color: "#a78bfa",
     },
     AI: {
       text: "text-orange-400",
       bg: "bg-orange-400/10",
       ring: "border-orange-400/20",
+      color: "#fb923c",
     },
     Product: {
       text: "text-orange-400",
       bg: "bg-orange-400/10",
       ring: "border-orange-400/20",
+      color: "#fb923c",
     },
     TypeScript: {
       text: "text-blue-400",
       bg: "bg-blue-400/10",
       ring: "border-blue-400/20",
+      color: "#60a5fa",
     },
     "Node.js": {
       text: "text-green-400",
       bg: "bg-green-400/10",
       ring: "border-green-400/20",
+      color: "#4ade80",
     },
     DevOps: {
       text: "text-amber-400",
       bg: "bg-amber-400/10",
       ring: "border-amber-400/20",
+      color: "#fbbf24",
     },
   };
 
@@ -87,6 +99,7 @@ const DEFAULT_PALETTE = {
   text: "text-white/40",
   bg: "bg-white/5",
   ring: "border-white/10",
+  color: "rgba(255,255,255,0.15)",
 };
 
 function tagPalette(tag: string) {
@@ -102,6 +115,8 @@ function HeroCard({
   article: ArticleSummary;
   inView: boolean;
 }) {
+  const accentColor = tagPalette(article.tags[0] ?? "").color;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
@@ -110,11 +125,22 @@ function HeroCard({
     >
       <Link
         href={`/blog/${article.slug}`}
-        className="group block glass-card rounded-2xl p-7 md:p-9 hover:border-primary/25 transition-all duration-300 relative overflow-hidden"
+        className="group block glass-card rounded-2xl overflow-hidden hover:border-primary/25 transition-all duration-300 relative"
         aria-label={`Read article: ${article.title}`}
       >
+        {/* Colored left accent bar */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-1 opacity-70 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ background: `linear-gradient(to bottom, ${accentColor}, ${accentColor}20)` }}
+        />
+
         {/* Hover glow */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{ background: `radial-gradient(ellipse at top left, ${accentColor}08, transparent 50%)` }}
+        />
+
+        <div className="p-7 md:p-9 pl-9 md:pl-11">
 
         <div className="relative z-10">
           {/* Top metadata row */}
@@ -167,6 +193,7 @@ function HeroCard({
             </div>
           </div>
         </div>
+        </div>
       </Link>
     </motion.div>
   );
@@ -183,6 +210,8 @@ function ArticleCard({
   index: number;
   inView: boolean;
 }) {
+  const accentColor = tagPalette(article.tags[0] ?? "").color;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -196,13 +225,22 @@ function ArticleCard({
     >
       <Link
         href={`/blog/${article.slug}`}
-        className="group flex flex-col h-full glass-card rounded-xl p-5 hover:border-white/15 transition-all duration-300 relative overflow-hidden"
+        className="group flex flex-col h-full glass-card rounded-xl overflow-hidden transition-all duration-300 hover:border-white/15 relative"
         aria-label={`Read article: ${article.title}`}
       >
-        {/* Subtle hover fill */}
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        {/* Colored left accent bar */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-[3px] opacity-60 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ background: `linear-gradient(to bottom, ${accentColor}, transparent)` }}
+        />
 
-        <div className="relative z-10 flex flex-col h-full">
+        {/* Subtle hover glow from accent color */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{ background: `radial-gradient(ellipse at top left, ${accentColor}08, transparent 60%)` }}
+        />
+
+        <div className="relative z-10 flex flex-col h-full p-5 pl-6">
           {/* Tags */}
           <div className="flex flex-wrap gap-1.5 mb-3">
             {article.tags.slice(0, 2).map((tag) => {
@@ -229,7 +267,7 @@ function ArticleCard({
           </p>
 
           {/* Footer */}
-          <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/[0.06]">
+          <div className="mt-auto flex items-center justify-between pt-3 border-t border-white/[0.06]">
             <div className="flex items-center gap-3 text-[11px] font-mono text-white/25">
               <span className="flex items-center gap-1">
                 <Clock className="w-2.5 h-2.5" aria-hidden="true" />
@@ -239,9 +277,20 @@ function ArticleCard({
                 {format(new Date(article.date), "MMM yyyy")}
               </time>
             </div>
-            <ArrowRight
-              className="w-3.5 h-3.5 text-white/20 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200"
-              aria-hidden="true"
+            <span
+              className="text-[11px] font-mono flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-1 group-hover:translate-x-0"
+              style={{ color: accentColor }}
+            >
+              Read
+              <ArrowRight className="w-3 h-3" aria-hidden="true" />
+            </span>
+          </div>
+
+          {/* Bottom fill bar on hover */}
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] overflow-hidden">
+            <div
+              className="h-full w-0 group-hover:w-full transition-all duration-500 ease-out"
+              style={{ background: `linear-gradient(to right, ${accentColor}60, transparent)` }}
             />
           </div>
         </div>

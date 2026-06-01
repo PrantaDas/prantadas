@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Sparkles, ChevronRight, LayoutGrid, Radar } from "lucide-react";
 import { skillsData } from "@/data/skills";
@@ -20,6 +20,25 @@ const radarData = [
   { subject: "Frontend",     score: 55 },
 ];
 
+function useCountUp(target: number, active: boolean) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    let frame: number;
+    const start = performance.now();
+    const duration = 1200;
+    function tick(now: number) {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(eased * target));
+      if (p < 1) frame = requestAnimationFrame(tick);
+    }
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [active, target]);
+  return val;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function RadarTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
@@ -31,7 +50,28 @@ function RadarTooltip({ active, payload }: any) {
   );
 }
 
-function TechRadar() {
+function RadarBarRow({ subject, score, inView }: { subject: string; score: number; inView: boolean }) {
+  const animated = useCountUp(score, inView);
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-sm text-white/65 font-mono">{subject}</span>
+        <span className="text-xs text-primary/70 font-mono font-bold tabular-nums w-8 text-right">{animated}%</span>
+      </div>
+      <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+        <motion.div
+          className="h-full rounded-full"
+          style={{ background: `hsl(${190 + (score / 100) * 60}, 80%, 55%)` }}
+          initial={{ width: 0 }}
+          animate={inView ? { width: `${score}%` } : {}}
+          transition={{ duration: 1.1, ease: "easeOut", delay: 0.1 }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function TechRadar({ inView }: { inView: boolean }) {
   return (
     <div className="flex flex-col lg:flex-row items-center gap-10">
       {/* Chart */}
@@ -63,25 +103,10 @@ function TechRadar() {
         </ResponsiveContainer>
       </div>
 
-      {/* Bar list */}
+      {/* Bar list with count-up */}
       <div className="flex-1 w-full space-y-3">
         {[...radarData].sort((a, b) => b.score - a.score).map(({ subject, score }) => (
-          <div key={subject}>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-sm text-white/65 font-mono">{subject}</span>
-              <span className="text-xs text-primary/70 font-mono font-bold">{score}%</span>
-            </div>
-            <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: `hsl(${190 + (score / 100) * 60}, 80%, 55%)` }}
-                initial={{ width: 0 }}
-                whileInView={{ width: `${score}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.9, ease: "easeOut", delay: 0.1 }}
-              />
-            </div>
-          </div>
+          <RadarBarRow key={subject} subject={subject} score={score} inView={inView} />
         ))}
         <p className="text-xs text-white/20 font-mono pt-2">
           * Based on real-world production experience
@@ -494,7 +519,7 @@ export function SkillsSection() {
             transition={{ duration: 0.5 }}
             className="mt-4"
           >
-            <TechRadar />
+            <TechRadar inView={inView} />
           </motion.div>
         )}
       </div>

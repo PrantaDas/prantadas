@@ -1,15 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { MapPin, Phone, Mail, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 const stats = [
-  { value: "3+", label: "Years Experience" },
-  { value: "15+", label: "Projects Built" },
-  { value: "2", label: "Companies" },
-  { value: "5", label: "Certifications" },
+  { value: 4, suffix: "+", label: "Years Experience" },
+  { value: 20, suffix: "+", label: "Projects Built" },
+  { value: 2, suffix: "", label: "Companies" },
+  { value: 5, suffix: "", label: "Certifications" },
 ];
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -21,6 +21,25 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       </span>
     </div>
   );
+}
+
+function CountUp({ target, suffix, inView }: { target: number; suffix: string; inView: boolean }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    let frame: number;
+    const start = performance.now();
+    const duration = 1400;
+    function tick(now: number) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    }
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [inView, target]);
+  return <>{count}{suffix}</>;
 }
 
 export function AboutSection() {
@@ -71,7 +90,6 @@ export function AboutSection() {
                   className="object-cover"
                   priority
                 />
-                {/* Image overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
               </div>
 
@@ -88,12 +106,8 @@ export function AboutSection() {
                     <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-50" />
                   </div>
                   <div>
-                    <div className="text-xs font-mono text-white/40">
-                      status
-                    </div>
-                    <div className="text-sm font-semibold text-emerald-400">
-                      Available
-                    </div>
+                    <div className="text-xs font-mono text-white/40">status</div>
+                    <div className="text-sm font-semibold text-emerald-400">Available</div>
                   </div>
                 </div>
               </motion.div>
@@ -106,13 +120,24 @@ export function AboutSection() {
                 className="absolute -top-5 -left-5 glass-card rounded-xl p-3 border border-white/5"
               >
                 <div className="flex items-center gap-2">
-                  <MapPin
-                    className="w-3.5 h-3.5 text-primary"
-                    aria-hidden="true"
-                  />
-                  <span className="text-xs font-mono text-white/60">
-                    Dhaka, 🇧🇩 BD
-                  </span>
+                  <MapPin className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
+                  <span className="text-xs font-mono text-white/60">Dhaka, 🇧🇩 BD</span>
+                </div>
+              </motion.div>
+
+              {/* Third floating card — role */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                animate={inView ? { opacity: 1, scale: 1, x: 0 } : {}}
+                transition={{ delay: 0.7, duration: 0.5 }}
+                className="absolute top-[40%] -right-8 glass-card rounded-xl px-3 py-2.5 border border-primary/10 hidden sm:flex items-center gap-2"
+              >
+                <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[9px] text-primary">TL</span>
+                </div>
+                <div>
+                  <div className="text-[10px] font-mono text-white/30 leading-none">Current</div>
+                  <div className="text-xs font-semibold text-white/70 leading-tight">Team Lead</div>
                 </div>
               </motion.div>
             </div>
@@ -140,10 +165,27 @@ export function AboutSection() {
                   architecture. Always chasing perfection in my craft, bringing
                   improvisation and rigour every single day.
                 </p>
-                <blockquote className="border-l-2 border-primary/40 pl-4 my-6 italic text-white/40">
-                  "We do this not because it is easy, but because we thought it
-                  would be easy"
-                </blockquote>
+
+                {/* Terminal-style blockquote */}
+                <div className="rounded-xl border border-white/6 bg-white/[0.02] overflow-hidden">
+                  <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/5 bg-white/[0.02]">
+                    <div className="w-2 h-2 rounded-full bg-[#ff5f57]" />
+                    <div className="w-2 h-2 rounded-full bg-[#febc2e]" />
+                    <div className="w-2 h-2 rounded-full bg-[#28c840]" />
+                    <span className="ml-2 text-[10px] font-mono text-white/20">quote.ts</span>
+                  </div>
+                  <div className="px-4 py-3 font-mono text-sm leading-relaxed">
+                    <span className="text-white/25">{"// "}</span>
+                    <span className="text-white/50 italic">
+                      "We do this not because it is easy,
+                    </span>
+                    <br />
+                    <span className="text-white/25">{"//  "}</span>
+                    <span className="text-white/50 italic">
+                      but because we thought it would be easy"
+                    </span>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
@@ -151,31 +193,15 @@ export function AboutSection() {
             <motion.div variants={itemVariants} className="flex flex-col gap-3">
               {[
                 { icon: MapPin, text: "Dhanmondi 32, Dhaka-1210, Bangladesh" },
-                {
-                  icon: Phone,
-                  text: "+8801708088432",
-                  href: "tel:+8801708088432",
-                },
-                {
-                  icon: Mail,
-                  text: "prantodas043@gmail.com",
-                  href: "mailto:prantodas043@gmail.com",
-                },
+                { icon: Phone, text: "+8801708088432", href: "tel:+8801708088432" },
+                { icon: Mail, text: "prantodas043@gmail.com", href: "mailto:prantodas043@gmail.com" },
               ].map(({ icon: Icon, text, href }) => (
-                <div
-                  key={text}
-                  className="flex items-center gap-3 text-sm text-white/40"
-                >
+                <div key={text} className="flex items-center gap-3 text-sm text-white/40">
                   <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
                     <Icon className="w-3.5 h-3.5 text-primary/60" />
                   </div>
                   {href ? (
-                    <a
-                      href={href}
-                      className="hover:text-white/70 transition-colors"
-                    >
-                      {text}
-                    </a>
+                    <a href={href} className="hover:text-white/70 transition-colors">{text}</a>
                   ) : (
                     <span>{text}</span>
                   )}
@@ -183,22 +209,17 @@ export function AboutSection() {
               ))}
             </motion.div>
 
-            {/* Stats */}
-            <motion.div
-              variants={itemVariants}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-4"
-            >
+            {/* Stats — animated count-up */}
+            <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {stats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="glass-card rounded-xl p-4 border border-white/5 text-center"
+                  className="glass-card rounded-xl p-4 border border-white/5 hover:border-primary/10 transition-colors text-center"
                 >
-                  <div className="font-display text-2xl font-bold gradient-text-cyan">
-                    {stat.value}
+                  <div className="font-display text-2xl font-bold gradient-text-cyan tabular-nums">
+                    <CountUp target={stat.value} suffix={stat.suffix} inView={inView} />
                   </div>
-                  <div className="text-xs text-white/40 mt-1 leading-tight">
-                    {stat.label}
-                  </div>
+                  <div className="text-xs text-white/40 mt-1 leading-tight">{stat.label}</div>
                 </div>
               ))}
             </motion.div>

@@ -69,6 +69,13 @@ export function CertificationsSection() {
                   <div className="absolute top-0 right-0 w-24 h-24 opacity-[0.04] pointer-events-none"
                     style={{ background: "radial-gradient(circle at top right, #fff 0%, transparent 70%)" }} />
 
+                  {/* Ribbon for Advanced level */}
+                  {level.label === "Advanced" && (
+                    <div className="absolute top-4 -right-7 w-28 flex items-center justify-center py-1 rotate-45 bg-purple-500/20 border-y border-purple-500/30 pointer-events-none z-10">
+                      <span className="text-[9px] font-mono font-bold text-purple-300/90 uppercase tracking-widest">Advanced</span>
+                    </div>
+                  )}
+
                   {/* Header row */}
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="w-10 h-10 rounded-xl bg-[#1e1e2e] border border-white/8 flex items-center justify-center flex-shrink-0">

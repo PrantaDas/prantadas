@@ -2,11 +2,36 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import { Github, Linkedin, Mail, ArrowRight } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
 const roles = ["Backend Developer", "Node.js Engineer", "API Architect", "System Designer"];
+
+function LocalTimeBadge() {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const update = () =>
+      setTime(
+        new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Dhaka",
+        }),
+      );
+    update();
+    const id = setInterval(update, 30_000);
+    return () => clearInterval(id);
+  }, []);
+  if (!time) return null;
+  return (
+    <div className="flex items-center gap-1.5 text-xs font-mono text-white/30">
+      <Clock className="w-3 h-3" aria-hidden="true" />
+      {time} · Dhaka
+    </div>
+  );
+}
+
 
 const stack = [
   { name: "Node.js", color: "#68a063" },
@@ -201,6 +226,7 @@ export function HeroSection() {
               <div className="flex items-center gap-1.5 text-xs font-mono text-white/30">
                 <span>📍</span> Dhaka, Bangladesh
               </div>
+              <LocalTimeBadge />
             </motion.div>
 
             {/* Name */}
@@ -317,20 +343,25 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Scroll cue */}
+      {/* Scroll cue — mouse-scroll icon */}
       <motion.button
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
         onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
         aria-label="Scroll down"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-1.5 text-white/25 hover:text-white/50 transition-colors"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-white/25 hover:text-white/50 transition-colors group"
       >
         <span className="text-[10px] font-mono tracking-widest uppercase">scroll</span>
-        <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        </motion.div>
+        {/* Mouse outline */}
+        <div className="relative w-5 h-8 rounded-full border border-current flex items-start justify-center pt-1.5">
+          {/* Scrolling dot */}
+          <motion.div
+            className="w-1 h-1.5 rounded-full bg-current"
+            animate={{ y: [0, 10, 0], opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
       </motion.button>
     </section>
   );

@@ -1,8 +1,14 @@
 import Link from "next/link";
-import { Clock, Calendar, ArrowUpRight } from "lucide-react";
+import { Clock, Calendar, ArrowUpRight, Eye } from "lucide-react";
 import { format } from "date-fns";
 import type { BlogPost } from "@/lib/blog";
 import { cn } from "@/lib/utils";
+
+function fmt(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return String(n);
+}
 
 function TagPill({ tag }: { tag: string }) {
   return (
@@ -18,10 +24,11 @@ function TagPill({ tag }: { tag: string }) {
 interface BlogCardProps {
   post: BlogPost;
   featured?: boolean;
+  viewCount?: number;
   className?: string;
 }
 
-export function BlogCard({ post, featured = false, className }: BlogCardProps) {
+export function BlogCard({ post, featured = false, viewCount, className }: BlogCardProps) {
   const formattedDate = post.date
     ? format(new Date(post.date), "MMM d, yyyy")
     : "";
@@ -49,10 +56,18 @@ export function BlogCard({ post, featured = false, className }: BlogCardProps) {
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-mono">
             ★ Featured
           </span>
-          <span className="text-xs font-mono text-white/30 flex items-center gap-1.5">
-            <Clock className="w-3 h-3" aria-hidden="true" />
-            {post.readingTime}
-          </span>
+          <div className="flex items-center gap-3 text-xs font-mono text-white/30">
+            {viewCount !== undefined && (
+              <span className="flex items-center gap-1">
+                <Eye className="w-3 h-3" aria-hidden="true" />
+                {fmt(viewCount)}
+              </span>
+            )}
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3" aria-hidden="true" />
+              {post.readingTime}
+            </span>
+          </div>
         </div>
 
         <div className="relative z-10 pointer-events-none">
@@ -113,10 +128,18 @@ export function BlogCard({ post, featured = false, className }: BlogCardProps) {
             <TagPill key={tag} tag={tag} />
           ))}
         </div>
-        <span className="flex items-center gap-1 text-xs text-white/30 font-mono">
-          <Clock className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-          {post.readingTime}
-        </span>
+        <div className="flex items-center gap-3 text-xs text-white/30 font-mono">
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+            {post.readingTime}
+          </span>
+          {viewCount !== undefined && (
+            <span className="flex items-center gap-1">
+              <Eye className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+              {fmt(viewCount)}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -11,9 +11,10 @@ interface BlogClientProps {
   posts: BlogPost[];
   tags: { tag: string; count: number }[];
   featuredPost: BlogPost | undefined;
+  viewCounts?: Record<string, number>;
 }
 
-export function BlogClient({ posts, tags, featuredPost }: BlogClientProps) {
+export function BlogClient({ posts, tags, featuredPost, viewCounts = {} }: BlogClientProps) {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
@@ -212,7 +213,7 @@ export function BlogClient({ posts, tags, featuredPost }: BlogClientProps) {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-10"
           >
-            <BlogCard post={featuredPost} featured />
+            <BlogCard post={featuredPost} featured viewCount={viewCounts[featuredPost.slug]} />
           </motion.div>
         )}
 
@@ -243,7 +244,7 @@ export function BlogClient({ posts, tags, featuredPost }: BlogClientProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: i * 0.06 }}
                 >
-                  <BlogCard post={post} />
+                  <BlogCard post={post} viewCount={viewCounts[post.slug]} />
                 </motion.div>
               ))}
             </motion.div>

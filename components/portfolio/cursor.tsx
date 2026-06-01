@@ -1,11 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
+const TRAIL_COUNT = 4;
+
+// Each trail dot uses a progressively slower spring — they naturally lag behind
+const trailConfigs = [
+  { damping: 32, stiffness: 220, mass: 0.7,  size: 5, opacity: 0.35 },
+  { damping: 40, stiffness: 160, mass: 1.0,  size: 4, opacity: 0.22 },
+  { damping: 50, stiffness: 110, mass: 1.4,  size: 3, opacity: 0.13 },
+  { damping: 60, stiffness:  70, mass: 1.8,  size: 2, opacity: 0.07 },
+];
+
 export function CustomCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
@@ -13,13 +21,24 @@ export function CustomCursor() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
+  // Main outer ring — medium spring
   const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
+  // Inner dot — tight spring (almost instant)
   const dotSpring = { damping: 50, stiffness: 800, mass: 0.1 };
   const dotX = useSpring(mouseX, dotSpring);
   const dotY = useSpring(mouseY, dotSpring);
+
+  // Trail dots — each progressively slower
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const trailSprings = trailConfigs.map((cfg) => ({
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    x: useSpring(mouseX, { damping: cfg.damping, stiffness: cfg.stiffness, mass: cfg.mass }),
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    y: useSpring(mouseY, { damping: cfg.damping, stiffness: cfg.stiffness, mass: cfg.mass }),
+  }));
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -27,13 +46,10 @@ export function CustomCursor() {
       mouseY.set(e.clientY);
       if (!isVisible) setIsVisible(true);
     };
-
     const handleMouseLeave = () => setIsVisible(false);
     const handleMouseEnter = () => setIsVisible(true);
-
     const handleMouseDown = () => setIsClicking(true);
     const handleMouseUp = () => setIsClicking(false);
-
     const handleHoverStart = () => setIsHovering(true);
     const handleHoverEnd = () => setIsHovering(false);
 
@@ -74,9 +90,26 @@ export function CustomCursor() {
 
   return (
     <>
+      {/* Trail dots — rendered behind the main cursor */}
+      {trailConfigs.map((cfg, i) => (
+        <motion.div
+          key={i}
+          className="fixed top-0 left-0 pointer-events-none z-[9997] rounded-full mix-blend-difference bg-white"
+          style={{
+            x: trailSprings[i].x,
+            y: trailSprings[i].y,
+            translateX: "-50%",
+            translateY: "-50%",
+            width: cfg.size,
+            height: cfg.size,
+          }}
+          animate={{ opacity: isVisible ? cfg.opacity : 0 }}
+          transition={{ duration: 0.15 }}
+        />
+      ))}
+
       {/* Outer ring */}
       <motion.div
-        ref={cursorRef}
         className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
         style={{
           x: cursorX,
@@ -100,7 +133,6 @@ export function CustomCursor() {
 
       {/* Inner dot */}
       <motion.div
-        ref={dotRef}
         className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
         style={{
           x: dotX,

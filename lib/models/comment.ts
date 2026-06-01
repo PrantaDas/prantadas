@@ -6,19 +6,26 @@ export interface IComment extends Document {
   email: string;
   message: string;
   rating: number;
+  avatar?: string;
+  visitorId?: string;
   createdAt: Date;
 }
 
 const CommentSchema = new Schema<IComment>(
   {
-    slug: { type: String, required: true, index: true },
-    name: { type: String, required: true, trim: true, maxlength: 50 },
-    email: { type: String, required: true, trim: true, lowercase: true },
-    message: { type: String, required: true, trim: true, maxlength: 1000 },
-    rating: { type: Number, required: true, min: 1, max: 5 },
+    slug:      { type: String, required: true, index: true },
+    name:      { type: String, required: true, trim: true, maxlength: 50 },
+    email:     { type: String, required: true, trim: true, lowercase: true },
+    message:   { type: String, required: true, trim: true, maxlength: 1000 },
+    rating:    { type: Number, required: true, min: 1, max: 5 },
+    avatar:    { type: String },
+    visitorId: { type: String, index: true },
   },
   { timestamps: true },
 );
+
+// Prevent one visitor from posting twice on the same post
+CommentSchema.index({ slug: 1, visitorId: 1 });
 
 export const Comment: Model<IComment> =
   mongoose.models.Comment ?? mongoose.model<IComment>("Comment", CommentSchema);

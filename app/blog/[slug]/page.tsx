@@ -26,15 +26,21 @@ import { ShareButtons } from "@/components/blog/share-buttons";
 import { LikeButton } from "@/components/blog/like-button";
 import { CommentSection } from "@/components/blog/comment-section";
 import { getComments } from "@/app/actions/comments";
+import { getPostViews } from "@/app/actions/views";
+import { BookmarkButton } from "@/components/blog/bookmark-button";
+import { ReadCompletion } from "@/components/blog/read-completion";
+import { FloatingCommentButton } from "@/components/blog/floating-comment-button";
 import { format } from "date-fns";
 import {
   ArrowLeft,
   ArrowRight,
   Calendar,
   Clock,
+  Eye,
   Github,
   Linkedin,
   Mail,
+  MessageSquare,
   Tag,
   RefreshCw,
 } from "lucide-react";
@@ -129,10 +135,11 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getBlogPost(slug);
   if (!post) notFound();
 
-  const [related, { prev, next }, comments] = await Promise.all([
+  const [related, { prev, next }, comments, viewCount] = await Promise.all([
     getRelatedPosts(slug, post.tags, 3),
     getAdjacentPosts(slug),
     getComments(slug),
+    getPostViews(slug),
   ]);
 
   const formattedDate = post.date
@@ -221,6 +228,8 @@ export default async function BlogPostPage({ params }: Props) {
 
       <main className="min-h-screen bg-background noise-overlay">
         <ReadingProgress />
+        <ReadCompletion slug={post.slug} title={post.title} />
+        <FloatingCommentButton commentCount={comments.length} />
         <div className="max-w-5xl mx-auto px-6 py-16 md:py-20">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="mb-8">
@@ -281,8 +290,8 @@ export default async function BlogPostPage({ params }: Props) {
                   {post.description}
                 </p>
 
-                <div className="flex flex-wrap items-center gap-4 py-4 border-y border-white/6">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 py-4 border-y border-white/6">
+                  <div className="flex items-center gap-3 shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={post.author.avatar}
@@ -300,7 +309,7 @@ export default async function BlogPostPage({ params }: Props) {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-4 ml-auto text-xs font-mono text-white/30">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 sm:ml-auto text-xs font-mono text-white/30">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
                       <time dateTime={new Date(post.date).toISOString()}>
@@ -317,6 +326,20 @@ export default async function BlogPostPage({ params }: Props) {
                       <Clock className="w-3.5 h-3.5" aria-hidden="true" />
                       {post.readingTime}
                     </span>
+                    <span className="flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5" aria-hidden="true" />
+                      {viewCount.toLocaleString()} {viewCount === 1 ? "view" : "views"}
+                    </span>
+                    {comments.length > 0 && (
+                      <a
+                        href="#comments"
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                        aria-label={`Jump to ${comments.length} comment${comments.length !== 1 ? "s" : ""}`}
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
+                        {comments.length} comment{comments.length !== 1 ? "s" : ""}
+                      </a>
+                    )}
                   </div>
                 </div>
               </header>
@@ -339,9 +362,12 @@ export default async function BlogPostPage({ params }: Props) {
                 />
               </article>
 
-              {/* Share + Like */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <LikeButton slug={post.slug} />
+              {/* Like + Bookmark + Share */}
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="flex items-start gap-2">
+                  <LikeButton slug={post.slug} />
+                  <BookmarkButton slug={post.slug} title={post.title} />
+                </div>
                 <ShareButtons title={post.title} slug={post.slug} />
               </div>
 
@@ -399,6 +425,9 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
               </div>
 
+              {/* Comments — placed here so readers can react without scrolling past "more reading" */}
+              <CommentSection slug={post.slug} initialComments={comments} />
+
               {/* Prev / Next navigation */}
               {(prev || next) && (
                 <nav
@@ -453,14 +482,12 @@ export default async function BlogPostPage({ params }: Props) {
                 </section>
               )}
 
-              {/* Comments */}
-              <CommentSection slug={post.slug} initialComments={comments} />
             </div>
 
             {/* Sticky ToC sidebar */}
             <aside className="hidden lg:block">
               <div className="sticky top-20">
-                <TableOfContents content={post.content} />
+                <TableOfContents content={post.content} commentCount={comments.length} />
               </div>
             </aside>
           </div>

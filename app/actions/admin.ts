@@ -301,13 +301,17 @@ export async function getAnalytics(period: AnalyticsPeriod): Promise<AnalyticsDa
 
   const now = new Date();
 
-  // Date range
-  const from = new Date(now);
-  if (period === "week") from.setDate(now.getDate() - 6);
-  else if (period === "month") from.setDate(now.getDate() - 29);
-  else from.setFullYear(now.getFullYear() - 1);
+  // Date range — use UTC getters so keys match the UTC-based dayKey values in DB
+  const utcNowY = now.getUTCFullYear();
+  const utcNowM = now.getUTCMonth();
+  const utcNowD = now.getUTCDate();
 
-  const fromKey = from.toISOString().split("T")[0];
+  let from: Date;
+  if (period === "week")        from = new Date(Date.UTC(utcNowY, utcNowM, utcNowD - 6));
+  else if (period === "month")  from = new Date(Date.UTC(utcNowY, utcNowM, utcNowD - 29));
+  else                          from = new Date(Date.UTC(utcNowY - 1, utcNowM, utcNowD));
+
+  const fromKey  = from.toISOString().split("T")[0];
   const todayKey = now.toISOString().split("T")[0];
 
   const [allDocs, todayDocs] = await Promise.all([
@@ -330,32 +334,32 @@ export async function getAnalytics(period: AnalyticsPeriod): Promise<AnalyticsDa
     .slice(0, 8)
     .map(([path, views]) => ({ path, views }));
 
-  // Build chart buckets
+  // Build chart buckets — use UTC throughout to match how dayKey is stored
+  // (track route uses new Date().toISOString().split("T")[0] which is UTC)
+  const utcY = now.getUTCFullYear();
+  const utcM = now.getUTCMonth();
+  const utcD = now.getUTCDate();
+
   const chart: ChartPoint[] = [];
 
   if (period === "week") {
-    // Last 7 days
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(now.getDate() - i);
+      const d = new Date(Date.UTC(utcY, utcM, utcD - i));
       const key = d.toISOString().split("T")[0];
       const dayDocs = allDocs.filter((x) => x.dayKey === key);
       chart.push({
-        label: d.toLocaleDateString("en", { weekday: "short" }),
+        label: d.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }),
         views: dayDocs.length,
         visitors: new Set(dayDocs.map((x) => x.visitorId as string)).size,
       });
     }
   } else if (period === "month") {
-    // Last 4 weeks
     for (let w = 3; w >= 0; w--) {
-      const weekStart = new Date(now);
-      weekStart.setDate(now.getDate() - w * 7 - 6);
-      const weekEnd = new Date(now);
-      weekEnd.setDate(now.getDate() - w * 7);
-      const startKey = weekStart.toISOString().split("T")[0];
-      const endKey = weekEnd.toISOString().split("T")[0];
-      const weekDocs = allDocs.filter((x) => x.dayKey >= startKey && x.dayKey <= endKey);
+      const weekStart = new Date(Date.UTC(utcY, utcM, utcD - w * 7 - 6));
+      const weekEnd   = new Date(Date.UTC(utcY, utcM, utcD - w * 7));
+      const startKey  = weekStart.toISOString().split("T")[0];
+      const endKey    = weekEnd.toISOString().split("T")[0];
+      const weekDocs  = allDocs.filter((x) => x.dayKey >= startKey && x.dayKey <= endKey);
       chart.push({
         label: `W${4 - w}`,
         views: weekDocs.length,
@@ -363,13 +367,13 @@ export async function getAnalytics(period: AnalyticsPeriod): Promise<AnalyticsDa
       });
     }
   } else {
-    // Last 12 months
+    // Last 12 months — build month keys in UTC so they match stored dayKeys
     for (let m = 11; m >= 0; m--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
-      const monthKey = d.toISOString().slice(0, 7); // "YYYY-MM"
+      const d = new Date(Date.UTC(utcY, utcM - m, 1));
+      const monthKey = d.toISOString().slice(0, 7); // "YYYY-MM" in UTC
       const monthDocs = allDocs.filter((x) => (x.dayKey as string).startsWith(monthKey));
       chart.push({
-        label: d.toLocaleDateString("en", { month: "short" }),
+        label: d.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" }),
         views: monthDocs.length,
         visitors: new Set(monthDocs.map((x) => x.visitorId as string)).size,
       });

@@ -27,7 +27,13 @@ function extractToc(content: string): TocItem[] {
   return items;
 }
 
-export function TableOfContents({ content }: { content: string }) {
+export function TableOfContents({
+  content,
+  commentCount,
+}: {
+  content: string;
+  commentCount?: number;
+}) {
   const items = extractToc(content);
   const [active, setActive] = useState<string>("");
 
@@ -84,6 +90,25 @@ export function TableOfContents({ content }: { content: string }) {
           {item.text}
         </a>
       ))}
+
+      {/* Jump to comments */}
+      <div className="pt-4 mt-4 border-t border-white/6">
+        <a
+          href="#comments"
+          className="flex items-center gap-2 text-sm text-white/35 hover:text-primary transition-colors py-0.5"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" });
+          }}
+        >
+          <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          {commentCount != null
+            ? `${commentCount} comment${commentCount !== 1 ? "s" : ""}`
+            : "Comments"}
+        </a>
+      </div>
     </nav>
   );
 }

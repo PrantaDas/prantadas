@@ -423,9 +423,10 @@ interface HistoryLine {
 interface TerminalProps {
   isOpen: boolean;
   onClose: () => void;
+  onMatrixTrigger?: () => void;
 }
 
-export function Terminal({ isOpen, onClose }: TerminalProps) {
+export function Terminal({ isOpen, onClose, onMatrixTrigger }: TerminalProps) {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<HistoryLine[]>([
     {
@@ -553,7 +554,7 @@ export function Terminal({ isOpen, onClose }: TerminalProps) {
     [isFullscreen, size],
   );
 
-  const runCommand = useCallback((raw: string) => {
+  const runCommand = useCallback((raw: string) => {  // eslint-disable-line react-hooks/exhaustive-deps
     const trimmed = raw.trim();
     if (!trimmed) return;
 
@@ -597,7 +598,12 @@ export function Terminal({ isOpen, onClose }: TerminalProps) {
     setCmdHistory((prev) => [raw, ...prev]);
     setHistoryIndex(-1);
     setInput("");
-  }, []);
+
+    // Trigger matrix rain after showing the output
+    if (cmd === "matrix" && onMatrixTrigger) {
+      setTimeout(onMatrixTrigger, 900);
+    }
+  }, [onMatrixTrigger]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {

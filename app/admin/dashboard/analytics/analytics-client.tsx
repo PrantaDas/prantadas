@@ -123,19 +123,31 @@ export default function AnalyticsDashboard({
       <div className="grid lg:grid-cols-2 gap-5">
         {/* Bar chart for year comparison */}
         <div className="p-5 rounded-2xl border border-white/6 bg-white/2">
-          <h2 className="text-sm font-mono text-white/40 uppercase tracking-widest mb-5">
-            Monthly Breakdown
-          </h2>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={year.chart} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 10, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 10, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="views" name="Views" fill="#00d4ff" fillOpacity={0.7} radius={[3, 3, 0, 0]} />
-              <Bar dataKey="visitors" name="Visitors" fill="#a855f7" fillOpacity={0.6} radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-sm font-mono text-white/40 uppercase tracking-widest">
+              Monthly Breakdown
+            </h2>
+            <span className="text-[10px] font-mono text-white/20 border border-white/8 rounded px-2 py-0.5">Last 12 months</span>
+          </div>
+          {year.chart.every((p) => p.views === 0) ? (
+            <div className="flex flex-col items-center justify-center h-[200px] gap-3">
+              <div className="w-10 h-10 rounded-xl border border-white/8 bg-white/3 flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-white/20" />
+              </div>
+              <p className="text-xs font-mono text-white/25 text-center">No visits recorded yet<br />Data will appear as visitors arrive</p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={year.chart} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 10, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 10, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="views" name="Views" fill="#00d4ff" fillOpacity={0.7} radius={[3, 3, 0, 0]} />
+                <Bar dataKey="visitors" name="Visitors" fill="#a855f7" fillOpacity={0.6} radius={[3, 3, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         {/* Top pages */}
