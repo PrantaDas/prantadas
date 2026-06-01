@@ -79,7 +79,9 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     makeHighlight("━━━ Available Commands ━━━"),
     makeText(""),
     makeText("  Navigation:"),
-    makeText("  open <section>   → scroll to section (about/skills/projects/...)"),
+    makeText(
+      "  open <section>   → scroll to section (about/skills/projects/...)",
+    ),
     makeText("  goto <section>   → alias for open"),
     makeText(""),
     makeText("  Info:"),
@@ -108,9 +110,17 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
 
   open: (args) => {
     const sec = args.trim().toLowerCase();
-    if (!sec) return [makeError("  Usage: open <section>"), makeText("  Sections: " + Object.keys(SECTIONS).join(", "))];
+    if (!sec)
+      return [
+        makeError("  Usage: open <section>"),
+        makeText("  Sections: " + Object.keys(SECTIONS).join(", ")),
+      ];
     const target = SECTIONS[sec];
-    if (!target) return [makeError(`  Unknown section: ${sec}`), makeText("  Available: " + Object.keys(SECTIONS).join(", "))];
+    if (!target)
+      return [
+        makeError(`  Unknown section: ${sec}`),
+        makeText("  Available: " + Object.keys(SECTIONS).join(", ")),
+      ];
     navigate(target);
     return [makeSuccess(`  ↗ Navigating to '${sec}'...`)];
   },
@@ -135,7 +145,13 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     makeText("  ○ Type-Safe APIs with tRPC + TypeScript"),
     makeText("    tags: TypeScript · API · Backend"),
     makeText(""),
-    makeLinks([{ label: "→ Read all", value: "prantadas.vercel.app/blog", href: "/blog" }]),
+    makeLinks([
+      {
+        label: "→ Read all",
+        value: "prantadas.vercel.app/blog",
+        href: "/blog",
+      },
+    ]),
   ],
 
   echo: (args) => [
@@ -145,7 +161,9 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
   man: (args) => {
     const cmd = args.trim().toLowerCase();
     const manuals: Record<string, string> = {
-      open: "open <section> — scroll to a section or navigate to a page.\n  Sections: " + Object.keys(SECTIONS).join(", "),
+      open:
+        "open <section> — scroll to a section or navigate to a page.\n  Sections: " +
+        Object.keys(SECTIONS).join(", "),
       echo: "echo <text> — print text to the terminal.",
       blog: "blog — list recent blog articles.",
       neofetch: "neofetch — display system info in a stylized format.",
@@ -157,7 +175,11 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     if (!cmd) return [makeError("  Usage: man <command>")];
     const manual = manuals[cmd];
     if (!manual) return [makeError(`  No manual entry for: ${cmd}`)];
-    return [makeHighlight(`  man ${cmd}`), makeText(""), makeText(`  ${manual}`)];
+    return [
+      makeHighlight(`  man ${cmd}`),
+      makeText(""),
+      makeText(`  ${manual}`),
+    ];
   },
 
   about: (_args) => [
@@ -320,7 +342,7 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     makeText("  · Exploring distributed systems architecture"),
     makeText(""),
     makeText("  Learning:"),
-    makeText("  · Rust (systems programming)"),
+    makeText("  · Go for backend performance and concurrency"),
     makeText("  · Advanced Kafka patterns"),
     makeText("  · ML-powered API optimizations"),
     makeText(""),
@@ -383,7 +405,6 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
   uname: (_args) => [
     makeText("  PrantaOS 3.0.0 portfolio-server #1 SMP PREEMPT_DYNAMIC"),
   ],
-
 
   neofetch: (_args) => [
     makeArt(
@@ -554,56 +575,66 @@ export function Terminal({ isOpen, onClose, onMatrixTrigger }: TerminalProps) {
     [isFullscreen, size],
   );
 
-  const runCommand = useCallback((raw: string) => {  // eslint-disable-line react-hooks/exhaustive-deps
-    const trimmed = raw.trim();
-    if (!trimmed) return;
+  const runCommand = useCallback(
+    (raw: string) => {
+      // eslint-disable-line react-hooks/exhaustive-deps
+      const trimmed = raw.trim();
+      if (!trimmed) return;
 
-    const output: CommandOutput[] = [];
-    const spaceIdx = trimmed.indexOf(" ");
-    const cmd = (spaceIdx === -1 ? trimmed : trimmed.slice(0, spaceIdx)).toLowerCase();
-    const args = spaceIdx === -1 ? "" : trimmed.slice(spaceIdx + 1);
+      const output: CommandOutput[] = [];
+      const spaceIdx = trimmed.indexOf(" ");
+      const cmd = (
+        spaceIdx === -1 ? trimmed : trimmed.slice(0, spaceIdx)
+      ).toLowerCase();
+      const args = spaceIdx === -1 ? "" : trimmed.slice(spaceIdx + 1);
 
-    if (cmd === "clear") {
-      setHistory([]);
-      setCmdHistory((prev) => [raw, ...prev]);
-      setHistoryIndex(-1);
-      setInput("");
-      return;
-    }
+      if (cmd === "clear") {
+        setHistory([]);
+        setCmdHistory((prev) => [raw, ...prev]);
+        setHistoryIndex(-1);
+        setInput("");
+        return;
+      }
 
-    if (cmd === "exit" || cmd === "quit") {
+      if (cmd === "exit" || cmd === "quit") {
+        setHistory((prev) => [
+          ...prev,
+          {
+            id: idRef.current++,
+            command: raw,
+            output: [makeSuccess("  Goodbye! 👋")],
+          },
+        ]);
+        setCmdHistory((prev) => [raw, ...prev]);
+        setHistoryIndex(-1);
+        setInput("");
+        setTimeout(() => onClose(), 600);
+        return;
+      }
+
+      const handler = COMMANDS[cmd];
+      if (handler) {
+        output.push(...handler(args));
+      } else {
+        output.push(makeError(`  command not found: ${cmd}`));
+        output.push(makeText("  Type 'help' to see available commands."));
+      }
+
       setHistory((prev) => [
         ...prev,
-        { id: idRef.current++, command: raw, output: [makeSuccess("  Goodbye! 👋")] },
+        { id: idRef.current++, command: raw, output },
       ]);
       setCmdHistory((prev) => [raw, ...prev]);
       setHistoryIndex(-1);
       setInput("");
-      setTimeout(() => onClose(), 600);
-      return;
-    }
 
-    const handler = COMMANDS[cmd];
-    if (handler) {
-      output.push(...handler(args));
-    } else {
-      output.push(makeError(`  command not found: ${cmd}`));
-      output.push(makeText("  Type 'help' to see available commands."));
-    }
-
-    setHistory((prev) => [
-      ...prev,
-      { id: idRef.current++, command: raw, output },
-    ]);
-    setCmdHistory((prev) => [raw, ...prev]);
-    setHistoryIndex(-1);
-    setInput("");
-
-    // Trigger matrix rain after showing the output
-    if (cmd === "matrix" && onMatrixTrigger) {
-      setTimeout(onMatrixTrigger, 900);
-    }
-  }, [onMatrixTrigger]);
+      // Trigger matrix rain after showing the output
+      if (cmd === "matrix" && onMatrixTrigger) {
+        setTimeout(onMatrixTrigger, 900);
+      }
+    },
+    [onMatrixTrigger],
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -624,7 +655,10 @@ export function Terminal({ isOpen, onClose, onMatrixTrigger }: TerminalProps) {
       const partial = parts[0].toLowerCase();
       const cmds = Object.keys(COMMANDS);
       const match = cmds.find((c) => c.startsWith(partial) && c !== partial);
-      if (match) setInput(parts.length > 1 ? match + " " + parts.slice(1).join(" ") : match);
+      if (match)
+        setInput(
+          parts.length > 1 ? match + " " + parts.slice(1).join(" ") : match,
+        );
     } else if (e.key === "l" && e.ctrlKey) {
       e.preventDefault();
       setHistory([]);
