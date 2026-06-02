@@ -94,7 +94,7 @@ function CommentCard({ comment }: { comment: CommentData }) {
               ))}
             </div>
           </div>
-          <time className="text-xs text-white/25 font-mono flex-shrink-0">
+          <time className="text-xs text-white/50 font-mono flex-shrink-0">
             {format(new Date(comment.createdAt), "MMM d, yyyy")}
           </time>
         </div>
@@ -359,7 +359,7 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
 
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <p className="text-xs text-white/35 font-mono mb-1.5">Rating</p>
+              <p className="text-xs text-white/55 font-mono mb-1.5">Rating</p>
               <StarRating value={rating} onChange={(v) => setValue("rating", v)} />
               {errors.rating && <p className="mt-1 text-xs text-red-400">{errors.rating.message}</p>}
             </div>
@@ -396,7 +396,7 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
       ) : (
         <div className="text-center py-10">
           <MessageSquare className="w-8 h-8 text-white/25 mx-auto mb-3" />
-          <p className="text-sm text-white/30 font-mono">No comments yet — be the first!</p>
+          <p className="text-sm text-white/55 font-mono">No comments yet — be the first!</p>
         </div>
       )}
     </section>

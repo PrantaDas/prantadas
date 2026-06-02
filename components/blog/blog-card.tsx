@@ -92,7 +92,7 @@ export function BlogCard({ post, featured = false, viewCount, rating, className 
               <TagPill key={tag} tag={tag} />
             ))}
           </div>
-          <span className="flex items-center gap-1.5 text-xs text-white/30">
+          <span className="flex items-center gap-1.5 text-xs text-white/55">
             <Calendar className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
             {formattedDate}
           </span>
@@ -135,7 +135,7 @@ export function BlogCard({ post, featured = false, viewCount, rating, className 
             <TagPill key={tag} tag={tag} />
           ))}
         </div>
-        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-white/40 font-mono">
+        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-white/55 font-mono">
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
             {formattedDate}

@@ -63,7 +63,7 @@ export function TableOfContents({
   return (
     <nav aria-label="Table of contents" className="flex flex-col min-h-0 flex-1">
       {/* Fixed label — never scrolls */}
-      <p className="text-xs font-mono text-white/30 uppercase tracking-widest mb-3 flex-shrink-0">
+      <p className="text-xs font-mono text-white/50 uppercase tracking-widest mb-3 flex-shrink-0">
         On this page
       </p>
 
@@ -81,7 +81,7 @@ export function TableOfContents({
               item.level === 4 && "pl-7",
               active === item.id
                 ? "text-primary"
-                : "text-white/40 hover:text-white/70",
+                : "text-white/55 hover:text-white/90",
             )}
             onClick={(e) => {
               e.preventDefault();
@@ -100,7 +100,7 @@ export function TableOfContents({
       <div className="pt-4 mt-4 border-t border-white/6 flex-shrink-0">
         <a
           href="#comments"
-          className="flex items-center gap-2 text-sm text-white/35 hover:text-primary transition-colors py-0.5"
+          className="flex items-center gap-2 text-sm text-white/55 hover:text-primary transition-colors py-0.5"
           onClick={(e) => {
             e.preventDefault();
             document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" });

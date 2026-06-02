@@ -32,6 +32,7 @@ import { BookmarkButton } from "@/components/blog/bookmark-button";
 import { ReadCompletion } from "@/components/blog/read-completion";
 import { FloatingCommentButton } from "@/components/blog/floating-comment-button";
 import { ScrollToTop } from "@/components/blog/scroll-to-top";
+import { BlogFooter } from "@/components/blog/blog-footer";
 import { EngagementModal } from "@/components/blog/engagement-modal";
 import { RatingDistribution } from "@/components/blog/rating-distribution";
 import { ViewCountDisplay } from "@/components/blog/view-count-display";
@@ -39,15 +40,12 @@ import { format } from "date-fns";
 import {
   ArrowLeft,
   ArrowRight,
-  Calendar,
-  Clock,
   Github,
   Linkedin,
   Mail,
   MessageSquare,
   Star,
   Tag,
-  RefreshCw,
 } from "lucide-react";
 
 const BASE_URL = "https://prantadas.vercel.app";
@@ -161,8 +159,12 @@ export default async function BlogPostPage({ params }: Props) {
   const formattedDate = post.date
     ? format(new Date(post.date), "MMMM d, yyyy")
     : "";
-  const formattedUpdated = post.updatedAt
-    ? format(new Date(post.updatedAt), "MMMM d, yyyy")
+  // Only surface "Updated" when the edit is genuinely newer than publication.
+  const isUpdated =
+    !!post.updatedAt &&
+    new Date(post.updatedAt).getTime() > new Date(post.date).getTime();
+  const formattedUpdated = isUpdated
+    ? format(new Date(post.updatedAt!), "MMM d, yyyy")
     : null;
 
   const components = useMDXComponents({ Note, Warning, Tip, Danger });
@@ -291,68 +293,59 @@ export default async function BlogPostPage({ params }: Props) {
                   {post.description}
                 </p>
 
-                {/* Author + meta row */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 py-4 border-y border-white/6 mb-4">
-                  <div className="flex items-center gap-3 shrink-0">
+                {/* Byline — identity + dateline (left), engagement (right) */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 py-5 border-y border-white/8 mb-5">
+                  {/* Identity + dateline */}
+                  <div className="flex items-center gap-3.5 min-w-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={post.author.avatar}
                       alt={post.author.name}
-                      width={36}
-                      height={36}
-                      className="w-9 h-9 rounded-full object-cover border border-white/10"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover border border-white/10 shrink-0"
                     />
-                    <div>
-                      <div className="text-sm font-semibold text-white/80">
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-white/90 leading-tight">
                         {post.author.name}
                       </div>
-                      <div className="text-xs text-white/35 font-mono">
-                        {post.author.location}
+                      <div className="mt-1 flex items-center flex-wrap gap-x-2 gap-y-0.5 text-xs font-mono text-white/55">
+                        <time dateTime={new Date(post.date).toISOString()}>
+                          {formattedDate}
+                        </time>
+                        <span className="text-white/25" aria-hidden="true">·</span>
+                        <span>{post.readingTime}</span>
+                        {formattedUpdated && (
+                          <>
+                            <span className="text-white/25" aria-hidden="true">·</span>
+                            <span className="text-white/45">Updated {formattedUpdated}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 sm:ml-auto text-xs font-mono text-white/50">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
-                      <time dateTime={new Date(post.date).toISOString()}>
-                        {formattedDate}
-                      </time>
-                    </span>
-                    {formattedUpdated && (
-                      <span className="flex items-center gap-1.5">
-                        <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
-                        Updated {formattedUpdated}
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" aria-hidden="true" />
-                      {post.readingTime}
-                    </span>
+
+                  {/* Engagement */}
+                  <div className="flex items-center gap-4 sm:ml-auto pl-[3.375rem] sm:pl-0 text-xs font-mono">
                     <ViewCountDisplay initialCount={viewCount} />
                     {rating.count > 0 && (
                       <span
-                        className="flex items-center gap-1.5"
+                        className="flex items-center gap-1.5 text-white/55"
                         title={`${rating.avg.toFixed(1)} / 5 from ${rating.count} rating${rating.count !== 1 ? "s" : ""}`}
                       >
                         <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" aria-hidden="true" />
-                        <span className="text-yellow-400/80">
-                          {rating.avg.toFixed(1)}
-                        </span>
+                        <span className="text-yellow-400/85">{rating.avg.toFixed(1)}</span>
                         <span className="text-white/40">({rating.count})</span>
                       </span>
                     )}
                     {comments.length > 0 && (
                       <a
                         href="#comments"
-                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                        className="flex items-center gap-1.5 text-white/55 hover:text-primary transition-colors"
                         aria-label={`Jump to ${comments.length} comment${comments.length !== 1 ? "s" : ""}`}
                       >
-                        <MessageSquare
-                          className="w-3.5 h-3.5"
-                          aria-hidden="true"
-                        />
-                        {comments.length} comment
-                        {comments.length !== 1 ? "s" : ""}
+                        <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
+                        {comments.length}
                       </a>
                     )}
                   </div>
@@ -476,7 +469,7 @@ export default async function BlogPostPage({ params }: Props) {
                       href={`/blog/${prev.slug}`}
                       className="group flex flex-col gap-2 p-4 rounded-xl border border-white/10 bg-white/2 hover:border-primary/25 hover:bg-primary/4 transition-all duration-200"
                     >
-                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/35 group-hover:text-primary/60 transition-colors">
+                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/55 group-hover:text-primary/70 transition-colors">
                         <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
                         Previous
                       </span>
@@ -490,7 +483,7 @@ export default async function BlogPostPage({ params }: Props) {
                       href={`/blog/${next.slug}`}
                       className="group flex flex-col gap-2 p-4 rounded-xl border border-white/10 bg-white/2 hover:border-primary/25 hover:bg-primary/4 transition-all duration-200 sm:text-right"
                     >
-                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/35 group-hover:text-primary/60 transition-colors sm:justify-end">
+                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/55 group-hover:text-primary/70 transition-colors sm:justify-end">
                         Next
                         <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                       </span>
@@ -528,6 +521,8 @@ export default async function BlogPostPage({ params }: Props) {
             </aside>
           </div>
         </div>
+
+        <BlogFooter widthClass="max-w-5xl" />
       </main>
     </>
   );

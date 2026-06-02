@@ -1,7 +1,6 @@
 import { Metadata } from "next";
-import { connection } from "next/server";
 import { projectsData } from "@/data/projects";
-import { getCuratedPosts } from "@/lib/blog";
+import { getAllBlogPosts, getFeaturedPost } from "@/lib/blog";
 import { PortfolioClient } from "@/components/portfolio/portfolio-client";
 
 export const metadata: Metadata = {
@@ -96,27 +95,30 @@ async function getRepositories(): Promise<Repository[]> {
   }
 }
 
-async function getYear(): Promise<number> {
-  await connection();
-  return new Date().getFullYear();
-}
-
-const CURATED_SLUGS = [
-  "the-most-dangerous-phrase-in-software-engineering",
-  "decisions-before-first-line-of-code",
-  "hidden-cost-of-overengineering",
-  "ai-in-production-software",
-  "mvps-dont-need-kubernetes",
-];
+// ISR: revalidate the page (and the footer year) once a day. The GitHub
+// fetch below already sets the same window, so the page stays static + fast
+// instead of being forced dynamic on every navigation.
+export const revalidate = 86400;
 
 export default async function Home() {
-  const [repositories, year, curatedPosts] = await Promise.all([
+  const [repositories, featuredPost, allPosts] = await Promise.all([
     getRepositories(),
-    getYear(),
-    getCuratedPosts(CURATED_SLUGS),
+    getFeaturedPost(),
+    getAllBlogPosts(),
   ]);
+  const year = new Date().getFullYear();
 
-  const articles = curatedPosts.map((p) => ({
+  // Hero = the post flagged `featured: true` (the same one /blog leads with),
+  // falling back to the most recent. The grid is the next most-recent posts,
+  // so the homepage stays in sync automatically as new articles are added.
+  const byDateDesc = [...allPosts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+  const hero = featuredPost ?? byDateDesc[0];
+  const rest = byDateDesc.filter((p) => p.slug !== hero?.slug).slice(0, 4);
+  const ordered = hero ? [hero, ...rest] : rest;
+
+  const articles = ordered.map((p) => ({
     slug: p.slug,
     title: p.title,
     description: p.description,

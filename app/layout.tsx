@@ -4,6 +4,7 @@ import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/sonner";
 import { TrackVisit } from "@/components/analytics/track-visit";
+import { MotionProvider } from "@/components/providers/motion-provider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -178,7 +179,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
-        <link rel="canonical" href={BASE_URL} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
@@ -193,7 +193,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <TrackVisit />
-        {children}
+        <MotionProvider>{children}</MotionProvider>
         <Toaster position="bottom-right" richColors />
       </body>
     </html>

@@ -2,10 +2,20 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Rss, PenLine, ArrowUpRight, ArrowLeft } from "lucide-react";
+import {
+  Search,
+  X,
+  Rss,
+  ArrowLeft,
+  ArrowUpRight,
+  Clock,
+  Flame,
+  Star,
+} from "lucide-react";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
-import { BlogCard } from "@/components/blog/blog-card";
+import { FeaturedArticle } from "@/components/blog/featured-article";
+import { ArticleRow } from "@/components/blog/article-row";
 
 interface BlogClientProps {
   posts: BlogPost[];
@@ -15,14 +25,58 @@ interface BlogClientProps {
   ratings?: Record<string, { avg: number; count: number }>;
 }
 
-export function BlogClient({ posts, tags, featuredPost, viewCounts = {}, ratings = {} }: BlogClientProps) {
+type SortId = "latest" | "popular" | "rated";
+
+const SORTS: { id: SortId; label: string; icon: typeof Clock }[] = [
+  { id: "latest", label: "Latest", icon: Clock },
+  { id: "popular", label: "Popular", icon: Flame },
+  { id: "rated", label: "Top Rated", icon: Star },
+];
+
+function fmtReads(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return String(n);
+}
+
+export function BlogClient({
+  posts,
+  tags,
+  featuredPost,
+  viewCounts = {},
+  ratings = {},
+}: BlogClientProps) {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [sort, setSort] = useState<SortId>("latest");
+  const [showAllTags, setShowAllTags] = useState(false);
+
+  // Categories are noisy at full length (lots of 1-count tags). Show the most
+  // used by default; reveal the rest on demand. Always keep the active tag
+  // visible even if it lives in the collapsed tail.
+  const TAG_LIMIT = 10;
+  const visibleTags = useMemo(() => {
+    if (showAllTags) return tags;
+    const head = tags.slice(0, TAG_LIMIT);
+    if (activeTag && !head.some((t) => t.tag === activeTag)) {
+      const active = tags.find((t) => t.tag === activeTag);
+      if (active) return [...head, active];
+    }
+    return head;
+  }, [tags, showAllTags, activeTag]);
+
+  // Masthead statistics
+  const totalReads = useMemo(
+    () => Object.values(viewCounts).reduce((sum, n) => sum + n, 0),
+    [viewCounts],
+  );
+
+  const isDefaultView = sort === "latest" && !search && !activeTag;
 
   const filtered = useMemo(() => {
-    return posts.filter((p) => {
+    const q = search.toLowerCase().trim();
+    const result = posts.filter((p) => {
       const matchesTag = !activeTag || p.tags.includes(activeTag);
-      const q = search.toLowerCase();
       const matchesSearch =
         !q ||
         p.title.toLowerCase().includes(q) ||
@@ -30,23 +84,42 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {}, ratings
         p.tags.some((t) => t.toLowerCase().includes(q));
       return matchesTag && matchesSearch;
     });
-  }, [posts, search, activeTag]);
 
-  const nonFeatured = filtered.filter(
-    (p) => !featuredPost || p.slug !== featuredPost.slug,
-  );
+    const sorted = [...result];
+    if (sort === "popular") {
+      sorted.sort((a, b) => (viewCounts[b.slug] ?? 0) - (viewCounts[a.slug] ?? 0));
+    } else if (sort === "rated") {
+      sorted.sort((a, b) => {
+        const ra = ratings[a.slug]?.avg ?? 0;
+        const rb = ratings[b.slug]?.avg ?? 0;
+        if (rb !== ra) return rb - ra;
+        return (ratings[b.slug]?.count ?? 0) - (ratings[a.slug]?.count ?? 0);
+      });
+    } else {
+      sorted.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
+    }
+    return sorted;
+  }, [posts, search, activeTag, sort, viewCounts, ratings]);
+
+  // On the default view the lead story is pulled out into the featured slot.
+  const archive =
+    isDefaultView && featuredPost
+      ? filtered.filter((p) => p.slug !== featuredPost.slug)
+      : filtered;
 
   return (
     <>
-      {/* ── Minimal top nav ── */}
+      {/* ── Top nav ── */}
       <nav
         className="sticky top-0 z-40 border-b border-white/5 bg-background/80 backdrop-blur-md"
         aria-label="Blog navigation"
       >
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-white/45 hover:text-white/80 transition-colors text-sm font-mono group"
+            className="inline-flex items-center gap-2 text-white/55 hover:text-white transition-colors text-sm font-mono group"
             aria-label="Back to home"
           >
             <ArrowLeft
@@ -55,106 +128,165 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {}, ratings
             />
             Pranta Das
           </Link>
-          <span className="text-white/40 text-xs font-mono tracking-widest uppercase">
-            Blog
-          </span>
+          <Link
+            href="/api/rss"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-white/45 hover:text-primary transition-colors text-xs font-mono"
+            aria-label="RSS Feed"
+          >
+            <Rss className="w-3.5 h-3.5" aria-hidden="true" />
+            RSS
+          </Link>
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-6 py-16 md:py-24">
-        {/* ── Publication Header ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
+      <div className="max-w-6xl mx-auto px-6">
+        {/* ════════ MASTHEAD ════════ */}
+        <motion.header
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55 }}
-          className="mb-14"
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="pt-16 sm:pt-24 pb-12 sm:pb-16"
         >
-          {/* Top meta row */}
-          <div className="mb-8">
-            {/* Label */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-5">
-              <PenLine className="w-3 h-3 text-primary/60" aria-hidden="true" />
-              <span className="text-xs font-mono text-primary/70 uppercase tracking-widest">
-                Engineering Blog
-              </span>
-            </div>
-
-            {/* Headline */}
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-4">
-              Writing that <span className="gradient-text-cyan">matters</span>
-            </h1>
-
-            {/* Description */}
-            <p className="text-white/50 text-base md:text-lg max-w-2xl leading-relaxed mb-6">
-              Engineering insights, architectural decisions, and lessons
-              learned building real-world products — from a Backend Engineer
-              in <span className="text-white/70">Dhaka, Bangladesh 🇧🇩</span>.
-              No tutorials. No filler. Production experience only.
-            </p>
-
-            {/* Stats row */}
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-mono text-white/30">
-              <span>
-                <span className="text-white/60 font-semibold">{posts.length}</span>{" "}
-                articles
-              </span>
-              <span className="w-px h-3 bg-white/10" aria-hidden="true" />
-              <span>TypeScript · Node.js · System Design · Career</span>
-              <span className="w-px h-3 bg-white/10" aria-hidden="true" />
-              <Link
-                href="/api/rss"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="RSS Feed"
-                className="inline-flex items-center gap-1.5 text-white/30 hover:text-primary transition-colors"
-              >
-                <Rss className="w-3 h-3" aria-hidden="true" />
-                RSS Feed
-                <ArrowUpRight className="w-2.5 h-2.5" aria-hidden="true" />
-              </Link>
-            </div>
+          {/* Masthead rule + kicker */}
+          <div className="flex items-center gap-4 mb-8">
+            <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-primary/70 whitespace-nowrap">
+              The Engineering Journal
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-r from-primary/25 via-white/8 to-transparent" />
           </div>
 
-          {/* Divider */}
-          <div className="h-px bg-gradient-to-r from-primary/20 via-white/5 to-transparent mb-8" />
+          {/* Editorial headline — left-aligned, oversized */}
+          <h1 className="font-display text-[2.75rem] sm:text-6xl md:text-7xl font-bold text-white leading-[0.98] tracking-tight mb-7 max-w-3xl text-balance">
+            Writing that{" "}
+            <span className="gradient-text-cyan">matters</span>.
+          </h1>
 
-          {/* Search */}
-          <div className="relative mb-4">
-            <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25"
-              aria-hidden="true"
-            />
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search articles..."
-              aria-label="Search articles"
-              className="w-full bg-white/4 border border-white/8 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white/70 placeholder:text-white/25 outline-none focus:border-primary/30 focus:ring-1 focus:ring-primary/10 transition-all"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                aria-label="Clear search"
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+          <p className="text-white/60 text-base md:text-lg max-w-2xl leading-relaxed mb-10">
+            Engineering insights, architectural decisions, and hard-won lessons
+            from building real-world products — written from Dhaka, Bangladesh
+            🇧🇩. No tutorials. No filler. Production experience only.
+          </p>
+
+          {/* Dateline statistics */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-xs uppercase tracking-[0.15em] text-white/45">
+            <span>
+              <span className="text-white/90 text-sm font-semibold normal-case tracking-normal">
+                {posts.length}
+              </span>{" "}
+              Articles
+            </span>
+            <span className="h-3 w-px bg-white/12" aria-hidden="true" />
+            <span>
+              <span className="text-white/90 text-sm font-semibold normal-case tracking-normal">
+                {tags.length}
+              </span>{" "}
+              Topics
+            </span>
+            {totalReads > 0 && (
+              <>
+                <span className="h-3 w-px bg-white/12" aria-hidden="true" />
+                <span>
+                  <span className="text-white/90 text-sm font-semibold normal-case tracking-normal">
+                    {fmtReads(totalReads)}
+                  </span>{" "}
+                  Reads
+                </span>
+              </>
             )}
           </div>
+        </motion.header>
 
-          {/* Tag filters */}
+        {/* ════════ FEATURED LEAD ════════ */}
+        <AnimatePresence mode="wait">
+          {isDefaultView && featuredPost && (
+            <motion.div
+              key="featured"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-16 sm:mb-20"
+            >
+              <FeaturedArticle
+                post={featuredPost}
+                viewCount={viewCounts[featuredPost.slug]}
+                rating={ratings[featuredPost.slug]}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ════════ DISCOVERY TOOLBAR ════════ */}
+        <div className="sticky top-14 z-30 -mx-6 px-6 py-4 bg-background/85 backdrop-blur-md border-y border-white/5 mb-10 space-y-4">
+          {/* Row 1 — search + sort */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="relative flex-1 sm:max-w-sm">
+              <Search
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search the journal…"
+                aria-label="Search articles"
+                className="w-full bg-white/[0.04] border border-white/8 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white/80 placeholder:text-white/40 outline-none focus:border-primary/40 focus:bg-white/[0.06] focus:ring-1 focus:ring-primary/15 transition-all"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  aria-label="Clear search"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Sort — segmented control */}
+            <div
+              className="flex shrink-0 p-1 rounded-xl bg-white/[0.04] border border-white/8 sm:ml-auto"
+              role="group"
+              aria-label="Sort articles"
+            >
+              {SORTS.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setSort(id)}
+                  aria-pressed={sort === id}
+                  className={`relative inline-flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
+                    sort === id ? "text-background" : "text-white/55 hover:text-white/80"
+                  }`}
+                >
+                  {sort === id && (
+                    <motion.span
+                      layoutId="sort-pill"
+                      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute inset-0 rounded-lg bg-primary"
+                    />
+                  )}
+                  <Icon className="relative w-3.5 h-3.5" aria-hidden="true" />
+                  <span className="relative">{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Row 2 — categories (collapsed to most-used, expandable) */}
           <div
-            className="flex flex-wrap gap-2"
+            className="flex flex-wrap items-center gap-2"
             role="group"
-            aria-label="Filter by tag"
+            aria-label="Filter by topic"
           >
             <button
               onClick={() => setActiveTag(null)}
               className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors border ${
                 activeTag === null
                   ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-white/8 text-white/35 hover:border-white/15 hover:text-white/55"
+                  : "border-white/8 text-white/55 hover:border-white/25 hover:text-white/80"
               }`}
             >
               All
@@ -162,7 +294,7 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {}, ratings
                 {posts.length}
               </span>
             </button>
-            {tags.map(({ tag, count }) => (
+            {visibleTags.map(({ tag, count }) => (
               <button
                 key={tag}
                 onClick={() => setActiveTag(activeTag === tag ? null : tag)}
@@ -170,68 +302,89 @@ export function BlogClient({ posts, tags, featuredPost, viewCounts = {}, ratings
                 className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors border ${
                   activeTag === tag
                     ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-white/8 text-white/35 hover:border-white/15 hover:text-white/55"
+                    : "border-white/8 text-white/55 hover:border-white/25 hover:text-white/80"
                 }`}
               >
                 {tag}
-                <span className="ml-1.5 text-white/40">{count}</span>
+                <span className={`ml-1.5 ${activeTag === tag ? "text-primary/60" : "text-white/40"}`}>
+                  {count}
+                </span>
               </button>
             ))}
+            {tags.length > TAG_LIMIT && (
+              <button
+                onClick={() => setShowAllTags((v) => !v)}
+                className="px-3 py-1 rounded-lg text-xs font-mono text-primary/70 hover:text-primary transition-colors"
+                aria-expanded={showAllTags}
+              >
+                {showAllTags ? "Show less" : `+${tags.length - TAG_LIMIT} more`}
+              </button>
+            )}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Featured post */}
-        {featuredPost && !activeTag && !search && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-10"
-          >
-            <BlogCard post={featuredPost} featured viewCount={viewCounts[featuredPost.slug]} rating={ratings[featuredPost.slug]} />
-          </motion.div>
-        )}
-
-        {/* Articles grid */}
-        <AnimatePresence mode="wait">
-          {filtered.length === 0 ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="py-16 text-center text-white/30 font-mono text-sm"
-            >
-              No articles match your search.
-            </motion.div>
+        {/* ════════ THE ARCHIVE ════════ */}
+        <section aria-label="Articles" className="pb-24">
+          {archive.length === 0 ? (
+            <div className="py-24 text-center">
+              <p className="text-white/55 font-mono text-sm mb-2">
+                Nothing matches your filters.
+              </p>
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setActiveTag(null);
+                }}
+                className="text-xs font-mono text-primary/70 hover:text-primary transition-colors"
+              >
+                Clear filters
+              </button>
+            </div>
           ) : (
-            <motion.div
-              key="grid"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid sm:grid-cols-2 gap-4"
-            >
-              {(activeTag || search ? filtered : nonFeatured).map((post, i) => (
-                <motion.div
-                  key={post.slug}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.06 }}
-                >
-                  <BlogCard post={post} viewCount={viewCounts[post.slug]} rating={ratings[post.slug]} />
-                </motion.div>
-              ))}
-            </motion.div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${sort}-${activeTag}-${search}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="divide-y divide-white/[0.07]"
+              >
+                {archive.map((post, i) => (
+                  <motion.div
+                    key={post.slug}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.32,
+                      delay: Math.min(i * 0.04, 0.4),
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                  >
+                    <ArticleRow
+                      post={post}
+                      index={i + 1}
+                      viewCount={viewCounts[post.slug]}
+                      rating={ratings[post.slug]}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
           )}
-        </AnimatePresence>
 
-        {/* Post count */}
-        {filtered.length > 0 && (
-          <p className="mt-8 text-center text-xs font-mono text-white/40">
-            {filtered.length} article{filtered.length !== 1 ? "s" : ""}
-          </p>
-        )}
+          {/* Footer count */}
+          {archive.length > 0 && (
+            <div className="mt-12 flex items-center gap-4">
+              <span className="h-px flex-1 bg-white/[0.06]" aria-hidden="true" />
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/40">
+                {archive.length} {archive.length === 1 ? "Article" : "Articles"}
+                {!isDefaultView && activeTag ? ` in ${activeTag}` : ""}
+              </span>
+              <span className="h-px flex-1 bg-white/[0.06]" aria-hidden="true" />
+            </div>
+          )}
+        </section>
       </div>
     </>
   );
