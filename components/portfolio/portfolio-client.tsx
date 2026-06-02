@@ -158,10 +158,7 @@ export function PortfolioClient({ repositories, year, articles }: PortfolioClien
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(139,92,246,0.05),transparent_70%)]" />
       </div>
 
-      <Navigation
-        onTerminalOpen={() => setTerminalOpen(true)}
-        onShortcutsOpen={() => setShortcutsOpen(true)}
-      />
+      <Navigation onTerminalOpen={() => setTerminalOpen(true)} />
 
       <main id="main-content" className="relative z-10" tabIndex={-1}>
         <HeroSection />
