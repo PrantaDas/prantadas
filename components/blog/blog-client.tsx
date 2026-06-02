@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -11,11 +11,13 @@ import {
   Clock,
   Flame,
   Star,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/blog";
 import { FeaturedArticle } from "@/components/blog/featured-article";
 import { ArticleRow } from "@/components/blog/article-row";
+import { ReadingList } from "@/components/blog/reading-list";
 
 interface BlogClientProps {
   posts: BlogPost[];
@@ -50,6 +52,13 @@ export function BlogClient({
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [sort, setSort] = useState<SortId>("latest");
   const [showAllTags, setShowAllTags] = useState(false);
+  // Mobile filter is staged: the dropdown sets a pending choice, an Apply
+  // button commits it. Kept in sync whenever the active tag changes elsewhere.
+  const [pendingTag, setPendingTag] = useState<string | null>(null);
+
+  // Keep the dropdown reflecting the active filter (e.g. after Clear, or when
+  // a tag is toggled via the sm+ pill cloud).
+  useEffect(() => setPendingTag(activeTag), [activeTag]);
 
   // Categories are noisy at full length (lots of 1-count tags). Show the most
   // used by default; reveal the rest on demand. Always keep the active tag
@@ -128,16 +137,19 @@ export function BlogClient({
             />
             Pranta Das
           </Link>
-          <Link
-            href="/api/rss"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-white/45 hover:text-primary transition-colors text-xs font-mono"
-            aria-label="RSS Feed"
-          >
-            <Rss className="w-3.5 h-3.5" aria-hidden="true" />
-            RSS
-          </Link>
+          <div className="flex items-center gap-5">
+            <ReadingList />
+            <Link
+              href="/api/rss"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-white/45 hover:text-primary transition-colors text-xs font-mono"
+              aria-label="RSS Feed"
+            >
+              <Rss className="w-3.5 h-3.5" aria-hidden="true" />
+              RSS
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -275,15 +287,58 @@ export function BlogClient({
             </div>
           </div>
 
-          {/* Row 2 — categories (collapsed to most-used, expandable) */}
+          {/* Row 2 — categories.
+              Mobile: a compact dropdown with explicit Apply / Clear so nothing
+              overflows the toolbar and filtering is deliberate.
+              sm+: the full wrapping pill cloud. */}
+          <div className="sm:hidden space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <select
+                  value={pendingTag ?? ""}
+                  onChange={(e) => setPendingTag(e.target.value || null)}
+                  aria-label="Choose a topic to filter by"
+                  className="w-full appearance-none [color-scheme:dark] bg-white/[0.04] border border-white/8 rounded-xl pl-3.5 pr-10 py-2.5 text-sm font-mono text-white/80 outline-none focus:border-primary/40 focus:bg-white/[0.06] focus:ring-1 focus:ring-primary/15 transition-all"
+                >
+                  <option value="">All topics · {posts.length}</option>
+                  {tags.map(({ tag, count }) => (
+                    <option key={tag} value={tag}>
+                      {tag} · {count}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40"
+                  aria-hidden="true"
+                />
+              </div>
+              <button
+                onClick={() => setActiveTag(pendingTag)}
+                disabled={pendingTag === activeTag}
+                className="shrink-0 px-4 py-2.5 rounded-xl text-xs font-mono border border-primary/40 bg-primary/10 text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Apply
+              </button>
+            </div>
+            {activeTag && (
+              <button
+                onClick={() => setActiveTag(null)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono border border-white/8 text-white/60 hover:text-white/85 hover:border-white/25 transition-colors"
+              >
+                <X className="w-3 h-3" aria-hidden="true" />
+                Clear filter · {activeTag}
+              </button>
+            )}
+          </div>
+
           <div
-            className="flex flex-wrap items-center gap-2"
+            className="hidden sm:flex flex-wrap items-center gap-2"
             role="group"
             aria-label="Filter by topic"
           >
             <button
               onClick={() => setActiveTag(null)}
-              className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors border ${
+              className={`shrink-0 px-3 py-1 rounded-lg text-xs font-mono transition-colors border ${
                 activeTag === null
                   ? "border-primary/40 bg-primary/10 text-primary"
                   : "border-white/8 text-white/55 hover:border-white/25 hover:text-white/80"
@@ -299,7 +354,7 @@ export function BlogClient({
                 key={tag}
                 onClick={() => setActiveTag(activeTag === tag ? null : tag)}
                 aria-pressed={activeTag === tag}
-                className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors border ${
+                className={`shrink-0 px-3 py-1 rounded-lg text-xs font-mono transition-colors border ${
                   activeTag === tag
                     ? "border-primary/40 bg-primary/10 text-primary"
                     : "border-white/8 text-white/55 hover:border-white/25 hover:text-white/80"
@@ -314,7 +369,7 @@ export function BlogClient({
             {tags.length > TAG_LIMIT && (
               <button
                 onClick={() => setShowAllTags((v) => !v)}
-                className="px-3 py-1 rounded-lg text-xs font-mono text-primary/70 hover:text-primary transition-colors"
+                className="shrink-0 px-3 py-1 rounded-lg text-xs font-mono text-primary/70 hover:text-primary transition-colors"
                 aria-expanded={showAllTags}
               >
                 {showAllTags ? "Show less" : `+${tags.length - TAG_LIMIT} more`}

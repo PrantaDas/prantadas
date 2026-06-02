@@ -9,7 +9,6 @@ import {
   Sparkles,
   Calendar,
   Building2,
-  BookOpen,
 } from "lucide-react";
 
 const experience = [
@@ -330,30 +329,6 @@ export function ExperienceSection() {
                 isLast={i === education.length - 1}
               />
             ))}
-
-            {/* Professional highlight — replaced with learning card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="glass-card rounded-xl border border-white/5 p-5 mt-2 flex gap-4 items-start"
-            >
-              <div className="w-8 h-8 rounded-lg bg-amber-400/8 border border-amber-400/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <BookOpen className="w-3.5 h-3.5 text-amber-400/60" />
-              </div>
-              <div>
-                <div className="text-sm font-medium text-white/65 mb-1.5">
-                  Professional Highlight
-                </div>
-                <p className="text-sm text-white/40 leading-relaxed">
-                  Recognised and praised for outstanding contributions and
-                  dedication in delivering high-impact solutions, meeting
-                  deadlines, and showcasing a commitment to excellence in
-                  project delivery and team collaboration.
-                </p>
-              </div>
-            </motion.div>
           </div>
         </div>
       </div>

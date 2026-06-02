@@ -29,6 +29,7 @@ import { getComments } from "@/app/actions/comments";
 import { getPostViews } from "@/app/actions/views";
 import { getPostRating, getRatingDistribution } from "@/app/actions/ratings";
 import { BookmarkButton } from "@/components/blog/bookmark-button";
+import { ReadingList } from "@/components/blog/reading-list";
 import { ReadCompletion } from "@/components/blog/read-completion";
 import { FloatingCommentButton } from "@/components/blog/floating-comment-button";
 import { ScrollToTop } from "@/components/blog/scroll-to-top";
@@ -252,8 +253,11 @@ export default async function BlogPostPage({ params }: Props) {
         <EngagementModal slug={post.slug} title={post.title} />
         <div className="max-w-5xl mx-auto px-6 py-16 md:py-20">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="mb-8">
-            <ol className="flex items-center gap-2 text-sm font-mono text-white/50">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-8 flex items-center justify-between gap-4"
+          >
+            <ol className="flex items-center gap-2 text-sm font-mono text-white/50 min-w-0">
               <li>
                 <Link
                   href="/"
@@ -279,6 +283,7 @@ export default async function BlogPostPage({ params }: Props) {
                 {post.title}
               </li>
             </ol>
+            <ReadingList />
           </nav>
 
           <div className="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12">
