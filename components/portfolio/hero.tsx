@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import { Github, Linkedin, Mail, ArrowRight, Clock } from "lucide-react";
+import { Github, Linkedin, Send, ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -291,7 +291,7 @@ export function HeroSection() {
               {[
                 { href: "https://github.com/Prantadas", icon: Github, label: "GitHub" },
                 { href: "https://linkedin.com/in/pranta-das7", icon: Linkedin, label: "LinkedIn" },
-                { href: "mailto:prantodas043@gmail.com", icon: Mail, label: "Email" },
+                { href: "#contact", icon: Send, label: "Contact" },
               ].map(({ href, icon: Icon, label }, i) => (
                 <span key={label}>
                   {i > 0 && <span className="sr-only">,</span>}

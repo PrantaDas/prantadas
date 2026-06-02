@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Github, Linkedin, Mail, Terminal, BookOpen } from "lucide-react";
+import { Github, Linkedin, Send, Terminal, BookOpen } from "lucide-react";
 
 interface FooterProps {
   year: number;
@@ -57,9 +57,9 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
                   label: "LinkedIn",
                 },
                 {
-                  href: "mailto:prantodas043@gmail.com",
-                  icon: Mail,
-                  label: "Email",
+                  href: "#contact",
+                  icon: Send,
+                  label: "Contact",
                 },
               ].map(({ href, icon: Icon, label }) => (
                 <Link

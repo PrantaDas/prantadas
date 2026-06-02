@@ -193,7 +193,7 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     ),
     makeHighlight("Pranta Das — Backend Developer"),
     makeText(""),
-    makeText("  Location   : Dhanmondi 32, Dhaka-1210, Bangladesh"),
+    makeText("  Location   : Dhaka, Bangladesh"),
     makeText("  Role       : Team Lead (Backend) @ Root Devs"),
     makeText("  Status     : 🟢 Available for opportunities"),
     makeText(""),
@@ -277,12 +277,6 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     makeText(""),
     makeLinks([
       {
-        label: "Email",
-        value: "prantodas043@gmail.com",
-        href: "mailto:prantodas043@gmail.com",
-      },
-      { label: "Phone", value: "+8801708088432", href: "tel:+8801708088432" },
-      {
         label: "GitHub",
         value: "github.com/Prantadas",
         href: "https://github.com/Prantadas",
@@ -310,11 +304,6 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
         label: "LinkedIn",
         value: "linkedin.com/in/pranta-das7",
         href: "https://linkedin.com/in/pranta-das7",
-      },
-      {
-        label: "Email",
-        value: "prantodas043@gmail.com",
-        href: "mailto:prantodas043@gmail.com",
       },
     ]),
   ],

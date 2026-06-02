@@ -113,13 +113,9 @@ const personSchema = {
   jobTitle: "Backend Developer & Team Lead",
   description:
     "Backend Developer specializing in Node.js, TypeScript, REST APIs, and scalable distributed systems. Team Lead at Root Devs. Based in Dhaka, Bangladesh.",
-  email: "prantodas043@gmail.com",
-  telephone: "+8801708088432",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Dhanmondi 32",
     addressLocality: "Dhaka",
-    postalCode: "1210",
     addressCountry: "BD",
   },
   nationality: { "@type": "Country", name: "Bangladesh" },

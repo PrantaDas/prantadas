@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { MapPin, Phone, Mail, Sparkles } from "lucide-react";
+import { MapPin, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 const stats = [
@@ -192,9 +192,7 @@ export function AboutSection() {
             {/* Contact info */}
             <motion.div variants={itemVariants} className="flex flex-col gap-3">
               {[
-                { icon: MapPin, text: "Dhanmondi 32, Dhaka-1210, Bangladesh" },
-                { icon: Phone, text: "+8801708088432", href: "tel:+8801708088432" },
-                { icon: Mail, text: "prantodas043@gmail.com", href: "mailto:prantodas043@gmail.com" },
+                { icon: MapPin, text: "Dhaka, Bangladesh", href: undefined as string | undefined },
               ].map(({ icon: Icon, text, href }) => (
                 <div key={text} className="flex items-center gap-3 text-sm text-white/40">
                   <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">

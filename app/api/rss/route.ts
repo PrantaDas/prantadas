@@ -30,7 +30,7 @@ export async function GET() {
       <guid isPermaLink="true">${postUrl}</guid>
       <description>${escapeXml(post.description)}</description>
       <pubDate>${pubDate}</pubDate>
-      <author>prantodas043@gmail.com (Pranta Das)</author>
+      <dc:creator>Pranta Das</dc:creator>
       ${tags}
       <content:encoded><![CDATA[${post.excerpt}]]></content:encoded>
     </item>`;
@@ -52,8 +52,7 @@ export async function GET() {
     <link>${BASE_URL}/blog</link>
     <description>Technical deep dives on TypeScript, Node.js, distributed systems, Web3, and software architecture by Pranta Das — Backend Engineer from Dhaka, Bangladesh.</description>
     <language>en-US</language>
-    <managingEditor>prantodas043@gmail.com (Pranta Das)</managingEditor>
-    <webMaster>prantodas043@gmail.com (Pranta Das)</webMaster>
+    <dc:creator>Pranta Das</dc:creator>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <atom:link href="${BASE_URL}/api/rss" rel="self" type="application/rss+xml"/>
     <image>

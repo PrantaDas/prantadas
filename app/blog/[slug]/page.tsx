@@ -42,7 +42,7 @@ import {
   ArrowRight,
   Github,
   Linkedin,
-  Mail,
+  Send,
   MessageSquare,
   Star,
   Tag,
@@ -441,13 +441,13 @@ export default async function BlogPostPage({ params }: Props) {
                     >
                       <Linkedin className="w-4 h-4" aria-hidden="true" />
                     </a>
-                    <a
-                      href="mailto:prantodas043@gmail.com"
-                      aria-label="Email Pranta Das"
+                    <Link
+                      href="/#contact"
+                      aria-label="Contact Pranta Das"
                       className="text-white/50 hover:text-white/70 transition-colors"
                     >
-                      <Mail className="w-4 h-4" aria-hidden="true" />
-                    </a>
+                      <Send className="w-4 h-4" aria-hidden="true" />
+                    </Link>
                   </nav>
                 </div>
               </div>

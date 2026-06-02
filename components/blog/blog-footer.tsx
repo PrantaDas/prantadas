@@ -1,18 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Linkedin, Mail, Rss, ArrowUp } from "lucide-react";
+import { Github, Linkedin, Rss, ArrowUp } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Home", href: "/", external: false },
   { label: "All Articles", href: "/blog", external: false },
+  { label: "Contact", href: "/#contact", external: false },
   { label: "RSS", href: "/api/rss", external: true },
 ];
 
 const SOCIAL = [
   { label: "GitHub", href: "https://github.com/Prantadas", Icon: Github },
   { label: "LinkedIn", href: "https://linkedin.com/in/pranta-das7", Icon: Linkedin },
-  { label: "Email", href: "mailto:prantodas043@gmail.com", Icon: Mail },
 ];
 
 /**

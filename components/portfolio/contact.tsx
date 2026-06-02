@@ -4,8 +4,6 @@ import { useRef, useState, useCallback, useTransition } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { submitContactForm } from "@/app/actions/contact";
 import {
-  Mail,
-  Phone,
   MapPin,
   Github,
   Linkedin,
@@ -36,22 +34,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 const contactLinks = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "prantodas043@gmail.com",
-    href: "mailto:prantodas043@gmail.com",
-    copyable: true,
-    color: "text-sky-400 bg-sky-400/8 border-sky-400/15 group-hover:bg-sky-400/15",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+8801708088432",
-    href: "tel:+8801708088432",
-    copyable: true,
-    color: "text-emerald-400 bg-emerald-400/8 border-emerald-400/15 group-hover:bg-emerald-400/15",
-  },
   {
     icon: MapPin,
     label: "Location",
