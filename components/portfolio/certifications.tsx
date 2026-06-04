@@ -30,7 +30,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export function CertificationsSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
 
   return (
     <section id="certifications" ref={ref} className="relative py-16 md:py-24">
@@ -39,9 +39,9 @@ export function CertificationsSection() {
 
       <div className="container max-w-6xl mx-auto px-6 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-14"
         >
           <SectionLabel>Certifications</SectionLabel>
@@ -59,9 +59,9 @@ export function CertificationsSection() {
             return (
               <motion.div
                 key={cert.name}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.1 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.32, delay: Math.min(0.04 + i * 0.035, 0.22), ease: [0.22, 1, 0.36, 1] }}
                 className="group relative"
               >
                 <div className={`relative rounded-2xl border ${level.ring} bg-gradient-to-br from-white/[0.04] to-transparent p-5 hover:from-white/[0.07] transition-all duration-300 overflow-hidden`}>
@@ -108,7 +108,7 @@ export function CertificationsSection() {
                         className={`h-full rounded-full ${level.bar}`}
                         initial={{ width: 0 }}
                         animate={inView ? { width: `${level.pct}%` } : {}}
-                        transition={{ duration: 0.8, delay: 0.3 + i * 0.09, ease: "easeOut" }}
+                        transition={{ duration: 0.55, delay: Math.min(0.15 + i * 0.035, 0.32), ease: "easeOut" }}
                       />
                     </div>
                   </div>

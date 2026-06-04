@@ -119,9 +119,9 @@ function HeroCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 28 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.4, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
     >
       <Link
         href={`/blog/${article.slug}`}
@@ -214,11 +214,11 @@ function ArticleCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{
-        duration: 0.5,
-        delay: 0.35 + index * 0.09,
+        duration: 0.32,
+        delay: Math.min(0.1 + index * 0.04, 0.28),
         ease: [0.22, 1, 0.36, 1],
       }}
       className="h-full"
@@ -307,7 +307,7 @@ interface FeaturedArticlesProps {
 
 export function FeaturedArticlesSection({ articles }: FeaturedArticlesProps) {
   const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
 
   if (articles.length === 0) return null;
 
@@ -323,9 +323,9 @@ export function FeaturedArticlesSection({ articles }: FeaturedArticlesProps) {
       <div className="container max-w-6xl mx-auto px-6">
         {/* ── Section header ─────────────────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="mb-10 md:mb-14"
         >
           {/* Label pill */}
@@ -390,7 +390,7 @@ export function FeaturedArticlesSection({ articles }: FeaturedArticlesProps) {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.72 }}
+          transition={{ duration: 0.32, delay: 0.32 }}
           className="mt-10 flex justify-center"
         >
           <Link

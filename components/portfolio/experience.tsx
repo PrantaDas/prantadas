@@ -123,10 +123,10 @@ function TimelineItem({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -24 }}
+      initial={{ opacity: 0, x: -16 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45, delay: index * 0.1 }}
+      viewport={{ once: true, margin: "0px 0px -5% 0px" }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.18), ease: [0.22, 1, 0.36, 1] }}
       className="relative flex gap-5"
     >
       {/* Timeline column */}
@@ -227,16 +227,16 @@ function TimelineItem({
 
 export function ExperienceSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
 
   return (
     <section id="experience" ref={ref} className="relative py-16 md:py-24">
       <div className="container max-w-6xl mx-auto px-6">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-10"
         >
           <SectionLabel>Career</SectionLabel>
@@ -247,17 +247,17 @@ export function ExperienceSection() {
 
         {/* Stats row */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.15, duration: 0.5 }}
+          transition={{ delay: 0.06, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           className="flex justify-center gap-6 mb-14"
         >
           {careerStats.map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.94 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 0.2 + i * 0.08, duration: 0.4 }}
+              transition={{ delay: 0.08 + i * 0.04, duration: 0.28 }}
               className="text-center px-6 py-3 glass-card rounded-xl border border-white/5"
             >
               <div className="font-display text-2xl font-bold gradient-text-cyan">
@@ -274,9 +274,9 @@ export function ExperienceSection() {
           {/* Work experience */}
           <div>
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.25 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
               className="flex items-center gap-3 mb-8"
             >
               <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -304,9 +304,9 @@ export function ExperienceSection() {
           {/* Education */}
           <div>
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.12, duration: 0.3 }}
               className="flex items-center gap-3 mb-8"
             >
               <div className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center">

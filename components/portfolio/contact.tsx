@@ -238,9 +238,9 @@ function ContactLinkItem({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
+      initial={{ opacity: 0, x: -12 }}
       animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.45, delay: 0.25 + index * 0.07 }}
+      transition={{ duration: 0.3, delay: Math.min(0.08 + index * 0.035, 0.22) }}
       className="group flex items-center gap-4 p-4 glass-card rounded-xl border border-white/5 hover:border-white/10 transition-all duration-300"
     >
       <div className={`w-10 h-10 rounded-lg border flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${color}`}>
@@ -299,7 +299,7 @@ function ContactLinkItem({
 // ─── Contact section ─────────────────────────────────────────────────────────
 export function ContactSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
 
   const [values, setValues] = useState<FormValues>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -363,9 +363,9 @@ export function ContactSection() {
 
       <div className="container max-w-6xl mx-auto px-6 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-16"
         >
           <SectionLabel>Contact</SectionLabel>
@@ -383,9 +383,9 @@ export function ContactSection() {
           <div className="space-y-3">
             {/* Availability badge */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.15 }}
+              transition={{ duration: 0.32, delay: 0.06 }}
               className="flex items-center justify-between p-4 glass-card rounded-xl border border-emerald-400/15 bg-emerald-400/3 mb-5"
             >
               <div className="flex items-center gap-3">
@@ -416,7 +416,7 @@ export function ContactSection() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.6, duration: 0.4 }}
+              transition={{ delay: 0.28, duration: 0.32 }}
               className="flex items-center gap-2 pt-1 pl-1"
             >
               <Clock className="w-3 h-3 text-white/20" />
@@ -428,9 +428,9 @@ export function ContactSection() {
 
           {/* Right: Form */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 16 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="glass-card rounded-2xl border border-white/5 overflow-hidden">
               {/* Form card header */}

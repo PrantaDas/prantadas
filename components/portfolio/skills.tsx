@@ -291,9 +291,9 @@ function SkillCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.85 }}
       transition={{
-        duration: 0.28,
-        delay: Math.min(index * 0.02, 0.4),
-        layout: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+        duration: 0.22,
+        delay: Math.min(index * 0.012, 0.18),
+        layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
       }}
       whileHover={{
         y: -5,
@@ -361,7 +361,7 @@ export function SkillsSection() {
   const [view, setView] = useState<"grid" | "radar">("grid");
   const [activeCategory, setActiveCategory] = useState("All");
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
 
   const allCategories = [...new Set(skillsData.map((s) => s.category))];
 
@@ -390,9 +390,9 @@ export function SkillsSection() {
       <div className="container max-w-6xl mx-auto px-6 relative z-10">
         {/* ── Header ── */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.65 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/15 bg-primary/5 mb-6">
@@ -439,9 +439,9 @@ export function SkillsSection() {
           <>
             {/* ── Category filters ── */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.55, delay: 0.15 }}
+              transition={{ duration: 0.32, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
               className="mb-10"
             >
               <div className="flex flex-wrap justify-center gap-2">
@@ -469,7 +469,7 @@ export function SkillsSection() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.25 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
             >
               <AnimatePresence mode="popLayout">
                 <motion.div
@@ -485,9 +485,9 @@ export function SkillsSection() {
 
             {/* ── Footer legend ── */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.32, delay: 0.18 }}
               className="mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
             >
               {allCategories.map((cat) => {

@@ -44,19 +44,19 @@ function CountUp({ target, suffix, inView }: { target: number; suffix: string; i
 
 export function AboutSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
 
   const containerVariants = {
     hidden: {},
-    visible: { transition: { staggerChildren: 0.1 } },
+    visible: { transition: { staggerChildren: 0.05 } },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 24 },
+    hidden: { opacity: 0, y: 14 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+      transition: { duration: 0.36, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
     },
   };
 
@@ -97,7 +97,7 @@ export function AboutSection() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
                 animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
-                transition={{ delay: 0.5, duration: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.32 }}
                 className="absolute -bottom-5 -right-5 glass-card rounded-xl p-4 border border-white/5"
               >
                 <div className="flex items-center gap-3">
@@ -116,7 +116,7 @@ export function AboutSection() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.8, y: -20 }}
                 animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
-                transition={{ delay: 0.6, duration: 0.5 }}
+                transition={{ delay: 0.24, duration: 0.32 }}
                 className="absolute -top-5 -left-5 glass-card rounded-xl p-3 border border-white/5"
               >
                 <div className="flex items-center gap-2">
@@ -129,7 +129,7 @@ export function AboutSection() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.8, x: 20 }}
                 animate={inView ? { opacity: 1, scale: 1, x: 0 } : {}}
-                transition={{ delay: 0.7, duration: 0.5 }}
+                transition={{ delay: 0.28, duration: 0.32 }}
                 className="absolute top-[40%] -right-8 glass-card rounded-xl px-3 py-2.5 border border-primary/10 hidden sm:flex items-center gap-2"
               >
                 <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">

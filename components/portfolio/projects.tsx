@@ -92,10 +92,10 @@ function RepoCard({ repo, index }: { repo: Repository; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.06 }}
+      viewport={{ once: true, margin: "0px 0px -5% 0px" }}
+      transition={{ duration: 0.32, delay: Math.min(index * 0.025, 0.2), ease: [0.22, 1, 0.36, 1] }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       className="group relative glass-card rounded-xl border border-white/5 hover:border-primary/20 transition-all duration-300 overflow-hidden flex flex-col"
@@ -198,10 +198,10 @@ function ProfessionalCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
+      viewport={{ once: true, margin: "0px 0px -5% 0px" }}
+      transition={{ duration: 0.32, delay: Math.min(index * 0.03, 0.2), ease: [0.22, 1, 0.36, 1] }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       className="group relative glass-card rounded-2xl border border-white/5 hover:border-primary/15 transition-all duration-300 overflow-hidden"
@@ -270,7 +270,7 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
   );
   const [activeCategory, setActiveCategory] = useState("All");
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
 
   const filtered =
     activeCategory === "All"
@@ -287,9 +287,9 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
       <div className="container max-w-6xl mx-auto px-6">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-14"
         >
           <SectionLabel>Work</SectionLabel>
@@ -303,9 +303,9 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
 
         {/* Tab switcher */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2, duration: 0.5 }}
+          transition={{ delay: 0.08, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           className="flex justify-center mb-10"
         >
           <div className="inline-flex p-1 rounded-xl bg-white/5 border border-white/8">
