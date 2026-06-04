@@ -14,6 +14,13 @@ const navLinks = [
   { label: "Blog", href: "/blog", isPage: true },
 ];
 
+// Mobile drawer + footer surface these alongside navLinks. Keeping the main
+// nav lean while still letting curious visitors discover them.
+const SECONDARY_LINKS: { label: string; href: string }[] = [
+  { label: "Now", href: "/now" },
+  { label: "Uses", href: "/uses" },
+];
+
 interface NavProps {
   onTerminalOpen?: () => void;
 }
@@ -240,11 +247,32 @@ export function Navigation({ onTerminalOpen }: NavProps) {
                 ),
               )}
 
+              {/* Secondary page links — smaller, below the main list */}
+              <div className="mt-2 flex items-center gap-5">
+                {SECONDARY_LINKS.map((link, i) => (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: (navLinks.length + i) * 0.055 }}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      aria-label={`Go to ${link.label} page`}
+                      className="font-mono text-xs uppercase tracking-widest text-white/45 hover:text-primary transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+
               {/* Hire Me in mobile menu */}
               <motion.button
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.055 }}
+                transition={{ delay: (navLinks.length + SECONDARY_LINKS.length) * 0.055 }}
                 onClick={hireMeClick}
                 className="mt-2 px-8 py-3 rounded-xl bg-primary text-background font-bold text-lg glow-cyan"
               >

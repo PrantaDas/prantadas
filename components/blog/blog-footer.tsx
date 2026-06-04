@@ -6,6 +6,8 @@ import { Github, Linkedin, Rss, ArrowUp } from "lucide-react";
 const NAV_LINKS = [
   { label: "Home", href: "/", external: false },
   { label: "All Articles", href: "/blog", external: false },
+  { label: "Now", href: "/now", external: false },
+  { label: "Uses", href: "/uses", external: false },
   { label: "Contact", href: "/#contact", external: false },
   { label: "RSS", href: "/api/rss", external: true },
 ];

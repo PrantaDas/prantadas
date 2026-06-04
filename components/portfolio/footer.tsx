@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Github, Linkedin, Send, Terminal, BookOpen } from "lucide-react";
+import { Github, Linkedin, Send, Terminal } from "lucide-react";
 
 interface FooterProps {
   year: number;
@@ -16,6 +16,9 @@ const navLinks = [
   { label: "Projects", href: "#projects" },
   { label: "Certifications", href: "#certifications" },
   { label: "Contact", href: "#contact" },
+  { label: "Now", href: "/now" },
+  { label: "Uses", href: "/uses" },
+  { label: "Blog", href: "/blog" },
 ];
 
 const builtWith = [
@@ -87,28 +90,32 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
               className="grid grid-cols-2 gap-x-4 gap-y-2"
               aria-label="Footer navigation"
             >
-              {navLinks.map(({ label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document
-                      .querySelector(href)
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="text-sm text-white/35 hover:text-primary transition-colors font-mono"
-                >
-                  {label}
-                </a>
-              ))}
-              <Link
-                href="/blog"
-                className="text-sm text-white/35 hover:text-primary transition-colors font-mono flex items-center gap-1.5"
-              >
-                <BookOpen className="w-3 h-3" />
-                Blog
-              </Link>
+              {navLinks.map(({ label, href }) => {
+                const isHash = href.startsWith("#");
+                return isHash ? (
+                  <a
+                    key={label}
+                    href={href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document
+                        .querySelector(href)
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="text-sm text-white/35 hover:text-primary transition-colors font-mono"
+                  >
+                    {label}
+                  </a>
+                ) : (
+                  <Link
+                    key={label}
+                    href={href}
+                    className="text-sm text-white/35 hover:text-primary transition-colors font-mono"
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 
