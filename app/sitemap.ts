@@ -16,6 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(post.updatedAt ?? post.date),
     changeFrequency: "monthly",
     priority: 0.8,
+    images: [`${BASE_URL}/blog/${post.slug}/opengraph-image`],
   }));
 
   const tagEntries: MetadataRoute.Sitemap = tags.map(({ tag }) => ({

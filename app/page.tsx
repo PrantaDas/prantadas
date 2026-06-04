@@ -118,11 +118,40 @@ export default async function Home() {
     readingTime: p.readingTime,
   }));
 
+  const BASE_URL = "https://prantadas.dev";
+
+  const projectsSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Featured Projects by Pranta Das",
+    numberOfItems: repositories.length,
+    itemListElement: repositories.slice(0, 20).map((repo, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "SoftwareSourceCode",
+        name: repo.name,
+        description: repo.description,
+        codeRepository: repo.html_url,
+        programmingLanguage: repo.language,
+        url: repo.html_url,
+        author: { "@type": "Person", name: "Pranta Das", url: BASE_URL },
+        keywords: (repo.topics ?? []).join(", "),
+      },
+    })),
+  };
+
   return (
-    <PortfolioClient
-      repositories={repositories}
-      year={year}
-      articles={articles}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectsSchema) }}
+      />
+      <PortfolioClient
+        repositories={repositories}
+        year={year}
+        articles={articles}
+      />
+    </>
   );
 }

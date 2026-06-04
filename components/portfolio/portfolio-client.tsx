@@ -2,24 +2,52 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import { SmoothScroll } from "@/components/portfolio/smooth-scroll";
 import { Navigation } from "@/components/portfolio/navigation";
 import { HeroSection } from "@/components/portfolio/hero";
 import { AboutSection } from "@/components/portfolio/about";
-import { SkillsSection } from "@/components/portfolio/skills";
-import { ExperienceSection } from "@/components/portfolio/experience";
-import { CertificationsSection } from "@/components/portfolio/certifications";
-import { ContactSection } from "@/components/portfolio/contact";
 import { SiteFooter } from "@/components/portfolio/footer";
-import { Terminal } from "@/components/portfolio/terminal";
 import { ScrollToTop } from "@/components/portfolio/scroll-to-top";
-import { ProjectsSection } from "@/components/portfolio/projects";
-import { MatrixRain } from "@/components/portfolio/matrix-rain";
-import { ShortcutsModal } from "@/components/portfolio/shortcuts-modal";
-import {
-  FeaturedArticlesSection,
-  type ArticleSummary,
-} from "@/components/portfolio/featured-articles";
+import { type ArticleSummary } from "@/components/portfolio/featured-articles";
+
+// Below-fold sections: code-split so initial JS payload is hero + about only.
+// SSR stays on so HTML/SEO is unchanged.
+const SkillsSection = dynamic(
+  () => import("@/components/portfolio/skills").then((m) => m.SkillsSection),
+);
+const ExperienceSection = dynamic(
+  () => import("@/components/portfolio/experience").then((m) => m.ExperienceSection),
+);
+const CertificationsSection = dynamic(
+  () => import("@/components/portfolio/certifications").then((m) => m.CertificationsSection),
+);
+const ContactSection = dynamic(
+  () => import("@/components/portfolio/contact").then((m) => m.ContactSection),
+);
+const ProjectsSection = dynamic(
+  () => import("@/components/portfolio/projects").then((m) => m.ProjectsSection),
+);
+const FeaturedArticlesSection = dynamic(
+  () =>
+    import("@/components/portfolio/featured-articles").then(
+      (m) => m.FeaturedArticlesSection,
+    ),
+);
+
+// On-demand overlays — ssr off, only ship/mount when user triggers.
+const Terminal = dynamic(
+  () => import("@/components/portfolio/terminal").then((m) => m.Terminal),
+  { ssr: false },
+);
+const MatrixRain = dynamic(
+  () => import("@/components/portfolio/matrix-rain").then((m) => m.MatrixRain),
+  { ssr: false },
+);
+const ShortcutsModal = dynamic(
+  () => import("@/components/portfolio/shortcuts-modal").then((m) => m.ShortcutsModal),
+  { ssr: false },
+);
 
 interface Repository {
   id: number;
@@ -72,6 +100,7 @@ function scrollTo(id: string) {
 
 export function PortfolioClient({ repositories, year, articles }: PortfolioClientProps) {
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalEverOpened, setTerminalEverOpened] = useState(false);
   const [matrixOpen, setMatrixOpen]   = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
@@ -82,6 +111,12 @@ export function PortfolioClient({ repositories, year, articles }: PortfolioClien
     setTerminalOpen(false);
     setMatrixOpen(true);
   }, []);
+
+  // Sticky flag: once terminal opens at all, keep it mounted so its
+  // close animation can play. Saves the Terminal chunk on initial render.
+  useEffect(() => {
+    if (terminalOpen) setTerminalEverOpened(true);
+  }, [terminalOpen]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -180,15 +215,18 @@ export function PortfolioClient({ repositories, year, articles }: PortfolioClien
 
       <SiteFooter year={year} onTerminalOpen={() => setTerminalOpen(true)} />
 
-      <Terminal
-        isOpen={terminalOpen}
-        onClose={() => setTerminalOpen(false)}
-        onMatrixTrigger={openMatrix}
-      />
+      {/* Mount terminal only after first open — preserves its own exit animation. */}
+      {terminalEverOpened && (
+        <Terminal
+          isOpen={terminalOpen}
+          onClose={() => setTerminalOpen(false)}
+          onMatrixTrigger={openMatrix}
+        />
+      )}
 
       <ScrollToTop />
 
-      {/* Overlays */}
+      {/* Overlays — only mount when triggered */}
       <AnimatePresence>
         {matrixOpen && <MatrixRain key="matrix" onClose={() => setMatrixOpen(false)} />}
       </AnimatePresence>

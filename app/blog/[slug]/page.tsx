@@ -189,15 +189,28 @@ export default async function BlogPostPage({ params }: Props) {
     },
     url: `${BASE_URL}/blog/${slug}`,
     mainEntityOfPage: `${BASE_URL}/blog/${slug}`,
-    image: `${BASE_URL}/opengraph-image.png`,
+    image: `${BASE_URL}/blog/${slug}/opengraph-image`,
     keywords: post.tags.join(", "),
     wordCount: post.content.split(/\s+/).length,
+    timeRequired: `PT${post.readingMinutes ?? Math.max(1, Math.round(post.content.split(/\s+/).length / 200))}M`,
     inLanguage: "en-US",
     isPartOf: {
       "@type": "Blog",
       name: "Pranta Das — Engineering Blog",
       url: `${BASE_URL}/blog`,
     },
+    ...(rating.count > 0 && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: Number(rating.avg.toFixed(2)),
+        ratingCount: rating.count,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    }),
+    ...(comments.length > 0 && {
+      commentCount: comments.length,
+    }),
   };
 
   const breadcrumbSchema = {
