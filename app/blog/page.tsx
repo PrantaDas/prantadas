@@ -5,7 +5,7 @@ import { BlogFooter } from "@/components/blog/blog-footer";
 import { getAllPostViews } from "@/app/actions/views";
 import { getAllPostRatings } from "@/app/actions/ratings";
 
-const BASE_URL = "https://prantadas.vercel.app";
+const BASE_URL = "https://prantadas.dev";
 
 export const metadata: Metadata = {
   title: "Blog — Engineering Articles & Technical Writing",

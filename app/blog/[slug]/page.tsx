@@ -49,7 +49,7 @@ import {
   Tag,
 } from "lucide-react";
 
-const BASE_URL = "https://prantadas.vercel.app";
+const BASE_URL = "https://prantadas.dev";
 
 interface Props {
   params: Promise<{ slug: string }>;

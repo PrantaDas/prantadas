@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export const dynamic = "force-static";
 
-const BASE_URL = "https://prantadas.vercel.app";
+const BASE_URL = "https://prantadas.dev";
 
 export default function robots(): MetadataRoute.Robots {
   return {

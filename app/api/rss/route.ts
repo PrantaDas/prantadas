@@ -1,7 +1,7 @@
 import { getAllBlogPosts } from "@/lib/blog";
 import { NextResponse } from "next/server";
 
-const BASE_URL = "https://prantadas.vercel.app";
+const BASE_URL = "https://prantadas.dev";
 
 function escapeXml(str: string): string {
   return str

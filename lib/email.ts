@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 const FROM = `Pranta Das <${process.env.SMTP_USER}>`;
 const OWNER_EMAIL = process.env.SMTP_USER as string;
-const SITE = "https://prantadas.vercel.app";
+const SITE = "https://prantadas.dev";
 
 function timestamp() {
   return new Date().toLocaleString("en-US", {

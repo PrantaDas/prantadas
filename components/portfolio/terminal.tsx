@@ -148,7 +148,7 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     makeLinks([
       {
         label: "→ Read all",
-        value: "prantadas.vercel.app/blog",
+        value: "prantadas.dev/blog",
         href: "/blog",
       },
     ]),

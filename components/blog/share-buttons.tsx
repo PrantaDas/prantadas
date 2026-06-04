@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link2, Check, Linkedin, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const BASE_URL = "https://prantadas.vercel.app";
+const BASE_URL = "https://prantadas.dev";
 
 interface ShareButtonsProps {
   title: string;

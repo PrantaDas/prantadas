@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "Pranta Das — Backend Developer & Team Lead | Bangladesh",
     description:
       "Backend Developer & Team Lead from Dhaka, Bangladesh. Node.js · TypeScript · NestJS · PostgreSQL · 3+ years building scalable platforms.",
-    url: "https://prantadas.vercel.app",
+    url: "https://prantadas.dev",
     siteName: "Pranta Das",
     locale: "en_US",
     type: "website",

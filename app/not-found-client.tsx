@@ -10,7 +10,7 @@ const lines = [
       <>
         GET{" "}
         <span className="text-white/70">
-          https://prantadas.vercel.app/
+          https://prantadas.dev/
           <span className="text-[#ff5f57]">[unknown-route]</span>
         </span>
       </>
@@ -78,7 +78,7 @@ export function NotFoundClient() {
             <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
             <span className="w-3 h-3 rounded-full bg-[#28c840]" />
             <span className="ml-3 font-mono text-xs text-white/25 select-none">
-              zsh — prantadas.vercel.app
+              zsh — prantadas.dev
             </span>
           </div>
 
@@ -96,7 +96,7 @@ export function NotFoundClient() {
                 <span>
                   GET{" "}
                   <span className="text-white/70">
-                    https://prantadas.vercel.app/
+                    https://prantadas.dev/
                     <span className="text-[#ff5f57]">[unknown-route]</span>
                   </span>
                 </span>

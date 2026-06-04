@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
             Admin Access
           </h1>
           <p className="text-sm text-white/35 text-center font-mono mb-8">
-            prantadas.vercel.app
+            prantadas.dev
           </p>
 
           <form action={action} className="space-y-3">

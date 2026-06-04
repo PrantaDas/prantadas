@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllBlogPosts, getAllTags } from "@/lib/blog";
 
-const BASE_URL = "https://prantadas.vercel.app";
+const BASE_URL = "https://prantadas.dev";
 
 export const revalidate = 3600;
 

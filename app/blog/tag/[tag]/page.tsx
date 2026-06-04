@@ -5,7 +5,7 @@ import { ArrowLeft, Tag } from "lucide-react";
 import { getAllBlogPosts, getAllTags } from "@/lib/blog";
 import { BlogCard } from "@/components/blog/blog-card";
 
-const BASE_URL = "https://prantadas.vercel.app";
+const BASE_URL = "https://prantadas.dev";
 
 interface Props {
   params: Promise<{ tag: string }>;
