@@ -67,13 +67,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const url = `${BASE_URL}/blog/${slug}`;
 
-  const ogImage = {
-    url: `${BASE_URL}/blog.webp`,
-    width: 1200,
-    height: 630,
-    alt: post.title,
-  };
-
   return {
     title: post.title,
     description: post.description,
@@ -99,15 +92,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       authors: [`${BASE_URL}/about`],
       tags: post.tags,
       section: post.tags[0] ?? "Engineering",
-      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: [`${BASE_URL}/blog.webp`],
-      creator: "@prantadas",
-      site: "@prantadas",
+      creator: "@PrantaD62436311",
+      site: "@PrantaD62436311",
     },
     alternates: {
       canonical: url,
@@ -198,7 +189,7 @@ export default async function BlogPostPage({ params }: Props) {
     },
     url: `${BASE_URL}/blog/${slug}`,
     mainEntityOfPage: `${BASE_URL}/blog/${slug}`,
-    image: `${BASE_URL}/blog.webp`,
+    image: `${BASE_URL}/opengraph-image.png`,
     keywords: post.tags.join(", "),
     wordCount: post.content.split(/\s+/).length,
     inLanguage: "en-US",
@@ -308,6 +299,8 @@ export default async function BlogPostPage({ params }: Props) {
                       alt={post.author.name}
                       width={40}
                       height={40}
+                      loading="lazy"
+                      decoding="async"
                       className="w-10 h-10 rounded-full object-cover border border-white/10 shrink-0"
                     />
                     <div className="min-w-0">
@@ -411,6 +404,8 @@ export default async function BlogPostPage({ params }: Props) {
                   alt={post.author.name}
                   width={56}
                   height={56}
+                  loading="lazy"
+                  decoding="async"
                   className="w-14 h-14 rounded-full object-cover border border-white/10 flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">

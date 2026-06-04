@@ -32,13 +32,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: `${count} article${count > 1 ? "s" : ""} tagged with "${decoded}".`,
       url: `${BASE_URL}/blog/tag/${tag}`,
       type: "website",
-      images: [{ url: "/photo.webp", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: `#${decoded} — Pranta Das Blog`,
       description: `${count} article${count > 1 ? "s" : ""} tagged with "${decoded}".`,
-      images: ["/photo.webp"],
     },
     alternates: { canonical: `${BASE_URL}/blog/tag/${tag}` },
   };
@@ -52,8 +50,27 @@ export default async function TagPage({ params }: Props) {
 
   if (posts.length === 0) notFound();
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${BASE_URL}/blog` },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: `#${decoded}`,
+        item: `${BASE_URL}/blog/tag/${tag}`,
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-background noise-overlay">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       {/* Nav */}
       <nav
         className="sticky top-0 z-40 border-b border-white/5 bg-background/80 backdrop-blur-md"

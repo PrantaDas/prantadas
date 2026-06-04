@@ -67,6 +67,8 @@ function Avatar({ src, name, size = "md" }: { src?: string; name: string; size?:
       <img
         src={src}
         alt={name}
+        loading="lazy"
+        decoding="async"
         onError={() => setImgError(true)}
         className={cn(dim, "rounded-full object-cover border border-white/10 flex-shrink-0")}
       />

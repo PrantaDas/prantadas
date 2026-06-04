@@ -1,0 +1,23 @@
+{
+  "name": "Pranta Das — Backend Developer & Team Lead",
+  "short_name": "Pranta Das",
+  "description": "Backend Developer & Team Lead from Dhaka, Bangladesh. Node.js · TypeScript · Distributed Systems.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00d4ff",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/opengraph-image.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ]
+}

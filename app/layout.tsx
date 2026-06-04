@@ -79,27 +79,25 @@ export const metadata: Metadata = {
     description:
       "Backend Developer & Team Lead from Dhaka, Bangladesh. Node.js · TypeScript · Distributed Systems · 3+ years building production platforms.",
     siteName: "Pranta Das",
-    images: [
-      {
-        url: "/photo.webp",
-        width: 1200,
-        height: 630,
-        alt: "Pranta Das — Backend Developer from Bangladesh",
-        type: "image/webp",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Pranta Das — Backend Developer & Team Lead",
     description:
       "Backend Developer & Team Lead from Dhaka, Bangladesh. Node.js · TypeScript · Distributed Systems.",
-    images: ["/photo.webp"],
-    creator: "@prantadas",
-    site: "@prantadas",
+    creator: "@PrantaD62436311",
+    site: "@PrantaD62436311",
   },
   alternates: {
     canonical: BASE_URL,
+    types: {
+      "application/rss+xml": `${BASE_URL}/api/rss`,
+    },
+  },
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
   },
   category: "technology",
 };
@@ -122,6 +120,7 @@ const personSchema = {
   sameAs: [
     "https://github.com/Prantadas",
     "https://linkedin.com/in/pranta-das7",
+    "https://x.com/PrantaD62436311",
     `${BASE_URL}`,
   ],
   knowsAbout: [

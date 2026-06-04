@@ -7,6 +7,7 @@ import {
   MapPin,
   Github,
   Linkedin,
+  Mail,
   Send,
   Sparkles,
   Loader2,
@@ -34,6 +35,14 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 const contactLinks = [
+  {
+    icon: Mail,
+    label: "Email",
+    value: "prantodas043@gmail.com",
+    href: "mailto:prantodas043@gmail.com",
+    copyable: true,
+    color: "text-primary/80 bg-primary/8 border-primary/15 group-hover:bg-primary/15",
+  },
   {
     icon: MapPin,
     label: "Location",

@@ -13,14 +13,6 @@ export const metadata: Metadata = {
       "Backend Developer & Team Lead from Dhaka, Bangladesh. Node.js · TypeScript · NestJS · PostgreSQL · 3+ years building scalable platforms.",
     url: "https://prantadas.vercel.app",
     siteName: "Pranta Das",
-    images: [
-      {
-        url: "/photo.webp",
-        width: 1200,
-        height: 630,
-        alt: "Pranta Das — Backend Developer from Dhaka, Bangladesh",
-      },
-    ],
     locale: "en_US",
     type: "website",
   },
@@ -29,7 +21,6 @@ export const metadata: Metadata = {
     title: "Pranta Das — Backend Developer & Team Lead",
     description:
       "Backend Developer from Dhaka, Bangladesh. Node.js · TypeScript · NestJS · 3+ years building scalable systems.",
-    images: ["/photo.webp"],
   },
 };
 

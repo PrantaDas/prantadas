@@ -117,6 +117,8 @@ export function BlogPostClient({
                     alt={post.author.name}
                     width={36}
                     height={36}
+                    loading="lazy"
+                    decoding="async"
                     className="w-9 h-9 rounded-full object-cover border border-white/10"
                   />
                   <div>
@@ -172,6 +174,8 @@ export function BlogPostClient({
                 alt={post.author.name}
                 width={56}
                 height={56}
+                loading="lazy"
+                decoding="async"
                 className="w-14 h-14 rounded-full object-cover border border-white/10 flex-shrink-0"
               />
               <div className="flex-1 min-w-0">

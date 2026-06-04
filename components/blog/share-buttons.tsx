@@ -53,7 +53,7 @@ export function ShareButtons({ title, slug }: ShareButtonsProps) {
       <div className="flex flex-wrap items-center gap-2 sm:inline-flex sm:align-middle">
         {/* X / Twitter */}
         <a
-          href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}&via=prantadas`}
+          href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}&via=PrantaD62436311`}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Share on X"

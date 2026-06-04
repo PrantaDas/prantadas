@@ -17,14 +17,12 @@ export const metadata: Metadata = {
       "Production-grade technical writing on TypeScript, Node.js, distributed systems, and software architecture.",
     url: `${BASE_URL}/blog`,
     type: "website",
-    images: [{ url: "/photo.webp", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Blog — Pranta Das | Engineering Articles",
     description:
       "Production-grade technical writing on TypeScript, Node.js, and distributed systems.",
-    images: ["/photo.webp"],
   },
   alternates: {
     canonical: `${BASE_URL}/blog`,
