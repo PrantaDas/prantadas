@@ -1,0 +1,343 @@
+---
+title: "Before Vercel and Render: How We Used to Host Frontends and Backends"
+description: "Before push-to-deploy platforms existed, shipping a frontend or backend meant a VPS, an Express server, an Nginx config, a TLS certificate you renewed by hand, and a deploy script you prayed for. A respectful look at how the plumbing used to work — and why understanding it still helps."
+date: "2026-06-07"
+updatedAt: "2026-06-07"
+tags:
+  ["Backend", "Frontend", "DevOps", "Engineering", "Node.js", "Infrastructure"]
+featured: false
+excerpt: "Vercel didn't invent shipping a website, and Render didn't invent running a Node.js server. They abstracted years of patterns developers had been hand-rolling on bare VPS boxes. Here is what hosting actually looked like before the dashboard."
+---
+
+If your first deploy was a `git push` that ended in a green checkmark and a `.vercel.app` URL, you started on top of a stack that took twenty years to build. That stack works. It deserves credit. None of what follows is a complaint about modern platforms — they are good products that solved real problems.
+
+This is about what was underneath them. Because every node in the Vercel dashboard, every "deploys" tab on Render, every preview URL on Netlify, replaces a specific thing developers used to do by hand. The work did not disappear. It got packaged.
+
+Worth understanding the original shape of that work — partly out of respect for the people who built the patterns, partly because the day a platform misbehaves is the day that knowledge becomes load-bearing.
+
+---
+
+## The Shape of a Deploy, Before Push-to-Deploy
+
+A typical "ship a webapp" task in 2014 had roughly these moving parts:
+
+1. A server you rented somewhere — DigitalOcean droplet, Linode, AWS EC2, OVH dedicated.
+2. An OS install you SSH'd into and configured by hand or with Ansible / Chef / Puppet.
+3. A web server in front — usually **Nginx**, sometimes Apache.
+4. A process manager keeping your Node / Python / Ruby app alive — **pm2**, **forever**, **systemd**, or **supervisord**.
+5. A reverse proxy config wiring `:80` and `:443` to your app on `:3000` or `:8000`.
+6. A TLS certificate you bought from a CA, or — after 2016 — pulled from **Let's Encrypt** via `certbot`, and renewed by cron.
+7. A deploy script. Usually a bash file. Often called `deploy.sh`.
+
+The "stack" was not a buzzword. It was a literal list of components you had personally installed.
+
+---
+
+## Hosting a Frontend: When "Static Site" Still Meant Apache
+
+Static hosting today feels free. Push to GitHub, connect the repo, get a global CDN with HTTPS in two minutes. Before that, "static site" was still a server problem.
+
+### The Apache + cPanel Era
+
+For the first decade of mass web development, shared hosting was the entry point. You bought a plan from a host — HostGator, Bluehost, DreamHost, Namecheap — got a cPanel login, and uploaded files through an FTP client like **FileZilla** or **Cyberduck**.
+
+The "build" step did not exist. You wrote HTML, CSS, jQuery. You uploaded it. The Apache server on the host noticed the file and served it. If the file was `.php`, Apache would pipe it through `mod_php` and execute it. If it was `.html`, it was sent verbatim.
+
+Updating the site meant connecting via FTP, dragging the changed file into the right folder, and overwriting the previous version. There was no atomic deploy. If you hit refresh during the upload, you got half the file.
+
+There was no preview environment. The staging environment was a second folder called `/staging` or a second cPanel account if you were organized.
+
+### The Build-and-Upload Era
+
+Then frontend builds appeared — first Grunt and Gulp, then Webpack, then everything. Suddenly your project produced a `dist/` or `build/` folder that was not the source code. You uploaded that.
+
+A common workflow circa 2016:
+
+```bash
+# On your laptop
+npm run build
+rsync -avz --delete ./dist/ user@server:/var/www/myapp/
+```
+
+That was the deploy. `rsync` synced the build output to a folder on a VPS. **Nginx** served files out of that folder. If you wanted a CDN, you also uploaded the same `dist/` to an S3 bucket and pointed CloudFront at it — by hand, with the AWS console, clicking through invalidations after every release.
+
+A typical Nginx config for a single-page app looked like this:
+
+```nginx
+server {
+    listen 80;
+    server_name myapp.com www.myapp.com;
+    return 301 https://myapp.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name myapp.com;
+
+    ssl_certificate     /etc/letsencrypt/live/myapp.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/myapp.com/privkey.pem;
+
+    root /var/www/myapp;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location ~* \.(?:js|css|woff2|svg|png|jpg)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+Every line of that config is something Vercel does for you and never shows you. The redirect from `:80` to `:443`. The TLS termination. The SPA fallback to `index.html` for client-side routing. The cache headers on static assets. None of it disappeared — it just moved into the platform's edge config, generated for you from sensible defaults.
+
+### Serving a Build from an Express Server
+
+Some teams skipped Nginx and used a Node server to serve their frontend directly. The reason was usually simple: the same Node process could serve the API and the static build, so you only had one thing to deploy.
+
+The code was famously small:
+
+```javascript
+const express = require('express');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Serve built frontend
+app.use(express.static(path.join(__dirname, 'client/build'), {
+  maxAge: '1y',
+  immutable: true,
+}));
+
+// API routes
+app.use('/api', require('./routes/api'));
+
+// SPA fallback — anything that didn't match a static file or an API route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server listening on :${PORT}`);
+});
+```
+
+That is a complete production frontend host in 15 lines of code. It worked. People shipped real revenue on this pattern.
+
+What it did not give you for free: a CDN, edge caching, automatic HTTPS, image optimization, instant rollbacks, atomic deploys, preview URLs per branch, custom domains with one click. Those things were doable — they were just additional work. Cloudflare in front of the origin server gave you a CDN. A second deploy with a feature branch gave you a preview, on a subdomain you set up by hand. A symlink swap during deploy gave you something close to atomicity.
+
+The platform now does all of it from a single dashboard. That is the real difference.
+
+---
+
+## Hosting a Backend: A Server That You Owned, Literally
+
+Backend hosting before Render and Railway and Fly was not conceptually complicated. It was operationally heavy.
+
+### The VPS Workflow
+
+You rented a Linux box. DigitalOcean cost $5 a month for a droplet. You SSH'd in as `root`, created a user, disabled root login over SSH, set up an SSH key, configured `ufw` to allow only `:22`, `:80`, and `:443`, installed Node via `nvm` or `nodesource`, installed PostgreSQL, installed Redis, installed Nginx, ran `certbot`, configured automatic certificate renewal in cron, set up swap because the $5 droplet had 512MB of RAM, installed log rotation, installed monitoring (or did not, and learned the hard way), installed fail2ban, set up backups (or did not, and learned the harder way).
+
+This was a checklist. Senior engineers had it memorized. There were blog posts called things like "My Ubuntu 16.04 Setup Script" and they were genuinely useful — entire careers were built on a deep familiarity with this checklist.
+
+Once the box was ready, the application got there one of three ways:
+
+**`git pull` on the server.** You SSH'd in, ran `git pull`, ran `npm install`, ran `npm run build`, restarted the process. Fragile. If `npm install` failed halfway, the app was in a broken state with no automatic rollback. People still did it.
+
+**A deploy script run from your laptop.** Something like:
+
+```bash
+#!/bin/bash
+set -e
+
+SERVER="deploy@api.myapp.com"
+APP_DIR="/var/www/api"
+RELEASE="$(date +%Y%m%d%H%M%S)"
+
+ssh "$SERVER" "mkdir -p $APP_DIR/releases/$RELEASE"
+rsync -avz --exclude node_modules ./ "$SERVER:$APP_DIR/releases/$RELEASE/"
+
+ssh "$SERVER" <<EOF
+  cd $APP_DIR/releases/$RELEASE
+  npm ci --production
+  ln -sfn $APP_DIR/releases/$RELEASE $APP_DIR/current
+  pm2 reload api --update-env
+EOF
+
+echo "Deployed release $RELEASE"
+```
+
+This pattern — a `releases/` directory of timestamped folders and a `current` symlink that flipped to the new one — was sometimes called **Capistrano-style deploys**, after the Ruby tool that popularized it. Rollback was symbolic link manipulation: `ln -sfn` to the previous timestamp, restart the process, done. It was, for what it cost, a reasonably good system.
+
+**A CI runner that SSH'd to the box.** Once Jenkins, TravisCI, and CircleCI became normal, the deploy script moved off your laptop and into a CI job. It still SSH'd to a box and ran the same commands. The trigger just became `git push` instead of `./deploy.sh`.
+
+### Keeping the Process Alive
+
+A naked `node server.js` dies the moment something throws an uncaught exception, and the box would not restart it. So you ran a process manager.
+
+**pm2** was the most common in Node land:
+
+```bash
+pm2 start server.js --name api -i max
+pm2 startup systemd
+pm2 save
+```
+
+That command ran the server with one worker per CPU core, registered pm2 with systemd so it survived reboots, and persisted the process list so `pm2 resurrect` would bring everything back. Logs went to `~/.pm2/logs/`. Rotating them was your problem unless you remembered to install `pm2-logrotate`.
+
+**systemd unit files** were the more "Linux-native" approach:
+
+```ini
+[Unit]
+Description=My API server
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/var/www/api/current
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/api.env
+
+[Install]
+WantedBy=multi-user.target
+```
+
+`systemctl enable api` made the service start on boot. `systemctl status api` told you whether it was running. `journalctl -u api -f` tailed its logs. Every modern platform's "your app is running" status indicator is, at the bottom of a deep stack of abstractions, ultimately a question about something like this systemd unit.
+
+### TLS Certificates: The `certbot` Cron Job
+
+Before Let's Encrypt launched in late 2015, an HTTPS certificate cost money. You bought one from a Certificate Authority — Comodo, DigiCert, RapidSSL — submitted a Certificate Signing Request, waited for domain validation by email, downloaded a `.crt` file, installed it into Nginx, and remembered to renew it a year later. The "remembered to" part was where many sites silently broke. An expired certificate showed users a full-page browser warning.
+
+Let's Encrypt changed this in two ways. Certificates became free, and `certbot` automated the issuance and renewal flow. A typical install was:
+
+```bash
+sudo certbot --nginx -d myapp.com -d www.myapp.com
+```
+
+`certbot` would talk to Let's Encrypt's ACME servers, prove you owned the domain by serving a temporary file from your Nginx root, get the certificate, install it into your Nginx config, and set up a cron job to renew it twice a day. The certificate was valid for 90 days, and `certbot renew` would only actually renew it if it was within 30 days of expiry.
+
+This was a huge improvement over manual purchase-and-install. It is also exactly what every platform now does invisibly — generate a Let's Encrypt cert for the domain you typed into the dashboard, and renew it forever without telling you.
+
+### Databases
+
+Database hosting was the other big lift.
+
+You could install PostgreSQL or MySQL on the same box as the application. Most small projects did. `apt install postgresql`, `createdb`, set a password, you have a database. Backups were a cron job:
+
+```bash
+0 3 * * * pg_dump myapp_prod | gzip > /backups/myapp_$(date +\%Y\%m\%d).sql.gz
+0 4 * * * find /backups -mtime +14 -delete
+```
+
+For anything serious, you separated the database onto its own box. For anything seriously serious, you used **Amazon RDS**, which was — at the time — genuinely a step ahead of self-hosting in terms of operational comfort. RDS gave you point-in-time recovery, automated snapshots, multi-AZ failover, and a connection string. It was expensive but it was reliable.
+
+The "click to add a Postgres database" button on every modern PaaS is, internally, doing the same thing — provisioning a managed database, generating credentials, attaching them to your app's environment. The interface compressed; the underlying components did not change.
+
+---
+
+## Heroku: The Bridge Between the Two Worlds
+
+No honest history of pre-Vercel hosting can skip Heroku. Heroku launched in 2007 and was, for nearly a decade, the closest thing the industry had to "git push and the rest happens."
+
+A Heroku deploy looked like this:
+
+```bash
+heroku create my-api
+git push heroku main
+heroku addons:create heroku-postgresql:hobby-dev
+heroku config:set NODE_ENV=production
+```
+
+Four commands. You had a running web service, a Postgres database, environment variables, automatic dyno restarts, log streaming, and an SSL endpoint at `https://my-api.herokuapp.com`. In 2010 this was magic.
+
+Heroku introduced the **buildpack** — a standardized way of detecting what kind of app you had pushed (Node, Ruby, Python, Go) and building it appropriately. It introduced the **Procfile**, a one-line description of how to start your process:
+
+```
+web: node server.js
+worker: node jobs/index.js
+```
+
+It introduced **dynos** — small, ephemeral container-like processes, well before containers became mainstream developer vocabulary. It introduced **review apps**, where every pull request got its own running deployment for testing.
+
+Almost every feature of every modern PaaS — preview environments, addons, env-var management, log streaming, instant rollback — was prototyped in Heroku first. Vercel, Render, Railway, Fly, Netlify: each took pieces of Heroku's model, applied it to a specific niche (static frontends, full-stack Node apps, Postgres-first backends, edge functions), and modernized the UX.
+
+When people say "before Vercel," there is a meaningful sense in which there was no real "before Heroku" for a developer who wanted convenience. Heroku just had limits — pricing got expensive past hobby tier, dyno hours had quotas, cold starts were slow, and it could not easily run modern frontend frameworks with their build-time complexity. The newer platforms specialized into the spaces where Heroku was awkward.
+
+---
+
+## The Things That Are Genuinely Different Now
+
+It would be dishonest to pretend the old way was secretly fine and modern platforms are just marketing. Some things were genuinely worse, and they are worth naming.
+
+**Atomic deploys were hard.** Without a symlink-swap pattern or a load balancer in front of multiple boxes, deploying meant a brief window where the app was either down or serving half-uploaded files. Production traffic during a deploy was a small gamble.
+
+**Rollbacks were manual.** Reverting a bad release meant `git checkout` to the previous commit, redeploy, restart. The "previous deployment" button that takes 200ms today was, in 2014, somewhere between two and ten minutes of clicking and SSH commands.
+
+**Scaling was vertical.** Need more capacity? Resize the droplet, take the downtime, hope the bigger box was fast enough. Horizontal scaling required a load balancer (HAProxy or Nginx upstream), session storage moved to Redis, sticky sessions configured carefully, and a deploy process that updated all the boxes in sequence. None of that was free.
+
+**TLS for previews did not exist.** A feature-branch preview deployment ran on `http://staging-foo.myapp.com` without HTTPS, or with a manually-issued wildcard certificate that you had to remember to install on every staging box. Modern platforms generating a valid cert for `pr-42.myapp.vercel.app` automatically is a genuine improvement.
+
+**Observability was DIY.** Logs were files on disks. Metrics were `top` and `htop` over SSH. APM cost extra and required an agent install. Modern dashboards that show you P50/P95 latencies and recent errors without you doing anything are not nothing.
+
+The old way was educational. It was not always better. It produced engineers who understood the system because the system forced them to. It also produced engineers who burned weekends chasing certificate expiries, debugging Nginx 502s at 2am, and wondering why pm2 had three zombie workers eating RAM.
+
+---
+
+## What the Modern Dashboard Is Hiding
+
+This part is the practical one. When you deploy to Vercel or Render today, the dashboard hides specific components. Every one of them still exists.
+
+**A build container.** When Vercel runs `npm run build`, it spins up an ephemeral container, clones your repo, installs dependencies, runs your build script, and captures the output. That container is gone five minutes later. The build artifacts get uploaded to internal storage.
+
+**A static file server.** Your `dist/` or `.next/static/` directory gets pushed to a CDN's origin storage. The CDN is the thing serving your CSS and JS to users. The platform configured the cache headers, the TLS, the edge routing, the gzip compression. All the Nginx stanzas from earlier — they exist, just inside the platform.
+
+**A serverless or container runtime.** Your `api/` routes or your Next.js server are executed somewhere. On Vercel, that "somewhere" is a serverless function (or an edge function, or a container, depending on the route). On Render and Railway, it is a long-running container. On Fly, it is a Firecracker VM. The platform decided which one based on your code. The decision used to be yours.
+
+**A managed database.** "Add Postgres" provisions an RDS-equivalent in the platform's cloud account, attaches it to your project, injects the connection string as an environment variable, and bills you per month. Same database engine; same Postgres version. Different invoice.
+
+**A reverse proxy.** Routing between `myapp.com`, `myapp.com/api/*`, `myapp.com/_next/static/*`, and the right backend for each is a reverse proxy decision. Nginx used to make it from a config file. The platform now makes it from your project's framework detection and your `vercel.json` / `render.yaml`.
+
+**A TLS terminator.** The HTTPS connection from the user terminates at the platform's edge, not at your application. Your code receives a plain HTTP request, internally, behind a TLS-stripped header. This is exactly what putting Nginx in front of a Node app used to do.
+
+**A health checker.** The platform polls your service, decides whether it is alive, and routes traffic away if it is not. This used to be a cron job that hit a `/health` endpoint and paged you via PagerDuty if it failed.
+
+None of this is hidden in a sinister way. It is hidden because most teams do not need to think about it most of the time, and that is a feature. But it is hidden, and when something behaves unexpectedly, you are debugging through abstractions.
+
+---
+
+## What's Worth Carrying Forward
+
+The point of this history is not to argue that everyone should re-learn how to write Nginx configs and set up systemd units. Most projects shouldn't. The platforms are good, the abstractions are sound, and the time savings are real.
+
+The point is that the abstractions are leaky in predictable places, and the engineers who know the underlying components ship through those leaks faster.
+
+A few things from the old world stay useful:
+
+**Reading Nginx and systemd configs.** Almost any serious production system you eventually work on will have one or both, either directly or inside a container image. Being able to read a `nginx.conf` and a `.service` file is a transferable skill that does not become obsolete.
+
+**Understanding the reverse proxy boundary.** Most production weirdness — request size limits, timeout behavior, header rewriting, sticky sessions, IP addresses showing up as `127.0.0.1` — happens at the reverse proxy boundary, whether that proxy is Nginx, Cloudflare, AWS ALB, or Vercel's edge.
+
+**Knowing how a deploy actually flows.** Source code becomes a build artifact becomes a running process. That pipeline always exists. Knowing how to instrument and inspect it pays off when a "build succeeded but app is 502'ing" log shows up and the dashboard does not have an answer.
+
+**Owning a small box.** Renting a $5 VPS and running a tiny service on it — manually, with Nginx and certbot and systemd — is one of the most useful learning exercises in software engineering. It clarifies what every higher-level abstraction is doing.
+
+---
+
+## Closing
+
+The platforms we use now are not magic. They are the accumulation of every "I had to do this by hand last week" complaint that developers wrote on blogs and forums for two decades, eventually packaged into products that solve those problems by default.
+
+The original way of doing it was not bad. It was just expensive in time. Engineers spent hours on the things the dashboard now does in a click, and most of those engineers are still around — building the platforms, or moving up the stack, or working on problems that are now actually about the application instead of the infrastructure underneath it.
+
+Worth being a little reverent about. The dashboards work because someone, somewhere, wrote and re-wrote and operated this stack until the patterns were obvious enough to automate. Anyone who deploys a Next.js app to Vercel in 2026 is, indirectly, standing on top of a long chain of `deploy.sh` scripts that worked just well enough to keep the internet running until something better came along.
+
+---
+
+*I started shipping production systems on bare DigitalOcean droplets — pm2, Nginx, certbot, the works. I now ship most things to Vercel and Render. Both feel correct for what they are. The thing the modern platforms are best at is letting you forget the parts of the old stack that were not the interesting part of your job. The thing the old stack was best at was forcing you to learn why the parts existed.*
