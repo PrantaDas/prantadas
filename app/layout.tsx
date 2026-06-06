@@ -95,10 +95,6 @@ export const metadata: Metadata = {
     },
   },
   manifest: "/site.webmanifest",
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.ico",
-  },
   category: "technology",
 };
 
