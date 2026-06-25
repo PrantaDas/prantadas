@@ -43,6 +43,9 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+    // Rewrites barrel imports (react-icons/si etc.) to per-icon paths so only
+    // used icons ship instead of the whole multi-MB pack. Biggest bundle win.
+    optimizePackageImports: ["react-icons", "lucide-react", "framer-motion"],
   },
 };
 

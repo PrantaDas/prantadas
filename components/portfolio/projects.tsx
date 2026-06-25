@@ -355,11 +355,11 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
                     className={`px-4 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 border flex items-center gap-1.5 ${
                       activeCategory === cat
                         ? "bg-primary/15 border-primary/30 text-primary"
-                        : "border-white/8 text-white/40 hover:border-white/20 hover:text-white/60"
+                        : "border-white/8 text-white/60 hover:border-white/20 hover:text-white/80"
                     }`}
                   >
                     {cat}
-                    <span className={`text-[9px] px-1 py-0.5 rounded ${activeCategory === cat ? "bg-primary/20 text-primary/70" : "bg-white/6 text-white/25"}`}>
+                    <span className={`text-[9px] px-1 py-0.5 rounded ${activeCategory === cat ? "bg-primary/25 text-primary" : "bg-white/10 text-white/55"}`}>
                       {categoryCounts[cat]}
                     </span>
                   </button>

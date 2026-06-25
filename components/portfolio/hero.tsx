@@ -173,7 +173,18 @@ export function HeroSection() {
   const ox = useSpring(useMotionValue(0), { stiffness: 40, damping: 25 });
   const oy = useSpring(useMotionValue(0), { stiffness: 40, damping: 25 });
 
+  // Only run pointer-parallax + looping orb pulse on devices that have a fine
+  // pointer and haven't asked to reduce motion. Skips the expensive repaint
+  // loop on touch/mobile and respects accessibility.
+  const [motionOk, setMotionOk] = useState(false);
+  useEffect(() => {
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setMotionOk(!coarse && !reduced);
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!motionOk) return;
     const r = heroRef.current?.getBoundingClientRect();
     if (!r) return;
     const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
@@ -202,10 +213,18 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/60 pointer-events-none" />
 
-      {/* Orbs */}
-      <motion.div style={{ x: ox, y: oy }} className="absolute top-1/3 left-1/3 w-[700px] h-[700px] rounded-full blur-[140px] bg-primary/12 pointer-events-none" />
-      <motion.div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px] bg-secondary/10 pointer-events-none"
-        animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 8, repeat: Infinity }} />
+      {/* Orbs — radial-gradients (painted once) instead of blur() filters, which
+          re-rasterize a huge area every frame when moved. will-change keeps the
+          parallax orb on its own compositor layer so the spring only composites. */}
+      <motion.div
+        style={motionOk ? { x: ox, y: oy } : undefined}
+        className="absolute top-1/3 left-1/3 w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle,_rgba(0,212,255,0.12),_transparent_70%)] pointer-events-none [will-change:transform]"
+      />
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,_rgba(139,92,246,0.10),_transparent_70%)] pointer-events-none"
+        animate={motionOk ? { opacity: [0.5, 0.8, 0.5] } : undefined}
+        transition={motionOk ? { duration: 8, repeat: Infinity } : undefined}
+      />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-12 py-20">
         <div className="flex flex-col lg:flex-row lg:items-center gap-12 lg:gap-8 xl:gap-16">

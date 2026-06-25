@@ -43,7 +43,7 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
             <div className="font-display font-bold text-white/80 text-lg mb-2">
               Pranta Das
             </div>
-            <p className="text-xs text-white/30 font-mono leading-relaxed mb-4 max-w-[200px]">
+            <p className="text-xs text-white/55 font-mono leading-relaxed mb-4 max-w-[200px]">
               Backend developer building scalable systems from Dhaka,
               Bangladesh.
             </p>
@@ -73,7 +73,7 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
                     href.startsWith("http") ? "noopener noreferrer" : undefined
                   }
                   aria-label={label}
-                  className="w-8 h-8 rounded-lg border border-white/8 bg-white/3 flex items-center justify-center text-white/30 hover:text-primary hover:border-primary/25 hover:bg-primary/5 transition-all"
+                  className="w-8 h-8 rounded-lg border border-white/8 bg-white/3 flex items-center justify-center text-white/55 hover:text-primary hover:border-primary/25 hover:bg-primary/5 transition-all"
                 >
                   <Icon className="w-3.5 h-3.5" aria-hidden="true" />
                 </Link>
@@ -83,7 +83,7 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
 
           {/* Navigation column */}
           <div>
-            <div className="text-xs font-mono text-white/30 uppercase tracking-widest mb-4">
+            <div className="text-xs font-mono text-white/55 uppercase tracking-widest mb-4">
               Navigation
             </div>
             <nav
@@ -102,7 +102,7 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
                         .querySelector(href)
                         ?.scrollIntoView({ behavior: "smooth" });
                     }}
-                    className="text-sm text-white/35 hover:text-primary transition-colors font-mono"
+                    className="text-sm text-white/55 hover:text-primary transition-colors font-mono"
                   >
                     {label}
                   </a>
@@ -110,7 +110,7 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
                   <Link
                     key={label}
                     href={href}
-                    className="text-sm text-white/35 hover:text-primary transition-colors font-mono"
+                    className="text-sm text-white/55 hover:text-primary transition-colors font-mono"
                   >
                     {label}
                   </Link>
@@ -121,14 +121,14 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
 
           {/* Built with column */}
           <div>
-            <div className="text-xs font-mono text-white/30 uppercase tracking-widest mb-4">
+            <div className="text-xs font-mono text-white/55 uppercase tracking-widest mb-4">
               Built with
             </div>
             <div className="flex flex-wrap gap-2">
               {builtWith.map(({ name, color }) => (
                 <span
                   key={name}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-lg border border-white/8 bg-white/3 text-white/40 hover:text-white/65 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-lg border border-white/8 bg-white/3 text-white/60 hover:text-white/80 transition-colors"
                 >
                   <span
                     className="w-1.5 h-1.5 rounded-full flex-shrink-0"
@@ -142,8 +142,8 @@ export function SiteFooter({ year, onTerminalOpen }: FooterProps) {
               onClick={onTerminalOpen}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              aria-label="Open interactive terminal"
-              className="mt-4 flex items-center gap-2 px-3.5 py-2 rounded-lg border border-white/8 text-white/30 hover:text-primary hover:border-primary/20 transition-all text-xs font-mono"
+              aria-label="Open Terminal"
+              className="mt-4 flex items-center gap-2 px-3.5 py-2 rounded-lg border border-white/8 text-white/55 hover:text-primary hover:border-primary/20 transition-all text-xs font-mono"
             >
               <Terminal className="w-3.5 h-3.5" aria-hidden="true" />
               Open Terminal

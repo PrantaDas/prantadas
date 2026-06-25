@@ -305,7 +305,7 @@ function SkillCard({
       <div
         className={`text-2xl sm:text-3xl leading-none ${c.text} group-hover:${c.activeText} transition-colors duration-200`}
       >
-        <Icon />
+        <Icon aria-hidden="true" />
       </div>
       <span className="text-[10px] sm:text-xs font-medium text-white/50 group-hover:text-white/80 transition-colors duration-200 text-center leading-tight px-1">
         {skill.name}

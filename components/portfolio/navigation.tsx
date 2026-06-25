@@ -85,7 +85,7 @@ export function Navigation({ onTerminalOpen }: NavProps) {
         role="banner"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "py-3 bg-background/70 backdrop-blur-xl border-b border-white/[0.05]"
+            ? "py-3 bg-background/90 border-b border-white/[0.05]"
             : "py-5 bg-transparent"
         }`}
       >
@@ -93,7 +93,7 @@ export function Navigation({ onTerminalOpen }: NavProps) {
           {/* Logo */}
           <motion.a
             href="#"
-            aria-label="Pranta Das — Back to top"
+            aria-label="PD — Pranta Das, back to top"
             className="flex items-center gap-2.5 group shrink-0"
             whileHover={{ scale: 1.02 }}
           >
