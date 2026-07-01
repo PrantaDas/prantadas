@@ -166,7 +166,7 @@ function SectionHeader({ group }: { group: Group }) {
         </h2>
       </div>
       {group.intro && (
-        <p className="text-sm text-white/45 leading-relaxed pl-12">
+        <p className="text-sm text-white/65 leading-relaxed pl-12">
           {group.intro}
         </p>
       )}
@@ -189,7 +189,7 @@ function ItemRow({ item }: { item: Item }) {
         </span>
       )}
       {item.note && (
-        <span className="text-sm text-white/45 leading-relaxed sm:flex-1">
+        <span className="text-sm text-white/65 leading-relaxed sm:flex-1">
           {item.note}
         </span>
       )}
@@ -208,7 +208,7 @@ export default function UsesPage() {
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-white/45 hover:text-white/80 transition-colors text-sm font-mono group"
+            className="inline-flex items-center gap-2 text-white/65 hover:text-white/80 transition-colors text-sm font-mono group"
             aria-label="Back to home"
           >
             <ArrowLeft
@@ -217,7 +217,7 @@ export default function UsesPage() {
             />
             Home
           </Link>
-          <span className="text-white/20 text-xs font-mono tracking-widest uppercase">
+          <span className="text-white/48 text-xs font-mono tracking-widest uppercase">
             Uses
           </span>
         </div>
@@ -232,12 +232,12 @@ export default function UsesPage() {
           <h1 className="font-display text-4xl sm:text-5xl font-bold text-white mb-4 leading-tight">
             What I <span className="gradient-text-cyan">Use</span>
           </h1>
-          <p className="text-white/50 text-base md:text-lg max-w-2xl leading-relaxed">
+          <p className="text-white/68 text-base md:text-lg max-w-2xl leading-relaxed">
             The hardware, software and daily-driver tools I reach for when
             building things. A living inventory — when something changes here,
             it changed because the old thing wasn&apos;t working.
           </p>
-          <p className="text-xs font-mono text-white/30 mt-4">
+          <p className="text-xs font-mono text-white/55 mt-4">
             Last reviewed {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
           </p>
         </header>
@@ -258,7 +258,7 @@ export default function UsesPage() {
 
         {/* Footer link */}
         <div className="mt-20 pt-10 border-t border-white/[0.06] flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-white/62">
             Curious what I&apos;m working on this month?
           </p>
           <Link

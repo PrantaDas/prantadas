@@ -44,7 +44,7 @@ function RadarTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-white/10 bg-[#0d1117] px-3 py-2 text-xs font-mono shadow-xl">
-      <span className="text-white/50">{payload[0]?.payload?.subject}: </span>
+      <span className="text-white/68">{payload[0]?.payload?.subject}: </span>
       <span className="text-primary font-bold">{payload[0]?.value}%</span>
     </div>
   );
@@ -108,7 +108,7 @@ function TechRadar({ inView }: { inView: boolean }) {
         {[...radarData].sort((a, b) => b.score - a.score).map(({ subject, score }) => (
           <RadarBarRow key={subject} subject={subject} score={score} inView={inView} />
         ))}
-        <p className="text-xs text-white/20 font-mono pt-2">
+        <p className="text-xs text-white/48 font-mono pt-2">
           * Based on real-world production experience
         </p>
       </div>
@@ -263,7 +263,7 @@ const categoryMeta: Record<
 };
 
 const fallbackMeta = {
-  text: "text-white/40",
+  text: "text-white/62",
   border: "border-white/10",
   bg: "bg-white/5",
   activeBg: "bg-white/10",
@@ -296,18 +296,18 @@ function SkillCard({
         layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
       }}
       whileHover={{
-        y: -5,
-        transition: { duration: 0.18 },
+        y: -4,
+        transition: { duration: 0.18, ease: "easeOut" },
       }}
-      style={{ "--card-glow": c.glow } as React.CSSProperties}
-      className="group flex flex-col items-center gap-2.5 p-3.5 rounded-2xl border border-white/8 bg-white/3 backdrop-blur-sm cursor-default select-none hover:border-opacity-100 transition-all duration-200 skill-card"
+      style={{ "--card-glow": c.glow, willChange: "transform" } as React.CSSProperties}
+      className="group flex flex-col items-center gap-2.5 p-3.5 rounded-2xl border border-white/8 bg-white/5 cursor-default select-none hover:border-white/20 transition-colors duration-200 skill-card"
     >
       <div
         className={`text-2xl sm:text-3xl leading-none ${c.text} group-hover:${c.activeText} transition-colors duration-200`}
       >
         <Icon aria-hidden="true" />
       </div>
-      <span className="text-[10px] sm:text-xs font-medium text-white/50 group-hover:text-white/80 transition-colors duration-200 text-center leading-tight px-1">
+      <span className="text-[10px] sm:text-xs font-medium text-white/68 group-hover:text-white/80 transition-colors duration-200 text-center leading-tight px-1">
         {skill.name}
       </span>
       <span
@@ -341,7 +341,7 @@ function FilterPill({
         ${
           isActive
             ? `${meta.activeBg} ${meta.activeBorder} ${meta.activeText}`
-            : "bg-transparent border-white/8 text-white/35 hover:border-white/20 hover:text-white/65"
+            : "bg-transparent border-white/8 text-white/58 hover:border-white/20 hover:text-white/65"
         }
       `}
     >
@@ -407,7 +407,7 @@ export function SkillsSection() {
             <span className="gradient-text-purple">Technologies</span>
           </h2>
 
-          <p className="text-white/40 max-w-md mx-auto mb-6">
+          <p className="text-white/62 max-w-md mx-auto mb-6">
             A curated toolkit forged through years of building real-world
             systems at scale.
           </p>
@@ -418,7 +418,7 @@ export function SkillsSection() {
               <button
                 onClick={() => setView("grid")}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono transition-all ${
-                  view === "grid" ? "bg-white/10 text-white/85" : "text-white/35 hover:text-white/60"
+                  view === "grid" ? "bg-white/10 text-white/85" : "text-white/58 hover:text-white/74"
                 }`}
               >
                 <LayoutGrid className="w-3.5 h-3.5" /> Skill Grid
@@ -426,7 +426,7 @@ export function SkillsSection() {
               <button
                 onClick={() => setView("radar")}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono transition-all ${
-                  view === "radar" ? "bg-white/10 text-white/85" : "text-white/35 hover:text-white/60"
+                  view === "radar" ? "bg-white/10 text-white/85" : "text-white/58 hover:text-white/74"
                 }`}
               >
                 <Radar className="w-3.5 h-3.5" /> Tech Radar
@@ -498,7 +498,7 @@ export function SkillsSection() {
                     onClick={() =>
                       setActiveCategory(activeCategory === cat ? "All" : cat)
                     }
-                    className="group flex items-center gap-1.5 text-[11px] text-white/20 hover:text-white/45 transition-colors"
+                    className="group flex items-center gap-1.5 text-[11px] text-white/48 hover:text-white/65 transition-colors"
                   >
                     <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.dot}`} />
                     <span className="font-mono">{cat}</span>
@@ -506,7 +506,7 @@ export function SkillsSection() {
                   </button>
                 );
               })}
-              <span className="text-[11px] font-mono text-white/12 ml-2">
+              <span className="text-[11px] font-mono text-white/45 ml-2">
                 · {skillsData.length} total
               </span>
             </motion.div>

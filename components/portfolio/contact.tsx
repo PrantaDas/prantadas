@@ -57,7 +57,7 @@ const contactLinks = [
     value: "github.com/Prantadas",
     href: "https://github.com/Prantadas",
     copyable: false,
-    color: "text-white/50 bg-white/5 border-white/10 group-hover:bg-white/10",
+    color: "text-white/68 bg-white/5 border-white/10 group-hover:bg-white/10",
   },
   {
     icon: Linkedin,
@@ -149,7 +149,7 @@ function FloatingInput({
       ? "border-primary/40 ring-1 ring-primary/10"
       : "border-white/8 hover:border-white/15";
 
-  const baseClass = `w-full bg-transparent border rounded-xl px-4 text-sm text-white/80 outline-none transition-all duration-200 resize-none placeholder:text-white/20 ${borderClass}`;
+  const baseClass = `w-full bg-transparent border rounded-xl px-4 text-sm text-white/80 outline-none transition-all duration-200 resize-none placeholder:text-white/48 ${borderClass}`;
 
   return (
     <div className="relative">
@@ -158,7 +158,7 @@ function FloatingInput({
         className={`absolute left-4 transition-all duration-200 pointer-events-none z-10 font-mono text-xs ${
           focused || hasValue
             ? `-top-2 bg-[#060810] px-1 ${showError ? "text-red-400/70" : "text-primary/70"}`
-            : `top-3 ${showError ? "text-red-400/50" : "text-white/30"}`
+            : `top-3 ${showError ? "text-red-400/50" : "text-white/55"}`
         }`}
       >
         {label}
@@ -179,7 +179,7 @@ function FloatingInput({
           />
           <span
             className={`absolute bottom-2.5 right-3.5 text-[10px] font-mono transition-colors ${
-              atLimit ? "text-amber-400/60" : "text-white/20"
+              atLimit ? "text-amber-400/60" : "text-white/48"
             } ${focused || hasValue ? "opacity-100" : "opacity-0"}`}
           >
             {value.length}/{MESSAGE_LIMIT}
@@ -247,7 +247,7 @@ function ContactLinkItem({
         <Icon className="w-4 h-4" />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-xs font-mono text-white/30 mb-0.5">{label}</div>
+        <div className="text-xs font-mono text-white/55 mb-0.5">{label}</div>
         {href ? (
           <Link
             href={href}
@@ -286,7 +286,7 @@ function ContactLinkItem({
                 exit={{ scale: 0.5, opacity: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                <Copy className="w-3 h-3 text-white/30" />
+                <Copy className="w-3 h-3 text-white/55" />
               </motion.span>
             )}
           </AnimatePresence>
@@ -372,7 +372,7 @@ export function ContactSection() {
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
             Let's <span className="gradient-text-cyan">Connect</span>
           </h2>
-          <p className="text-white/40 max-w-lg mx-auto">
+          <p className="text-white/62 max-w-lg mx-auto">
             Open to new opportunities, collaborations, or just a conversation
             about code
           </p>
@@ -399,10 +399,10 @@ export function ContactSection() {
                 </div>
                 <div>
                   <div className="text-sm font-medium text-emerald-400/90">Available for opportunities</div>
-                  <div className="text-xs text-white/30 font-mono mt-0.5">Open to full-time & freelance roles</div>
+                  <div className="text-xs text-white/55 font-mono mt-0.5">Open to full-time & freelance roles</div>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-mono text-white/25 bg-white/4 border border-white/8 rounded-lg px-2.5 py-1">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-white/52 bg-white/4 border border-white/8 rounded-lg px-2.5 py-1">
                 <Zap className="w-3 h-3" />
                 Active
               </div>
@@ -419,8 +419,8 @@ export function ContactSection() {
               transition={{ delay: 0.28, duration: 0.32 }}
               className="flex items-center gap-2 pt-1 pl-1"
             >
-              <Clock className="w-3 h-3 text-white/20" />
-              <span className="text-xs font-mono text-white/25">
+              <Clock className="w-3 h-3 text-white/48" />
+              <span className="text-xs font-mono text-white/52">
                 Typical response within 24 hours
               </span>
             </motion.div>
@@ -440,7 +440,7 @@ export function ContactSection() {
                     <h3 className="font-display text-base font-semibold text-white/80">
                       Send a Message
                     </h3>
-                    <p className="text-xs text-white/30 font-mono mt-0.5">
+                    <p className="text-xs text-white/55 font-mono mt-0.5">
                       I read every message personally
                     </p>
                   </div>
@@ -516,7 +516,7 @@ export function ContactSection() {
                     )}
                   </motion.button>
 
-                  <p className="text-center text-[11px] text-white/20 font-mono">
+                  <p className="text-center text-[11px] text-white/48 font-mono">
                     * Required fields
                   </p>
                 </form>

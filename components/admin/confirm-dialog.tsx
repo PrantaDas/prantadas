@@ -50,18 +50,18 @@ export function ConfirmDialog({
               <AlertTriangle className={`w-5 h-5 ${danger ? "text-red-400" : "text-amber-400"}`} />
             </div>
 
-            <button onClick={onCancel} className="absolute top-4 right-4 text-white/25 hover:text-white/60 transition-colors">
+            <button onClick={onCancel} className="absolute top-4 right-4 text-white/52 hover:text-white/74 transition-colors">
               <X className="w-4 h-4" />
             </button>
 
             <h3 className="font-display font-semibold text-white/90 text-base mb-2">{title}</h3>
-            <p className="text-sm text-white/45 leading-relaxed mb-6">{description}</p>
+            <p className="text-sm text-white/65 leading-relaxed mb-6">{description}</p>
 
             <div className="flex items-center gap-3 justify-end">
               <button
                 onClick={onCancel}
                 disabled={isPending}
-                className="px-4 py-2 rounded-xl border border-white/10 text-sm font-mono text-white/50 hover:text-white/80 hover:border-white/20 transition-all disabled:opacity-50"
+                className="px-4 py-2 rounded-xl border border-white/10 text-sm font-mono text-white/68 hover:text-white/80 hover:border-white/20 transition-all disabled:opacity-50"
               >
                 Cancel
               </button>

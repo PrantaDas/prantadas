@@ -16,7 +16,7 @@ function getLevel(name: string) {
   if (name.includes("Intermediate")) return levelMap.Intermediate;
   if (name.includes("Advanced")) return levelMap.Advanced;
   if (name.includes("Basic")) return levelMap.Basic;
-  return { label: "Certified", ring: "border-white/10", badge: "bg-white/5 text-white/50 border-white/15", bar: "bg-primary", pct: 60 };
+  return { label: "Certified", ring: "border-white/10", badge: "bg-white/5 text-white/68 border-white/15", bar: "bg-primary", pct: 60 };
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -48,7 +48,7 @@ export function CertificationsSection() {
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
             Verified <span className="gradient-text-purple">Skills</span>
           </h2>
-          <p className="text-white/40 max-w-lg mx-auto">
+          <p className="text-white/62 max-w-lg mx-auto">
             Industry-recognised certifications from HackerRank — proof of production-level proficiency
           </p>
         </motion.div>
@@ -95,13 +95,13 @@ export function CertificationsSection() {
                   <h3 className="font-display font-semibold text-white/85 text-sm mb-1 leading-snug">
                     {cert.name}
                   </h3>
-                  <p className="text-xs font-mono text-white/30 mb-4">HackerRank · 2024</p>
+                  <p className="text-xs font-mono text-white/55 mb-4">HackerRank · 2024</p>
 
                   {/* Proficiency bar */}
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-mono text-white/25">Proficiency</span>
-                      <span className="text-[10px] font-mono text-white/35">{level.pct}%</span>
+                      <span className="text-[10px] font-mono text-white/52">Proficiency</span>
+                      <span className="text-[10px] font-mono text-white/58">{level.pct}%</span>
                     </div>
                     <div className="h-1 rounded-full bg-white/6 overflow-hidden">
                       <motion.div
@@ -114,7 +114,7 @@ export function CertificationsSection() {
                   </div>
 
                   {/* Badges row */}
-                  <div className="flex items-center gap-3 mb-4 text-[10px] text-white/30 font-mono">
+                  <div className="flex items-center gap-3 mb-4 text-[10px] text-white/55 font-mono">
                     <span className="flex items-center gap-1">
                       <BadgeCheck className="w-3 h-3 text-emerald-400" />
                       Verified
@@ -130,7 +130,7 @@ export function CertificationsSection() {
                     href={cert.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-white/8 text-xs font-mono text-white/40 hover:border-primary/30 hover:text-primary hover:bg-primary/5 transition-all duration-200"
+                    className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-white/8 text-xs font-mono text-white/62 hover:border-primary/30 hover:text-primary hover:bg-primary/5 transition-all duration-200"
                   >
                     <ExternalLink className="w-3 h-3" />
                     View Certificate

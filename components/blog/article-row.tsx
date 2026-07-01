@@ -38,10 +38,10 @@ export function ArticleRow({ post, index, viewCount, rating }: ArticleRowProps) 
       <div className="relative grid sm:grid-cols-[5rem_1fr_auto] gap-x-7 gap-y-3 py-7">
         {/* Left rail: index + date */}
         <div className="flex sm:flex-col items-baseline sm:items-start gap-3 sm:gap-1.5">
-          <span className="font-mono text-xs text-white/30 group-hover:text-primary/80 transition-colors tabular-nums">
+          <span className="font-mono text-xs text-white/55 group-hover:text-primary/80 transition-colors tabular-nums">
             {String(index).padStart(3, "0")}
           </span>
-          <span className="font-mono text-xs text-white/45">{date}</span>
+          <span className="font-mono text-xs text-white/65">{date}</span>
         </div>
 
         {/* Main: title, dek, tags */}
@@ -49,14 +49,14 @@ export function ArticleRow({ post, index, viewCount, rating }: ArticleRowProps) 
           <h3 className="font-display text-lg sm:text-xl font-semibold text-white/85 group-hover:text-white transition-colors leading-snug mb-2 text-balance">
             {post.title}
           </h3>
-          <p className="text-white/55 text-sm leading-relaxed line-clamp-2 mb-3 max-w-2xl">
+          <p className="text-white/72 text-sm leading-relaxed line-clamp-2 mb-3 max-w-2xl">
             {post.excerpt}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {post.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="font-mono text-[11px] text-white/45 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]"
+                className="font-mono text-[11px] text-white/65 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]"
               >
                 {tag}
               </span>
@@ -65,7 +65,7 @@ export function ArticleRow({ post, index, viewCount, rating }: ArticleRowProps) 
         </div>
 
         {/* Right: meta + affordance */}
-        <div className="flex sm:flex-col items-center sm:items-end gap-4 sm:gap-2.5 text-xs font-mono text-white/50 sm:text-right">
+        <div className="flex sm:flex-col items-center sm:items-end gap-4 sm:gap-2.5 text-xs font-mono text-white/68 sm:text-right">
           <span className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5" aria-hidden="true" />
             {post.readingTime}
@@ -83,7 +83,7 @@ export function ArticleRow({ post, index, viewCount, rating }: ArticleRowProps) 
             </span>
           )}
           <ArrowUpRight
-            className="hidden sm:block w-4 h-4 text-white/30 group-hover:text-primary transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            className="hidden sm:block w-4 h-4 text-white/55 group-hover:text-primary transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             aria-hidden="true"
           />
         </div>

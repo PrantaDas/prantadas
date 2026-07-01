@@ -36,7 +36,7 @@ export function FeaturedArticle({ post, viewCount, rating }: FeaturedArticleProp
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/12 border border-primary/30 text-primary text-[11px] font-mono uppercase tracking-[0.15em]">
             ✦ Featured
           </span>
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/45">
+          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/65">
             {kicker}
           </span>
         </div>
@@ -45,11 +45,11 @@ export function FeaturedArticle({ post, viewCount, rating }: FeaturedArticleProp
           {post.title}
         </h2>
 
-        <p className="text-white/60 text-sm sm:text-base leading-relaxed line-clamp-3 mb-8 max-w-xl">
+        <p className="text-white/74 text-sm sm:text-base leading-relaxed line-clamp-3 mb-8 max-w-xl">
           {post.excerpt}
         </p>
 
-        <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-mono text-white/55 mb-7">
+        <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-mono text-white/72 mb-7">
           <span className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
             {date}

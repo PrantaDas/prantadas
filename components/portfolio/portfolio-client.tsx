@@ -236,7 +236,7 @@ export function PortfolioClient({ repositories, year, articles }: PortfolioClien
 
       {/* Keyboard hints */}
       {!terminalOpen && !matrixOpen && (
-        <div className="fixed bottom-6 left-6 hidden lg:flex items-center gap-3 text-white/20 text-xs font-mono pointer-events-none select-none z-40">
+        <div className="fixed bottom-6 left-6 hidden lg:flex items-center gap-3 text-white/48 text-xs font-mono pointer-events-none select-none z-40">
           <span className="flex items-center gap-1.5">
             <kbd className="px-1.5 py-0.5 rounded border border-white/10 text-[10px]">`</kbd>
             terminal

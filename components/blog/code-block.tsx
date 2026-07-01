@@ -29,7 +29,7 @@ export function CodeBlock({
       <button
         onClick={copy}
         aria-label="Copy code"
-        className="absolute top-3 right-3 p-1.5 rounded-md bg-white/5 border border-white/10 text-white/30 hover:text-white/70 hover:bg-white/10 transition-all opacity-0 group-hover/code:opacity-100 focus-visible:opacity-100"
+        className="absolute top-3 right-3 p-1.5 rounded-md bg-white/5 border border-white/10 text-white/55 hover:text-white/70 hover:bg-white/10 transition-all opacity-0 group-hover/code:opacity-100 focus-visible:opacity-100"
       >
         {copied ? (
           <Check className="w-3.5 h-3.5 text-emerald-400" />

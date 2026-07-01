@@ -261,11 +261,11 @@ export default async function BlogPostPage({ params }: Props) {
             aria-label="Breadcrumb"
             className="mb-8 flex items-center justify-between gap-4"
           >
-            <ol className="flex items-center gap-2 text-sm font-mono text-white/50 min-w-0">
+            <ol className="flex items-center gap-2 text-sm font-mono text-white/68 min-w-0">
               <li>
                 <Link
                   href="/"
-                  className="hover:text-white/60 transition-colors"
+                  className="hover:text-white/74 transition-colors"
                 >
                   Home
                 </Link>
@@ -274,14 +274,14 @@ export default async function BlogPostPage({ params }: Props) {
               <li>
                 <Link
                   href="/blog"
-                  className="hover:text-white/60 transition-colors"
+                  className="hover:text-white/74 transition-colors"
                 >
                   Blog
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
               <li
-                className="text-white/50 truncate max-w-[220px]"
+                className="text-white/68 truncate max-w-[220px]"
                 aria-current="page"
               >
                 {post.title}
@@ -298,7 +298,7 @@ export default async function BlogPostPage({ params }: Props) {
                 <h1 className="font-display text-3xl sm:text-4xl md:text-[2.6rem] font-bold text-white leading-tight mb-4">
                   {post.title}
                 </h1>
-                <p className="text-white/50 text-base md:text-lg leading-relaxed mb-6">
+                <p className="text-white/68 text-base md:text-lg leading-relaxed mb-6">
                   {post.description}
                 </p>
 
@@ -320,16 +320,16 @@ export default async function BlogPostPage({ params }: Props) {
                       <div className="text-sm font-semibold text-white/90 leading-tight">
                         {post.author.name}
                       </div>
-                      <div className="mt-1 flex items-center flex-wrap gap-x-2 gap-y-0.5 text-xs font-mono text-white/55">
+                      <div className="mt-1 flex items-center flex-wrap gap-x-2 gap-y-0.5 text-xs font-mono text-white/72">
                         <time dateTime={new Date(post.date).toISOString()}>
                           {formattedDate}
                         </time>
-                        <span className="text-white/25" aria-hidden="true">·</span>
+                        <span className="text-white/52" aria-hidden="true">·</span>
                         <span>{post.readingTime}</span>
                         {formattedUpdated && (
                           <>
-                            <span className="text-white/25" aria-hidden="true">·</span>
-                            <span className="text-white/45">Updated {formattedUpdated}</span>
+                            <span className="text-white/52" aria-hidden="true">·</span>
+                            <span className="text-white/65">Updated {formattedUpdated}</span>
                           </>
                         )}
                       </div>
@@ -341,18 +341,18 @@ export default async function BlogPostPage({ params }: Props) {
                     <ViewCountDisplay initialCount={viewCount} />
                     {rating.count > 0 && (
                       <span
-                        className="flex items-center gap-1.5 text-white/55"
+                        className="flex items-center gap-1.5 text-white/72"
                         title={`${rating.avg.toFixed(1)} / 5 from ${rating.count} rating${rating.count !== 1 ? "s" : ""}`}
                       >
                         <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" aria-hidden="true" />
                         <span className="text-yellow-400/85">{rating.avg.toFixed(1)}</span>
-                        <span className="text-white/40">({rating.count})</span>
+                        <span className="text-white/62">({rating.count})</span>
                       </span>
                     )}
                     {comments.length > 0 && (
                       <a
                         href="#comments"
-                        className="flex items-center gap-1.5 text-white/55 hover:text-primary transition-colors"
+                        className="flex items-center gap-1.5 text-white/72 hover:text-primary transition-colors"
                         aria-label={`Jump to ${comments.length} comment${comments.length !== 1 ? "s" : ""}`}
                       >
                         <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
@@ -373,7 +373,7 @@ export default async function BlogPostPage({ params }: Props) {
                       key={tag}
                       href={`/blog/tag/${encodeURIComponent(tag)}`}
                       role="listitem"
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/4 border border-white/8 text-white/40 text-xs font-mono hover:bg-primary/8 hover:border-primary/20 hover:text-primary/80 transition-colors"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/4 border border-white/8 text-white/62 text-xs font-mono hover:bg-primary/8 hover:border-primary/20 hover:text-primary/80 transition-colors"
                     >
                       <Tag className="w-2.5 h-2.5" aria-hidden="true" />
                       {tag}
@@ -428,7 +428,7 @@ export default async function BlogPostPage({ params }: Props) {
                   <div className="text-xs font-mono text-primary/60 mb-2">
                     {post.author.role} · {post.author.location}
                   </div>
-                  <p className="text-sm text-white/45 leading-relaxed mb-3">
+                  <p className="text-sm text-white/65 leading-relaxed mb-3">
                     Backend Developer &amp; Team Lead building scalable systems
                     and sharing engineering insights from Dhaka, Bangladesh.
                   </p>
@@ -441,7 +441,7 @@ export default async function BlogPostPage({ params }: Props) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Pranta Das on GitHub"
-                      className="text-white/50 hover:text-white/70 transition-colors"
+                      className="text-white/68 hover:text-white/70 transition-colors"
                     >
                       <Github className="w-4 h-4" aria-hidden="true" />
                     </a>
@@ -450,14 +450,14 @@ export default async function BlogPostPage({ params }: Props) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Pranta Das on LinkedIn"
-                      className="text-white/50 hover:text-white/70 transition-colors"
+                      className="text-white/68 hover:text-white/70 transition-colors"
                     >
                       <Linkedin className="w-4 h-4" aria-hidden="true" />
                     </a>
                     <Link
                       href="/#contact"
                       aria-label="Contact Pranta Das"
-                      className="text-white/50 hover:text-white/70 transition-colors"
+                      className="text-white/68 hover:text-white/70 transition-colors"
                     >
                       <Send className="w-4 h-4" aria-hidden="true" />
                     </Link>
@@ -482,7 +482,7 @@ export default async function BlogPostPage({ params }: Props) {
                       href={`/blog/${prev.slug}`}
                       className="group flex flex-col gap-2 p-4 rounded-xl border border-white/10 bg-white/2 hover:border-primary/25 hover:bg-primary/4 transition-all duration-200"
                     >
-                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/55 group-hover:text-primary/70 transition-colors">
+                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/72 group-hover:text-primary/70 transition-colors">
                         <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
                         Previous
                       </span>
@@ -496,7 +496,7 @@ export default async function BlogPostPage({ params }: Props) {
                       href={`/blog/${next.slug}`}
                       className="group flex flex-col gap-2 p-4 rounded-xl border border-white/10 bg-white/2 hover:border-primary/25 hover:bg-primary/4 transition-all duration-200 sm:text-right"
                     >
-                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/55 group-hover:text-primary/70 transition-colors sm:justify-end">
+                      <span className="flex items-center gap-1.5 text-xs font-mono text-white/72 group-hover:text-primary/70 transition-colors sm:justify-end">
                         Next
                         <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                       </span>

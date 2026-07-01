@@ -121,7 +121,7 @@ export function LikeButton({ slug }: LikeButtonProps) {
             "relative inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-mono transition-all duration-150 overflow-visible",
             counts.userVote === "like"
               ? "bg-primary/15 text-primary border border-primary/25"
-              : "text-white/40 hover:text-white/70 hover:bg-white/5 border border-transparent",
+              : "text-white/62 hover:text-white/70 hover:bg-white/5 border border-transparent",
           )}
         >
           {/* Particles */}
@@ -175,7 +175,7 @@ export function LikeButton({ slug }: LikeButtonProps) {
             "relative inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-mono transition-all duration-150 overflow-hidden",
             counts.userVote === "dislike"
               ? "bg-red-500/15 text-red-400 border border-red-500/25"
-              : "text-white/40 hover:text-white/70 hover:bg-white/5 border border-transparent",
+              : "text-white/62 hover:text-white/70 hover:bg-white/5 border border-transparent",
           )}
         >
           <AnimatePresence>
@@ -232,7 +232,7 @@ export function LikeButton({ slug }: LikeButtonProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="text-[11px] font-mono text-white/25 pl-1"
+            className="text-[11px] font-mono text-white/52 pl-1"
           >
             {proof}
           </motion.p>

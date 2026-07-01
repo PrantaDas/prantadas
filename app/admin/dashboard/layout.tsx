@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <div>
             <div className="text-xs font-bold text-white/80">Admin Panel</div>
-            <div className="text-[10px] text-white/25 font-mono">Pranta Das</div>
+            <div className="text-[10px] text-white/52 font-mono">Pranta Das</div>
           </div>
         </div>
 
@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-white/45 hover:text-white/80 hover:bg-white/5 transition-colors font-mono group"
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-white/65 hover:text-white/80 hover:bg-white/5 transition-colors font-mono group"
             >
               <Icon className="w-4 h-4 flex-shrink-0 group-hover:text-primary transition-colors" />
               {label}
@@ -46,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <form action={adminLogout}>
             <button
               type="submit"
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-white/35 hover:text-red-400 hover:bg-red-500/8 transition-colors font-mono"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-white/58 hover:text-red-400 hover:bg-red-500/8 transition-colors font-mono"
             >
               <LogOut className="w-4 h-4 flex-shrink-0" />
               Sign Out

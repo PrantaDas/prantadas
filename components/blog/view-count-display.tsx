@@ -33,7 +33,7 @@ export function ViewCountDisplay({ initialCount }: { initialCount: number }) {
   }, [pathname]); // only re-run when navigating to a different post
 
   return (
-    <div className="flex items-center gap-1.5 text-white/40">
+    <div className="flex items-center gap-1.5 text-white/62">
       <Eye className="w-4 h-4" aria-hidden="true" />
       <span>{count.toLocaleString()}</span>
       <span>{count === 1 ? "view" : "views"}</span>

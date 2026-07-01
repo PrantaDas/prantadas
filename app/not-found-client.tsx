@@ -23,8 +23,8 @@ const lines = [
   { type: "trace2", content: "  at dispatch (next/dist/server/router.js:312:9)" },
   { type: "divider" },
   { type: "meta", key: "status_code", value: "404", valueClass: "text-[#febc2e]" },
-  { type: "meta", key: "message", value: '"resource not found in route table"', valueClass: "text-white/50" },
-  { type: "meta", key: "suggestion", value: '"check the URL or use one of the commands below"', valueClass: "text-white/50" },
+  { type: "meta", key: "message", value: '"resource not found in route table"', valueClass: "text-white/68" },
+  { type: "meta", key: "suggestion", value: '"check the URL or use one of the commands below"', valueClass: "text-white/68" },
   { type: "divider" },
 ];
 
@@ -77,7 +77,7 @@ export function NotFoundClient() {
             <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
             <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
             <span className="w-3 h-3 rounded-full bg-[#28c840]" />
-            <span className="ml-3 font-mono text-xs text-white/25 select-none">
+            <span className="ml-3 font-mono text-xs text-white/52 select-none">
               zsh — prantadas.dev
             </span>
           </div>
@@ -91,7 +91,7 @@ export function NotFoundClient() {
               className="space-y-0"
             >
               {/* Prompt line */}
-              <motion.div variants={lineVariant} className="flex items-start gap-2 text-white/50 mb-3">
+              <motion.div variants={lineVariant} className="flex items-start gap-2 text-white/68 mb-3">
                 <span className="text-[#00d4ff] select-none">❯</span>
                 <span>
                   GET{" "}
@@ -110,13 +110,13 @@ export function NotFoundClient() {
               <motion.div variants={lineVariant} className="text-[#ff5f57] mb-1">
                 ✗ RouteError: Cannot resolve path
               </motion.div>
-              <motion.div variants={lineVariant} className="text-white/30 text-xs pl-4 mb-0.5">
+              <motion.div variants={lineVariant} className="text-white/55 text-xs pl-4 mb-0.5">
                 at Router.resolve (router.ts:204:13)
               </motion.div>
-              <motion.div variants={lineVariant} className="text-white/30 text-xs pl-4 mb-0.5">
+              <motion.div variants={lineVariant} className="text-white/55 text-xs pl-4 mb-0.5">
                 at AppRouter.navigate (app.ts:88:5)
               </motion.div>
-              <motion.div variants={lineVariant} className="text-white/20 text-xs pl-4">
+              <motion.div variants={lineVariant} className="text-white/48 text-xs pl-4">
                 at dispatch (next/dist/server/router.js:312:9)
               </motion.div>
 
@@ -125,18 +125,18 @@ export function NotFoundClient() {
               </motion.div>
 
               {/* Diagnosis */}
-              <motion.div variants={lineVariant} className="space-y-1 text-xs text-white/35 mb-0">
+              <motion.div variants={lineVariant} className="space-y-1 text-xs text-white/58 mb-0">
                 <p>
-                  <span className="text-white/20">#</span> status_code{" "}
+                  <span className="text-white/48">#</span> status_code{" "}
                   <span className="text-[#febc2e] font-bold">404</span>
                 </p>
                 <p>
-                  <span className="text-white/20">#</span> message{" "}
-                  <span className="text-white/50">&quot;resource not found in route table&quot;</span>
+                  <span className="text-white/48">#</span> message{" "}
+                  <span className="text-white/68">&quot;resource not found in route table&quot;</span>
                 </p>
                 <p>
-                  <span className="text-white/20">#</span> suggestion{" "}
-                  <span className="text-white/50">&quot;check the URL or use one of the commands below&quot;</span>
+                  <span className="text-white/48">#</span> suggestion{" "}
+                  <span className="text-white/68">&quot;check the URL or use one of the commands below&quot;</span>
                 </p>
               </motion.div>
 
@@ -146,33 +146,33 @@ export function NotFoundClient() {
 
               {/* Action commands */}
               <motion.div variants={lineVariant} className="space-y-2">
-                <p className="text-white/25 text-xs mb-3"># suggested actions:</p>
+                <p className="text-white/52 text-xs mb-3"># suggested actions:</p>
                 <Link
                   href="/"
                   className="flex items-center gap-3 group/cmd rounded-lg px-3 py-2.5 border border-white/[0.06] hover:border-[#00d4ff]/25 hover:bg-[#00d4ff]/[0.04] transition-all duration-200"
                 >
                   <span className="text-[#00d4ff] select-none">$</span>
-                  <span className="text-white/60 group-hover/cmd:text-white/90 transition-colors">
+                  <span className="text-white/74 group-hover/cmd:text-white/90 transition-colors">
                     cd <span className="text-[#00d4ff]">~/home</span>
                   </span>
-                  <span className="ml-auto text-white/20 text-xs group-hover/cmd:text-white/40 transition-colors">↵</span>
+                  <span className="ml-auto text-white/48 text-xs group-hover/cmd:text-white/62 transition-colors">↵</span>
                 </Link>
                 <Link
                   href="/blog"
                   className="flex items-center gap-3 group/cmd rounded-lg px-3 py-2.5 border border-white/[0.06] hover:border-purple-500/25 hover:bg-purple-500/[0.04] transition-all duration-200"
                 >
                   <span className="text-purple-400 select-none">$</span>
-                  <span className="text-white/60 group-hover/cmd:text-white/90 transition-colors">
+                  <span className="text-white/74 group-hover/cmd:text-white/90 transition-colors">
                     ls <span className="text-purple-400">~/blog</span>
                   </span>
-                  <span className="ml-auto text-white/20 text-xs group-hover/cmd:text-white/40 transition-colors">↵</span>
+                  <span className="ml-auto text-white/48 text-xs group-hover/cmd:text-white/62 transition-colors">↵</span>
                 </Link>
               </motion.div>
 
               {/* Blinking cursor */}
               <motion.div
                 variants={lineVariant}
-                className="mt-4 flex items-center gap-2 text-white/30"
+                className="mt-4 flex items-center gap-2 text-white/55"
               >
                 <span className="text-[#00d4ff] select-none">❯</span>
                 <span className="w-2 h-4 bg-[#00d4ff]/50 animate-pulse rounded-sm" />
@@ -186,7 +186,7 @@ export function NotFoundClient() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.8 }}
-          className="mt-5 text-center font-mono text-xs text-white/15 select-none"
+          className="mt-5 text-center font-mono text-xs text-white/45 select-none"
         >
           exit code 404 · process exited with errors
         </motion.p>

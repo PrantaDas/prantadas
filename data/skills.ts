@@ -5,7 +5,7 @@ import {
   BiLogoMongodb,
   BiLogoPostgresql,
 } from "react-icons/bi";
-import { FaTerminal } from "react-icons/fa6";
+import { FaTerminal, FaLayerGroup } from "react-icons/fa6";
 import { FaNode } from "react-icons/fa";
 import { DiRedis } from "react-icons/di";
 import {
@@ -24,6 +24,8 @@ import {
   SiPuppeteer,
   SiOpensea,
   SiNestjs,
+  SiFastify,
+  SiSwagger,
 } from "react-icons/si";
 
 export const skillsData = [
@@ -56,6 +58,16 @@ export const skillsData = [
     name: "Nest.js",
     logo: SiNestjs,
     category: "Backend",
+  },
+  {
+    name: "Fastify",
+    logo: SiFastify,
+    category: "Backend",
+  },
+  {
+    name: "Swagger",
+    logo: SiSwagger,
+    category: "API",
   },
   {
     name: "GraphQL",
@@ -120,6 +132,11 @@ export const skillsData = [
   {
     name: "Kafka",
     logo: SiApachekafka,
+    category: "Message Queue",
+  },
+  {
+    name: "BullMQ",
+    logo: FaLayerGroup,
     category: "Message Queue",
   },
   {

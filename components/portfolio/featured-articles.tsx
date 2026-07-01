@@ -96,7 +96,7 @@ const TAG_PALETTE: Record<string, { text: string; bg: string; ring: string; colo
   };
 
 const DEFAULT_PALETTE = {
-  text: "text-white/40",
+  text: "text-white/62",
   bg: "bg-white/5",
   ring: "border-white/10",
   color: "rgba(255,255,255,0.15)",
@@ -162,7 +162,7 @@ function HeroCard({
                 );
               })}
             </div>
-            <div className="flex items-center gap-4 text-xs font-mono text-white/30">
+            <div className="flex items-center gap-4 text-xs font-mono text-white/55">
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3 h-3" aria-hidden="true" />
                 {article.readingTime}
@@ -179,14 +179,14 @@ function HeroCard({
               <h3 className="text-2xl md:text-[1.75rem] font-display font-bold text-white/85 group-hover:text-white transition-colors leading-snug mb-3">
                 {article.title}
               </h3>
-              <p className="text-white/45 leading-relaxed max-w-2xl">
+              <p className="text-white/65 leading-relaxed max-w-2xl">
                 {article.description}
               </p>
             </div>
             <div className="flex-shrink-0 mt-1 hidden sm:block">
               <div className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary/40 flex items-center justify-center transition-all duration-300 group-hover:bg-primary/10">
                 <ArrowUpRight
-                  className="w-4 h-4 text-white/30 group-hover:text-primary transition-colors"
+                  className="w-4 h-4 text-white/55 group-hover:text-primary transition-colors"
                   aria-hidden="true"
                 />
               </div>
@@ -262,13 +262,13 @@ function ArticleCard({
           </h3>
 
           {/* Description */}
-          <p className="text-sm text-white/35 leading-relaxed line-clamp-2 mb-4">
+          <p className="text-sm text-white/58 leading-relaxed line-clamp-2 mb-4">
             {article.description}
           </p>
 
           {/* Footer */}
           <div className="mt-auto flex items-center justify-between pt-3 border-t border-white/[0.06]">
-            <div className="flex items-center gap-3 text-[11px] font-mono text-white/25">
+            <div className="flex items-center gap-3 text-[11px] font-mono text-white/52">
               <span className="flex items-center gap-1">
                 <Clock className="w-2.5 h-2.5" aria-hidden="true" />
                 {article.readingTime}
@@ -346,7 +346,7 @@ export function FeaturedArticlesSection({ articles }: FeaturedArticlesProps) {
                 <span className="text-white/90">Selected</span>{" "}
                 <span className="gradient-text-cyan">Articles</span>
               </h2>
-              <p className="mt-3 text-white/40 max-w-xl leading-relaxed">
+              <p className="mt-3 text-white/62 max-w-xl leading-relaxed">
                 Engineering insights, architectural decisions, and lessons from
                 building production systems — written from real experience.
               </p>
@@ -354,7 +354,7 @@ export function FeaturedArticlesSection({ articles }: FeaturedArticlesProps) {
 
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/8 text-sm font-mono text-white/40 hover:text-white hover:border-white/20 transition-all duration-200 group flex-shrink-0 self-start md:self-auto"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/8 text-sm font-mono text-white/62 hover:text-white hover:border-white/20 transition-all duration-200 group flex-shrink-0 self-start md:self-auto"
               aria-label="View all blog articles"
             >
               View all articles

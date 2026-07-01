@@ -24,7 +24,7 @@ export function ToggleStatusBtn({ slug, status }: { slug: string; status: "publi
       className={
         status === "published"
           ? "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors disabled:opacity-50"
-          : "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-white/5 border border-white/10 text-white/35 hover:bg-white/10 hover:text-white/55 transition-colors disabled:opacity-50"
+          : "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-white/5 border border-white/10 text-white/58 hover:bg-white/10 hover:text-white/72 transition-colors disabled:opacity-50"
       }
     >
       {status === "published"
@@ -53,7 +53,7 @@ export function DeletePostBtn({ slug }: { slug: string }) {
         onClick={() => setOpen(true)}
         disabled={isPending}
         aria-label="Delete post"
-        className="p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+        className="p-1.5 rounded-lg text-white/48 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
       >
         <Trash2 className="w-3.5 h-3.5" />
       </button>

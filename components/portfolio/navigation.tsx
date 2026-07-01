@@ -133,7 +133,7 @@ export function Navigation({ onTerminalOpen }: NavProps) {
                     className={`relative z-10 transition-colors duration-200 ${
                       activeSection === link.href.slice(1)
                         ? "text-primary"
-                        : "text-white/40 group-hover:text-white/80"
+                        : "text-white/62 group-hover:text-white/80"
                     }`}
                   >
                     {link.label}
@@ -170,7 +170,7 @@ export function Navigation({ onTerminalOpen }: NavProps) {
               aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
-              className="lg:hidden p-2 text-white/50 hover:text-white transition-colors"
+              className="lg:hidden p-2 text-white/68 hover:text-white transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
             >
               {mobileOpen ? (
@@ -260,7 +260,7 @@ export function Navigation({ onTerminalOpen }: NavProps) {
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
                       aria-label={`Go to ${link.label} page`}
-                      className="font-mono text-xs uppercase tracking-widest text-white/45 hover:text-primary transition-colors"
+                      className="font-mono text-xs uppercase tracking-widest text-white/65 hover:text-primary transition-colors"
                     >
                       {link.label}
                     </Link>

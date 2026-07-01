@@ -94,7 +94,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     // Blockquote
     blockquote: ({ children }) => (
       <blockquote className="my-6 border-l-2 border-primary/40 pl-5 py-1 bg-primary/5 rounded-r-xl">
-        <div className="text-white/60 italic leading-relaxed">{children}</div>
+        <div className="text-white/74 italic leading-relaxed">{children}</div>
       </blockquote>
     ),
 
@@ -129,7 +129,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </th>
     ),
     td: ({ children }) => (
-      <td className="px-4 py-3 text-white/60 border-b border-white/5 last:border-0">
+      <td className="px-4 py-3 text-white/74 border-b border-white/5 last:border-0">
         {children}
       </td>
     ),

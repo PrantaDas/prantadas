@@ -12,7 +12,7 @@ export default async function EditPostPage({ params }: Props) {
     <div className="p-8 max-w-3xl">
       <div className="mb-8">
         <h1 className="font-display text-2xl font-bold text-white mb-1">Edit Post</h1>
-        <p className="text-sm text-white/35 font-mono">/{slug}</p>
+        <p className="text-sm text-white/58 font-mono">/{slug}</p>
       </div>
       <EditPostForm post={post} />
     </div>

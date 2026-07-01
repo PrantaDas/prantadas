@@ -128,7 +128,7 @@ export function BlogClient({
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-white/55 hover:text-white transition-colors text-sm font-mono group"
+            className="inline-flex items-center gap-2 text-white/72 hover:text-white transition-colors text-sm font-mono group"
             aria-label="Back to home"
           >
             <ArrowLeft
@@ -143,7 +143,7 @@ export function BlogClient({
               href="/api/rss"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-white/45 hover:text-primary transition-colors text-xs font-mono"
+              className="inline-flex items-center gap-1.5 text-white/65 hover:text-primary transition-colors text-xs font-mono"
               aria-label="RSS Feed"
             >
               <Rss className="w-3.5 h-3.5" aria-hidden="true" />
@@ -175,14 +175,14 @@ export function BlogClient({
             <span className="gradient-text-cyan">matters</span>.
           </h1>
 
-          <p className="text-white/60 text-base md:text-lg max-w-2xl leading-relaxed mb-10">
+          <p className="text-white/74 text-base md:text-lg max-w-2xl leading-relaxed mb-10">
             Engineering insights, architectural decisions, and hard-won lessons
             from building real-world products — written from Dhaka, Bangladesh
             🇧🇩. No tutorials. No filler. Production experience only.
           </p>
 
           {/* Dateline statistics */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-xs uppercase tracking-[0.15em] text-white/45">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-xs uppercase tracking-[0.15em] text-white/65">
             <span>
               <span className="text-white/90 text-sm font-semibold normal-case tracking-normal">
                 {posts.length}
@@ -236,7 +236,7 @@ export function BlogClient({
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="relative flex-1 sm:max-w-sm">
               <Search
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/58"
                 aria-hidden="true"
               />
               <input
@@ -245,13 +245,13 @@ export function BlogClient({
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search the journal…"
                 aria-label="Search articles"
-                className="w-full bg-white/[0.04] border border-white/8 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white/80 placeholder:text-white/40 outline-none focus:border-primary/40 focus:bg-white/[0.06] focus:ring-1 focus:ring-primary/15 transition-all"
+                className="w-full bg-white/[0.04] border border-white/8 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white/80 placeholder:text-white/62 outline-none focus:border-primary/40 focus:bg-white/[0.06] focus:ring-1 focus:ring-primary/15 transition-all"
               />
               {search && (
                 <button
                   onClick={() => setSearch("")}
                   aria-label="Clear search"
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/62 hover:text-white/70 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -270,7 +270,7 @@ export function BlogClient({
                   onClick={() => setSort(id)}
                   aria-pressed={sort === id}
                   className={`relative inline-flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
-                    sort === id ? "text-background" : "text-white/55 hover:text-white/80"
+                    sort === id ? "text-background" : "text-white/72 hover:text-white/80"
                   }`}
                 >
                   {sort === id && (
@@ -308,7 +308,7 @@ export function BlogClient({
                   ))}
                 </select>
                 <ChevronDown
-                  className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40"
+                  className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/62"
                   aria-hidden="true"
                 />
               </div>
@@ -323,7 +323,7 @@ export function BlogClient({
             {activeTag && (
               <button
                 onClick={() => setActiveTag(null)}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono border border-white/8 text-white/60 hover:text-white/85 hover:border-white/25 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono border border-white/8 text-white/74 hover:text-white/85 hover:border-white/25 transition-colors"
               >
                 <X className="w-3 h-3" aria-hidden="true" />
                 Clear filter · {activeTag}
@@ -341,11 +341,11 @@ export function BlogClient({
               className={`shrink-0 px-3 py-1 rounded-lg text-xs font-mono transition-colors border ${
                 activeTag === null
                   ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-white/8 text-white/55 hover:border-white/25 hover:text-white/80"
+                  : "border-white/8 text-white/72 hover:border-white/25 hover:text-white/80"
               }`}
             >
               All
-              <span className={`ml-1.5 ${activeTag === null ? "text-primary/60" : "text-white/40"}`}>
+              <span className={`ml-1.5 ${activeTag === null ? "text-primary/60" : "text-white/62"}`}>
                 {posts.length}
               </span>
             </button>
@@ -357,11 +357,11 @@ export function BlogClient({
                 className={`shrink-0 px-3 py-1 rounded-lg text-xs font-mono transition-colors border ${
                   activeTag === tag
                     ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-white/8 text-white/55 hover:border-white/25 hover:text-white/80"
+                    : "border-white/8 text-white/72 hover:border-white/25 hover:text-white/80"
                 }`}
               >
                 {tag}
-                <span className={`ml-1.5 ${activeTag === tag ? "text-primary/60" : "text-white/40"}`}>
+                <span className={`ml-1.5 ${activeTag === tag ? "text-primary/60" : "text-white/62"}`}>
                   {count}
                 </span>
               </button>
@@ -382,7 +382,7 @@ export function BlogClient({
         <section aria-label="Articles" className="pb-24">
           {archive.length === 0 ? (
             <div className="py-24 text-center">
-              <p className="text-white/55 font-mono text-sm mb-2">
+              <p className="text-white/72 font-mono text-sm mb-2">
                 Nothing matches your filters.
               </p>
               <button
@@ -432,7 +432,7 @@ export function BlogClient({
           {archive.length > 0 && (
             <div className="mt-12 flex items-center gap-4">
               <span className="h-px flex-1 bg-white/[0.06]" aria-hidden="true" />
-              <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/40">
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/62">
                 {archive.length} {archive.length === 1 ? "Article" : "Articles"}
                 {!isDefaultView && activeTag ? ` in ${activeTag}` : ""}
               </span>

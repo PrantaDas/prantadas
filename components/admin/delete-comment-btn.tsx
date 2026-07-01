@@ -24,7 +24,7 @@ export function DeleteCommentBtn({ id, name }: { id: string; name: string }) {
       <button
         onClick={() => setOpen(true)}
         aria-label="Delete comment"
-        className="p-2 rounded-lg text-white/25 hover:text-red-400 hover:bg-red-500/10 transition-all"
+        className="p-2 rounded-lg text-white/52 hover:text-red-400 hover:bg-red-500/10 transition-all"
       >
         <Trash2 className="w-4 h-4" />
       </button>

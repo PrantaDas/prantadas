@@ -21,7 +21,7 @@ export default async function CommentsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display text-2xl font-bold text-white mb-1">Comments</h1>
-          <p className="text-sm text-white/35 font-mono">
+          <p className="text-sm text-white/58 font-mono">
             {comments.length} comment{comments.length !== 1 ? "s" : ""} across{" "}
             {Object.keys(grouped).length} post{Object.keys(grouped).length !== 1 ? "s" : ""}
           </p>
@@ -32,11 +32,11 @@ export default async function CommentsPage() {
       {comments.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
           <div className="w-16 h-16 rounded-2xl border border-white/8 bg-white/3 flex items-center justify-center">
-            <Inbox className="w-7 h-7 text-white/20" />
+            <Inbox className="w-7 h-7 text-white/48" />
           </div>
           <div>
-            <p className="text-white/50 font-semibold mb-1">No comments yet</p>
-            <p className="text-sm text-white/25 font-mono">
+            <p className="text-white/68 font-semibold mb-1">No comments yet</p>
+            <p className="text-sm text-white/52 font-mono">
               Comments left by blog readers will appear here.
             </p>
           </div>
@@ -53,7 +53,7 @@ export default async function CommentsPage() {
           {Object.entries(grouped).map(([slug, slugComments]) => (
             <div key={slug}>
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-mono text-white/30 uppercase tracking-widest">Post</span>
+                <span className="text-xs font-mono text-white/55 uppercase tracking-widest">Post</span>
                 <Link
                   href={`/blog/${slug}`}
                   target="_blank"
@@ -62,7 +62,7 @@ export default async function CommentsPage() {
                   /{slug}
                   <ExternalLink className="w-3 h-3" />
                 </Link>
-                <span className="ml-auto text-xs text-white/20 font-mono">
+                <span className="ml-auto text-xs text-white/48 font-mono">
                   {slugComments.length} comment{slugComments.length !== 1 ? "s" : ""}
                 </span>
               </div>
@@ -87,8 +87,8 @@ export default async function CommentsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
                         <span className="text-sm font-semibold text-white/80">{c.name}</span>
-                        <span className="text-xs text-white/30 font-mono">{c.email}</span>
-                        <span className="text-xs text-white/20 font-mono ml-auto">
+                        <span className="text-xs text-white/55 font-mono">{c.email}</span>
+                        <span className="text-xs text-white/48 font-mono ml-auto">
                           {format(new Date(c.createdAt), "MMM d, yyyy · HH:mm")}
                         </span>
                       </div>
@@ -99,7 +99,7 @@ export default async function CommentsPage() {
                         ))}
                       </div>
 
-                      <p className="text-sm text-white/55 leading-relaxed">{c.message}</p>
+                      <p className="text-sm text-white/72 leading-relaxed">{c.message}</p>
                     </div>
 
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">

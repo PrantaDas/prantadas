@@ -47,7 +47,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
         <h1 className="text-xl md:text-2xl font-display font-semibold text-white/80 mb-3">
           Something went wrong
         </h1>
-        <p className="text-white/40 text-sm md:text-base leading-relaxed mb-10">
+        <p className="text-white/62 text-sm md:text-base leading-relaxed mb-10">
           An unexpected error occurred. This has been noted. You can try again
           or return to the homepage.
         </p>
@@ -62,13 +62,13 @@ export default function GlobalError({ error, reset }: ErrorProps) {
           </button>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/8 text-white/50 text-sm font-mono hover:border-white/15 hover:text-white/75 transition-all duration-200"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/8 text-white/68 text-sm font-mono hover:border-white/15 hover:text-white/75 transition-all duration-200"
           >
             ← Return Home
           </Link>
         </div>
 
-        <p className="mt-12 font-mono text-xs text-white/15 select-none">
+        <p className="mt-12 font-mono text-xs text-white/45 select-none">
           // Unexpected error — no details exposed
         </p>
       </div>

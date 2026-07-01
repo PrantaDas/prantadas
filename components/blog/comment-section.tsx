@@ -47,7 +47,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
         >
           <Star
             className={cn("w-5 h-5 transition-colors",
-              star <= (hovered || value) ? "fill-yellow-400 text-yellow-400" : "text-white/40"
+              star <= (hovered || value) ? "fill-yellow-400 text-yellow-400" : "text-white/62"
             )}
             aria-hidden="true"
           />
@@ -92,15 +92,15 @@ function CommentCard({ comment }: { comment: CommentData }) {
             <span className="text-sm font-semibold text-white/80 truncate">{comment.name}</span>
             <div className="flex items-center gap-0.5 flex-shrink-0">
               {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className={cn("w-3 h-3", s <= comment.rating ? "fill-yellow-400 text-yellow-400" : "text-white/15")} aria-hidden="true" />
+                <Star key={s} className={cn("w-3 h-3", s <= comment.rating ? "fill-yellow-400 text-yellow-400" : "text-white/45")} aria-hidden="true" />
               ))}
             </div>
           </div>
-          <time className="text-xs text-white/50 font-mono flex-shrink-0">
+          <time className="text-xs text-white/68 font-mono flex-shrink-0">
             {format(new Date(comment.createdAt), "MMM d, yyyy")}
           </time>
         </div>
-        <p className="text-sm text-white/55 leading-relaxed">{comment.message}</p>
+        <p className="text-sm text-white/72 leading-relaxed">{comment.message}</p>
       </div>
     </div>
   );
@@ -135,7 +135,7 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
 
   const rating = watch("rating");
 
-  const inputClass = "w-full px-3.5 py-2.5 rounded-xl bg-white/4 border border-white/8 text-white/80 text-sm placeholder:text-white/25 focus:outline-none focus:border-primary/40 focus:bg-white/6 transition-colors";
+  const inputClass = "w-full px-3.5 py-2.5 rounded-xl bg-white/4 border border-white/8 text-white/80 text-sm placeholder:text-white/52 focus:outline-none focus:border-primary/40 focus:bg-white/6 transition-colors";
 
   const onSubmit = (data: FormValues) => {
     startTransition(async () => {
@@ -204,7 +204,7 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
                 {/* Close */}
                 <button
                   onClick={() => setShowThankYou(false)}
-                  className="absolute top-4 right-4 text-white/40 hover:text-white/60 transition-colors"
+                  className="absolute top-4 right-4 text-white/62 hover:text-white/74 transition-colors"
                   aria-label="Close"
                 >
                   <X className="w-4 h-4" />
@@ -274,10 +274,10 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
                 <h3 className="font-display text-xl font-bold text-white mb-2">
                   Thanks, {postedName.split(" ")[0]}!
                 </h3>
-                <p className="text-sm text-white/50 leading-relaxed mb-1">
+                <p className="text-sm text-white/68 leading-relaxed mb-1">
                   Your comment has been posted.
                 </p>
-                <p className="text-sm text-white/40 leading-relaxed mb-7">
+                <p className="text-sm text-white/62 leading-relaxed mb-7">
                   I read every comment personally and truly appreciate you taking the time to share your thoughts. 🙏
                 </p>
 
@@ -322,7 +322,7 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
               "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-mono transition-all duration-200 border",
               formOpen
                 ? "bg-primary/10 border-primary/25 text-primary"
-                : "bg-white/4 border-white/8 text-white/50 hover:text-white/80 hover:border-white/15"
+                : "bg-white/4 border-white/8 text-white/68 hover:text-white/80 hover:border-white/15"
             )}
           >
             {formOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -361,7 +361,7 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
 
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <p className="text-xs text-white/55 font-mono mb-1.5">Rating</p>
+              <p className="text-xs text-white/72 font-mono mb-1.5">Rating</p>
               <StarRating value={rating} onChange={(v) => setValue("rating", v)} />
               {errors.rating && <p className="mt-1 text-xs text-red-400">{errors.rating.message}</p>}
             </div>
@@ -384,7 +384,7 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
             </button>
           </div>
 
-          <p className="text-[11px] text-white/40 font-mono">
+          <p className="text-[11px] text-white/62 font-mono">
             A unique avatar will be auto-generated for your comment.
           </p>
         </form>
@@ -397,8 +397,8 @@ export function CommentSection({ slug, initialComments }: CommentSectionProps) {
         </div>
       ) : (
         <div className="text-center py-10">
-          <MessageSquare className="w-8 h-8 text-white/25 mx-auto mb-3" />
-          <p className="text-sm text-white/55 font-mono">No comments yet — be the first!</p>
+          <MessageSquare className="w-8 h-8 text-white/52 mx-auto mb-3" />
+          <p className="text-sm text-white/72 font-mono">No comments yet — be the first!</p>
         </div>
       )}
     </section>

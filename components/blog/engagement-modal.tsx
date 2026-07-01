@@ -92,7 +92,7 @@ export function EngagementModal({ slug, title }: EngagementModalProps) {
               {/* Dismiss */}
               <button
                 onClick={() => setOpen(false)}
-                className="absolute top-4 right-4 text-white/25 hover:text-white/60 transition-colors"
+                className="absolute top-4 right-4 text-white/52 hover:text-white/74 transition-colors"
                 aria-label="Dismiss"
               >
                 <X className="w-4 h-4" />
@@ -104,12 +104,12 @@ export function EngagementModal({ slug, title }: EngagementModalProps) {
                   <BookOpen className="w-5 h-5 text-primary/70" />
                 </div>
                 <div>
-                  <p className="text-xs font-mono text-white/35 mb-0.5">You&apos;ve been reading</p>
+                  <p className="text-xs font-mono text-white/58 mb-0.5">You&apos;ve been reading</p>
                   <h3 className="text-sm font-semibold text-white/85 line-clamp-1">{title}</h3>
                 </div>
               </div>
 
-              <p className="text-sm text-white/55 leading-relaxed mb-6">
+              <p className="text-sm text-white/72 leading-relaxed mb-6">
                 What do you think? Your feedback helps me write better content.
               </p>
 
@@ -126,7 +126,7 @@ export function EngagementModal({ slug, title }: EngagementModalProps) {
                   </div>
                   <div className="text-center">
                     <div className="text-sm font-semibold text-white/75">Liked it!</div>
-                    <div className="text-[11px] font-mono text-white/35">Hit the like button</div>
+                    <div className="text-[11px] font-mono text-white/58">Hit the like button</div>
                   </div>
                 </motion.button>
 
@@ -141,14 +141,14 @@ export function EngagementModal({ slug, title }: EngagementModalProps) {
                   </div>
                   <div className="text-center">
                     <div className="text-sm font-semibold text-white/75">Leave a comment</div>
-                    <div className="text-[11px] font-mono text-white/35">Share your thoughts</div>
+                    <div className="text-[11px] font-mono text-white/58">Share your thoughts</div>
                   </div>
                 </motion.button>
               </div>
 
               <button
                 onClick={() => setOpen(false)}
-                className="w-full text-xs font-mono text-white/25 hover:text-white/45 transition-colors py-1"
+                className="w-full text-xs font-mono text-white/52 hover:text-white/65 transition-colors py-1"
               >
                 Maybe later
               </button>

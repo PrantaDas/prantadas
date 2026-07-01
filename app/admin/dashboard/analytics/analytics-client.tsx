@@ -24,8 +24,8 @@ function StatCard({ label, value, icon: Icon, sub, color }: {
         <Icon className="w-4 h-4" />
       </div>
       <div className="font-display text-3xl font-bold text-white mb-0.5">{value}</div>
-      <div className="text-xs font-mono text-white/40">{label}</div>
-      {sub && <div className="text-[10px] font-mono text-white/25 mt-0.5">{sub}</div>}
+      <div className="text-xs font-mono text-white/62">{label}</div>
+      {sub && <div className="text-[10px] font-mono text-white/52 mt-0.5">{sub}</div>}
     </div>
   );
 }
@@ -35,11 +35,11 @@ function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-white/10 bg-[#0d1117] p-3 text-xs font-mono shadow-xl">
-      <div className="text-white/50 mb-2">{label}</div>
+      <div className="text-white/68 mb-2">{label}</div>
       {payload.map((p: { name: string; value: number; color: string }, i: number) => (
         <div key={i} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className="text-white/60">{p.name}:</span>
+          <span className="text-white/74">{p.name}:</span>
           <span className="text-white">{p.value}</span>
         </div>
       ))}
@@ -64,14 +64,14 @@ export default function AnalyticsDashboard({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-white mb-1">Analytics</h1>
-          <p className="text-sm text-white/35 font-mono">Real visitor data from your portfolio</p>
+          <p className="text-sm text-white/58 font-mono">Real visitor data from your portfolio</p>
         </div>
         <div className="flex gap-1 p-1 rounded-xl bg-white/4 border border-white/6">
           {PERIODS.map(({ id, label }) => (
             <button key={id} onClick={() => setPeriod(id)}
               className={cn(
                 "px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all",
-                period === id ? "bg-white/10 text-white/85" : "text-white/30 hover:text-white/60",
+                period === id ? "bg-white/10 text-white/85" : "text-white/55 hover:text-white/74",
               )}>
               {label}
             </button>
@@ -93,7 +93,7 @@ export default function AnalyticsDashboard({
 
       {/* Area chart */}
       <div className="p-5 rounded-2xl border border-white/6 bg-white/2">
-        <h2 className="text-sm font-mono text-white/40 uppercase tracking-widest mb-5">
+        <h2 className="text-sm font-mono text-white/62 uppercase tracking-widest mb-5">
           Views &amp; Visitors
         </h2>
         <ResponsiveContainer width="100%" height={260}>
@@ -124,17 +124,17 @@ export default function AnalyticsDashboard({
         {/* Bar chart for year comparison */}
         <div className="p-5 rounded-2xl border border-white/6 bg-white/2">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-sm font-mono text-white/40 uppercase tracking-widest">
+            <h2 className="text-sm font-mono text-white/62 uppercase tracking-widest">
               Monthly Breakdown
             </h2>
-            <span className="text-[10px] font-mono text-white/20 border border-white/8 rounded px-2 py-0.5">Last 12 months</span>
+            <span className="text-[10px] font-mono text-white/48 border border-white/8 rounded px-2 py-0.5">Last 12 months</span>
           </div>
           {year.chart.every((p) => p.views === 0) ? (
             <div className="flex flex-col items-center justify-center h-[200px] gap-3">
               <div className="w-10 h-10 rounded-xl border border-white/8 bg-white/3 flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-white/20" />
+                <TrendingUp className="w-4 h-4 text-white/48" />
               </div>
-              <p className="text-xs font-mono text-white/25 text-center">No visits recorded yet<br />Data will appear as visitors arrive</p>
+              <p className="text-xs font-mono text-white/52 text-center">No visits recorded yet<br />Data will appear as visitors arrive</p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
@@ -152,11 +152,11 @@ export default function AnalyticsDashboard({
 
         {/* Top pages */}
         <div className="p-5 rounded-2xl border border-white/6 bg-white/2">
-          <h2 className="text-sm font-mono text-white/40 uppercase tracking-widest mb-4">
+          <h2 className="text-sm font-mono text-white/62 uppercase tracking-widest mb-4">
             Top Pages
           </h2>
           {data.topPages.length === 0 ? (
-            <p className="text-white/25 font-mono text-sm text-center py-8">No data yet</p>
+            <p className="text-white/52 font-mono text-sm text-center py-8">No data yet</p>
           ) : (
             <div className="space-y-2.5">
               {data.topPages.map(({ path, views }, i) => {
@@ -165,10 +165,10 @@ export default function AnalyticsDashboard({
                 return (
                   <div key={path}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-mono text-white/55 truncate max-w-[200px]">
+                      <span className="text-xs font-mono text-white/72 truncate max-w-[200px]">
                         {i + 1}. {path}
                       </span>
-                      <span className="text-xs font-mono text-white/40 flex-shrink-0 ml-2">{views}</span>
+                      <span className="text-xs font-mono text-white/62 flex-shrink-0 ml-2">{views}</span>
                     </div>
                     <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
                       <div className="h-full rounded-full bg-primary/60" style={{ width: `${pct}%` }} />

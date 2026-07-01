@@ -13,7 +13,7 @@ export default async function MigratePage() {
         <h1 className="font-display text-2xl font-bold text-white mb-1">
           Migrate Blog Posts
         </h1>
-        <p className="text-sm text-white/55 font-mono">
+        <p className="text-sm text-white/72 font-mono">
           Import MDX files from{" "}
           <code className="text-white/70">content/blog/</code> into MongoDB
         </p>
@@ -29,7 +29,7 @@ export default async function MigratePage() {
             </span>
           </div>
           <div className="text-3xl font-bold text-emerald-400">{preview.inDb.length}</div>
-          <div className="text-xs text-white/40 font-mono mt-0.5">
+          <div className="text-xs text-white/62 font-mono mt-0.5">
             post{preview.inDb.length !== 1 ? "s" : ""} already migrated
           </div>
         </div>
@@ -40,17 +40,17 @@ export default async function MigratePage() {
             : "border-white/8 bg-white/3"
         }`}>
           <div className="flex items-center gap-2 mb-2">
-            <FileText className={`w-4 h-4 ${preview.newFiles.length > 0 ? "text-primary" : "text-white/30"}`} aria-hidden="true" />
+            <FileText className={`w-4 h-4 ${preview.newFiles.length > 0 ? "text-primary" : "text-white/55"}`} aria-hidden="true" />
             <span className={`text-xs font-mono uppercase tracking-widest ${
-              preview.newFiles.length > 0 ? "text-primary/70" : "text-white/30"
+              preview.newFiles.length > 0 ? "text-primary/70" : "text-white/55"
             }`}>
               New / Not migrated
             </span>
           </div>
-          <div className={`text-3xl font-bold ${preview.newFiles.length > 0 ? "text-primary" : "text-white/40"}`}>
+          <div className={`text-3xl font-bold ${preview.newFiles.length > 0 ? "text-primary" : "text-white/62"}`}>
             {preview.newFiles.length}
           </div>
-          <div className="text-xs text-white/40 font-mono mt-0.5">
+          <div className="text-xs text-white/62 font-mono mt-0.5">
             {preview.newFiles.length > 0
               ? `post${preview.newFiles.length !== 1 ? "s" : ""} ready to import`
               : "everything is up to date"}
@@ -79,7 +79,7 @@ export default async function MigratePage() {
       {/* Already in DB list (collapsed) */}
       {preview.inDb.length > 0 && (
         <details className="mb-6 rounded-xl border border-white/6 bg-white/2 overflow-hidden">
-          <summary className="px-4 py-2.5 text-xs font-mono text-white/40 cursor-pointer hover:text-white/60 transition-colors uppercase tracking-widest list-none flex items-center justify-between">
+          <summary className="px-4 py-2.5 text-xs font-mono text-white/62 cursor-pointer hover:text-white/74 transition-colors uppercase tracking-widest list-none flex items-center justify-between">
             <span>Already migrated ({preview.inDb.length})</span>
             <span className="text-[10px]">click to expand</span>
           </summary>
@@ -87,7 +87,7 @@ export default async function MigratePage() {
             {preview.inDb.map((slug) => (
               <div key={slug} className="flex items-center gap-2 px-4 py-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/40 flex-shrink-0" />
-                <span className="text-sm font-mono text-white/35">{slug}</span>
+                <span className="text-sm font-mono text-white/58">{slug}</span>
               </div>
             ))}
           </div>

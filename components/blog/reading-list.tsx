@@ -57,7 +57,7 @@ export function ReadingList() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 text-white/45 hover:text-amber-400 transition-colors text-xs font-mono"
+        className="inline-flex items-center gap-1.5 text-white/65 hover:text-amber-400 transition-colors text-xs font-mono"
         aria-label={`Reading list, ${items.length} saved`}
       >
         <Bookmark className="w-3.5 h-3.5" aria-hidden="true" />
@@ -99,7 +99,7 @@ export function ReadingList() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-white/85">Reading list</h3>
-                    <p className="text-xs font-mono text-white/35">
+                    <p className="text-xs font-mono text-white/58">
                       {items.length === 0
                         ? "Nothing saved yet"
                         : `${items.length} saved article${items.length === 1 ? "" : "s"}`}
@@ -107,7 +107,7 @@ export function ReadingList() {
                   </div>
                   <button
                     onClick={() => setOpen(false)}
-                    className="shrink-0 p-1.5 -mr-1 rounded-md text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors"
+                    className="shrink-0 p-1.5 -mr-1 rounded-md text-white/55 hover:text-white/70 hover:bg-white/5 transition-colors"
                     aria-label="Close reading list"
                   >
                     <X className="w-4 h-4" />
@@ -118,8 +118,8 @@ export function ReadingList() {
                 <div className="flex-1 overflow-y-auto no-scrollbar p-5">
                   {sorted.length === 0 ? (
                     <div className="py-8 text-center">
-                      <BookOpen className="w-7 h-7 text-white/15 mx-auto mb-3" aria-hidden="true" />
-                      <p className="text-sm text-white/45 leading-relaxed">
+                      <BookOpen className="w-7 h-7 text-white/45 mx-auto mb-3" aria-hidden="true" />
+                      <p className="text-sm text-white/65 leading-relaxed">
                         Tap{" "}
                         <span className="inline-flex items-center gap-1 align-middle text-white/70">
                           <Bookmark className="w-3.5 h-3.5" aria-hidden="true" />
@@ -139,16 +139,16 @@ export function ReadingList() {
                           >
                             <span className="flex items-center gap-1.5 text-sm text-white/80 group-hover:text-white transition-colors line-clamp-2">
                               {b.title}
-                              <ArrowUpRight className="w-3.5 h-3.5 shrink-0 text-white/30 group-hover:text-amber-400 transition-colors" aria-hidden="true" />
+                              <ArrowUpRight className="w-3.5 h-3.5 shrink-0 text-white/55 group-hover:text-amber-400 transition-colors" aria-hidden="true" />
                             </span>
-                            <span className="text-[11px] font-mono text-white/30">
+                            <span className="text-[11px] font-mono text-white/55">
                               Saved {relativeDate(b.savedAt)}
                             </span>
                           </Link>
                           <button
                             onClick={() => removeBookmark(b.slug)}
                             aria-label={`Remove ${b.title} from reading list`}
-                            className="shrink-0 p-1.5 rounded-md text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                            className="shrink-0 p-1.5 rounded-md text-white/55 hover:text-red-400 hover:bg-red-400/10 transition-colors"
                           >
                             <X className="w-3.5 h-3.5" aria-hidden="true" />
                           </button>

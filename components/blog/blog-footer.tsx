@@ -43,7 +43,7 @@ export function BlogFooter({ widthClass = "max-w-5xl" }: { widthClass?: string }
             <p className="font-display text-lg font-semibold text-white/90">
               Pranta Das
             </p>
-            <p className="text-sm text-white/55 leading-relaxed mt-1.5">
+            <p className="text-sm text-white/72 leading-relaxed mt-1.5">
               Backend engineer &amp; team lead writing about systems,
               architecture, and the craft — from Dhaka, Bangladesh 🇧🇩.
             </p>
@@ -62,7 +62,7 @@ export function BlogFooter({ widthClass = "max-w-5xl" }: { widthClass?: string }
                   {...(external
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="inline-flex items-center gap-1.5 text-white/55 hover:text-primary transition-colors"
+                  className="inline-flex items-center gap-1.5 text-white/72 hover:text-primary transition-colors"
                 >
                   {label === "RSS" && (
                     <Rss className="w-3 h-3" aria-hidden="true" />
@@ -80,7 +80,7 @@ export function BlogFooter({ widthClass = "max-w-5xl" }: { widthClass?: string }
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
                   aria-label={label}
-                  className="text-white/50 hover:text-white/85 transition-colors"
+                  className="text-white/68 hover:text-white/85 transition-colors"
                 >
                   <Icon className="w-4 h-4" aria-hidden="true" />
                 </a>
@@ -90,7 +90,7 @@ export function BlogFooter({ widthClass = "max-w-5xl" }: { widthClass?: string }
         </div>
 
         {/* Baseline */}
-        <div className="mt-12 pt-6 border-t border-white/5 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 text-xs font-mono text-white/45">
+        <div className="mt-12 pt-6 border-t border-white/5 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 text-xs font-mono text-white/65">
           <span>© {year} Pranta Das. All rights reserved.</span>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

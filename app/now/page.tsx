@@ -75,7 +75,7 @@ export default function NowPage() {
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-white/45 hover:text-white/80 transition-colors text-sm font-mono group"
+            className="inline-flex items-center gap-2 text-white/65 hover:text-white/80 transition-colors text-sm font-mono group"
             aria-label="Back to home"
           >
             <ArrowLeft
@@ -84,7 +84,7 @@ export default function NowPage() {
             />
             Home
           </Link>
-          <span className="text-white/20 text-xs font-mono tracking-widest uppercase">
+          <span className="text-white/48 text-xs font-mono tracking-widest uppercase">
             Now
           </span>
         </div>
@@ -103,13 +103,13 @@ export default function NowPage() {
           <h1 className="font-display text-4xl sm:text-5xl font-bold text-white mb-4 leading-tight">
             What I&apos;m doing <span className="gradient-text-cyan">now</span>
           </h1>
-          <p className="text-white/50 text-base md:text-lg leading-relaxed">
+          <p className="text-white/68 text-base md:text-lg leading-relaxed">
             A snapshot of the work, learning and side-quests filling my days
             right now. This page exists so anyone curious can see the current
             state — not what I&apos;m proud of historically, but what&apos;s
             actually on my desk this week.
           </p>
-          <p className="text-xs font-mono text-white/30 mt-4">
+          <p className="text-xs font-mono text-white/55 mt-4">
             Last updated {formattedDate}
           </p>
         </header>
@@ -126,7 +126,7 @@ export default function NowPage() {
               label="Building"
               title="StampEzee — multi-vendor digital loyalty platform"
             />
-            <div className="pl-12 space-y-4 text-white/55 leading-relaxed text-[15px]">
+            <div className="pl-12 space-y-4 text-white/72 leading-relaxed text-[15px]">
               <p>
                 Designing and shipping <span className="text-white/85">StampEzee</span>,
                 a digital loyalty program that multiple vendors can plug into
@@ -150,7 +150,7 @@ export default function NowPage() {
                 ].map((t) => (
                   <span
                     key={t}
-                    className="inline-flex items-center px-2.5 py-1 rounded-md bg-white/4 border border-white/8 text-[11px] font-mono text-white/55"
+                    className="inline-flex items-center px-2.5 py-1 rounded-md bg-white/4 border border-white/8 text-[11px] font-mono text-white/72"
                   >
                     {t}
                   </span>
@@ -169,13 +169,13 @@ export default function NowPage() {
               label="Learning"
               title="Go"
             />
-            <div className="pl-12 space-y-3 text-white/55 leading-relaxed text-[15px]">
+            <div className="pl-12 space-y-3 text-white/72 leading-relaxed text-[15px]">
               <p>
                 Picking up Go to extend my backend toolbox beyond Node. Drawn in
                 by its concurrency model, predictable runtime cost, and the way
                 idiomatic Go forces simpler service designs.
               </p>
-              <p className="text-white/45 text-sm">
+              <p className="text-white/65 text-sm">
                 Working through the std library, building small services from
                 scratch instead of frameworks, and porting bits of older Node
                 utilities to see the contrast first-hand.
@@ -193,12 +193,12 @@ export default function NowPage() {
               label="Reading & writing"
               title="Distributed systems + engineering essays"
             />
-            <div className="pl-12 space-y-3 text-white/55 leading-relaxed text-[15px]">
+            <div className="pl-12 space-y-3 text-white/72 leading-relaxed text-[15px]">
               <p>
                 Reading deep on distributed systems patterns and database
                 internals — material that pays back for years, not weeks.
               </p>
-              <p className="text-white/45 text-sm">
+              <p className="text-white/65 text-sm">
                 Writing on{" "}
                 <Link href="/blog" className="text-primary/80 hover:text-primary underline underline-offset-2">
                   the blog
@@ -218,13 +218,13 @@ export default function NowPage() {
               label="Direction"
               title="Deeper, not wider"
             />
-            <div className="pl-12 space-y-3 text-white/55 leading-relaxed text-[15px]">
+            <div className="pl-12 space-y-3 text-white/72 leading-relaxed text-[15px]">
               <p>
                 Saying no to surface-level project hopping. Compounding on the
                 stack I already know well — Node, TypeScript, Postgres, queues
                 — while adding Go as a deliberate second lens.
               </p>
-              <p className="text-white/45 text-sm">
+              <p className="text-white/65 text-sm">
                 Lead the backend team at Root Devs by day, ship side work like
                 StampEzee on the side, treat the blog as the long-form
                 portfolio.
@@ -242,7 +242,7 @@ export default function NowPage() {
               label="Off hours"
               title="Decompression"
             />
-            <div className="pl-12 space-y-3 text-white/55 leading-relaxed text-[15px]">
+            <div className="pl-12 space-y-3 text-white/72 leading-relaxed text-[15px]">
               <p>
                 Casual gaming on the iPad to flush the work tabs out of my
                 head, the occasional long coffee, and time off-screen so the
@@ -254,7 +254,7 @@ export default function NowPage() {
 
         {/* Inspiration footer */}
         <div className="mt-16 pt-10 border-t border-white/[0.06] flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-          <p className="text-xs font-mono text-white/35">
+          <p className="text-xs font-mono text-white/58">
             /now-style page —{" "}
             <a
               href="https://nownownow.com/about"

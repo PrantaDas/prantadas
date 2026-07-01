@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { Github, Linkedin, Send, ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 const roles = ["Backend Developer", "Node.js Engineer", "API Architect", "System Designer"];
 
@@ -25,7 +24,7 @@ function LocalTimeBadge() {
   }, []);
   if (!time) return null;
   return (
-    <div className="flex items-center gap-1.5 text-xs font-mono text-white/30">
+    <div className="flex items-center gap-1.5 text-xs font-mono text-white/55">
       <Clock className="w-3 h-3" aria-hidden="true" />
       {time} · Dhaka
     </div>
@@ -115,7 +114,7 @@ function TerminalCard() {
       initial={{ opacity: 0, y: 24, rotateX: 8 }}
       animate={{ opacity: 1, y: 0, rotateX: 0 }}
       transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative w-full max-w-sm"
+      className="relative w-full max-w-md"
       style={{ perspective: 1000 }}
     >
       {/* Glow behind the card */}
@@ -129,7 +128,7 @@ function TerminalCard() {
             <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
             <div className="w-3 h-3 rounded-full bg-[#28c840]" />
           </div>
-          <span className="ml-2 text-xs text-white/30 font-mono">pranta.config.ts</span>
+          <span className="ml-2 text-xs text-white/55 font-mono">pranta.config.ts</span>
         </div>
 
         {/* Code */}
@@ -142,7 +141,7 @@ function TerminalCard() {
               transition={{ delay: 0.6 + i * 0.07, duration: 0.4 }}
               className="flex"
             >
-              <span className="w-6 text-white/15 select-none mr-4 text-right flex-shrink-0">{i + 1}</span>
+              <span className="w-6 text-white/45 select-none mr-4 text-right flex-shrink-0">{i + 1}</span>
               <span style={{ paddingLeft: `${line.indent * 16}px` }}>
                 {line.parts.map((p, j) => (
                   <span key={j} style={{ color: p.c }}>{p.t}</span>
@@ -242,7 +241,7 @@ export function HeroSection() {
                 </span>
                 Open to opportunities
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-mono text-white/30">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-white/55">
                 <span>📍</span> Dhaka, Bangladesh
               </div>
               <LocalTimeBadge />
@@ -250,7 +249,7 @@ export function HeroSection() {
 
             {/* Name */}
             <motion.div custom={1} variants={item} initial="hidden" animate="visible">
-              <p className="text-sm font-mono text-white/35 mb-2 tracking-wider">Hi, I&apos;m</p>
+              <p className="text-sm font-mono text-white/58 mb-2 tracking-wider">Hi, I&apos;m</p>
               <h1 className="font-display font-black text-white leading-[0.88] mb-4"
                 style={{ fontSize: "clamp(3.5rem, 9vw, 7.5rem)" }}>
                 Pranta<br />
@@ -261,13 +260,13 @@ export function HeroSection() {
             {/* Role */}
             <motion.div custom={2} variants={item} initial="hidden" animate="visible"
               className="flex items-center gap-3 mb-6 font-mono text-lg">
-              <span className="text-white/30">&gt;</span>
+              <span className="text-white/55">&gt;</span>
               <TypewriterRoles />
             </motion.div>
 
             {/* Bio */}
             <motion.p custom={3} variants={item} initial="hidden" animate="visible"
-              className="text-white/50 text-base md:text-[17px] leading-relaxed mb-8 max-w-lg">
+              className="text-white/68 text-base md:text-[17px] leading-relaxed mb-8 max-w-lg">
               Team Lead building{" "}
               <span className="text-white/80">scalable backends</span>,{" "}
               <span className="text-white/80">intelligent bots</span>, and{" "}
@@ -280,7 +279,7 @@ export function HeroSection() {
               className="flex flex-wrap gap-2 mb-9">
               {stack.map(({ name, color }) => (
                 <span key={name}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-white/6 bg-white/3 text-xs font-mono text-white/50 hover:text-white/80 hover:border-white/15 transition-colors cursor-default">
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-white/6 bg-white/3 text-xs font-mono text-white/68 hover:text-white/80 hover:border-white/15 transition-colors cursor-default">
                   <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: color }} />
                   {name}
                 </span>
@@ -317,7 +316,7 @@ export function HeroSection() {
                   <Link href={href} target={href.startsWith("http") ? "_blank" : undefined}
                     rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                     aria-label={label}
-                    className="flex items-center gap-1.5 text-white/35 hover:text-white/80 transition-colors text-sm">
+                    className="flex items-center gap-1.5 text-white/58 hover:text-white/80 transition-colors text-sm">
                     <Icon className="w-4 h-4" /><span className="hidden sm:inline">{label}</span>
                   </Link>
                 </span>
@@ -326,36 +325,9 @@ export function HeroSection() {
           </div>
 
           {/* ── Right ────────────────────────────────────────────── */}
-          <div className="flex flex-col items-center lg:items-end gap-6 lg:flex-shrink-0">
-
-            {/* Photo */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="relative"
-            >
-              <motion.div
-                className="absolute -inset-[3px] rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                style={{ background: "conic-gradient(from 0deg, #00d4ff 0%, transparent 40%, #a855f7 60%, transparent 80%, #00d4ff 100%)" }}
-              />
-              <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-4 border-background">
-                <Image src="/photo.webp" alt="Pranta Das" fill className="object-cover" priority />
-              </div>
-              {/* Ping badge */}
-              <motion.div
-                initial={{ scale: 0 }} animate={{ scale: 1 }}
-                transition={{ delay: 1.2, type: "spring", stiffness: 260 }}
-                className="absolute -bottom-1 -right-1 flex items-center gap-1 px-2.5 py-1 rounded-full bg-background border border-emerald-500/30 text-emerald-400 text-[11px] font-mono shadow-lg"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                available
-              </motion.div>
-            </motion.div>
-
-            {/* Terminal card */}
+          {/* Single hero visual: the terminal card. Face photo lives once,
+              in the About section, so it isn't repeated here. */}
+          <div className="flex flex-col items-center lg:items-end justify-center gap-6 lg:flex-shrink-0">
             <TerminalCard />
           </div>
 
@@ -369,7 +341,7 @@ export function HeroSection() {
         transition={{ delay: 2 }}
         onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
         aria-label="Scroll down"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-white/25 hover:text-white/50 transition-colors group"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-white/52 hover:text-white/68 transition-colors group"
       >
         <span className="text-[10px] font-mono tracking-widest uppercase">scroll</span>
         {/* Mouse outline */}

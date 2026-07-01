@@ -747,8 +747,8 @@ export function Terminal({ isOpen, onClose, onMatrixTrigger }: TerminalProps) {
 
             {/* Center title — pointer-events-none so drag still works */}
             <div className="absolute inset-0 flex items-center justify-center gap-1.5 pointer-events-none">
-              <TerminalIcon className="w-3 h-3 text-white/30" />
-              <span className="text-xs font-mono text-white/40 tracking-wide">
+              <TerminalIcon className="w-3 h-3 text-white/55" />
+              <span className="text-xs font-mono text-white/62 tracking-wide">
                 {OWNER}@{HOST} — zsh
               </span>
             </div>
@@ -770,9 +770,9 @@ export function Terminal({ isOpen, onClose, onMatrixTrigger }: TerminalProps) {
                         <span className="text-emerald-400/80 shrink-0">
                           {OWNER}@{HOST}
                         </span>
-                        <span className="text-white/25">:</span>
+                        <span className="text-white/52">:</span>
                         <span className="text-blue-400/70">~</span>
-                        <span className="text-white/25">$</span>
+                        <span className="text-white/52">$</span>
                         <span className="text-white/85 ml-1 break-all">
                           {entry.command}
                         </span>
@@ -791,9 +791,9 @@ export function Terminal({ isOpen, onClose, onMatrixTrigger }: TerminalProps) {
                 <span className="text-emerald-400/80 font-mono text-xs shrink-0">
                   {OWNER}@{HOST}
                 </span>
-                <span className="text-white/25 font-mono text-xs">:</span>
+                <span className="text-white/52 font-mono text-xs">:</span>
                 <span className="text-blue-400/70 font-mono text-xs">~</span>
-                <span className="text-white/25 font-mono text-xs">$</span>
+                <span className="text-white/52 font-mono text-xs">$</span>
                 <input
                   ref={inputRef}
                   value={input}
@@ -819,7 +819,7 @@ export function Terminal({ isOpen, onClose, onMatrixTrigger }: TerminalProps) {
                 width="8"
                 height="8"
                 viewBox="0 0 8 8"
-                className="text-white/20 pointer-events-none"
+                className="text-white/48 pointer-events-none"
               >
                 <path
                   d="M7 1L1 7M7 4L4 7"
@@ -867,7 +867,7 @@ function OutputLine({ line }: { line: CommandOutput }) {
       <div className="space-y-1">
         {items.map((item) => (
           <div key={item.label} className="flex items-center gap-3">
-            <span className="text-white/30 w-12 flex-shrink-0">
+            <span className="text-white/55 w-12 flex-shrink-0">
               {item.label}
             </span>
             {item.href ? (
@@ -880,12 +880,12 @@ function OutputLine({ line }: { line: CommandOutput }) {
                 {item.value}
               </a>
             ) : (
-              <span className="text-white/60">{item.value}</span>
+              <span className="text-white/74">{item.value}</span>
             )}
           </div>
         ))}
       </div>
     );
   }
-  return <div className="text-white/50">{line.content as string}</div>;
+  return <div className="text-white/68">{line.content as string}</div>;
 }

@@ -33,7 +33,7 @@ const shortcuts = [
 
 function Kbd({ children }: { children: string }) {
   return (
-    <kbd className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded border border-white/15 bg-white/5 text-[10px] font-mono text-white/60">
+    <kbd className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded border border-white/15 bg-white/5 text-[10px] font-mono text-white/74">
       {children}
     </kbd>
   );
@@ -77,7 +77,7 @@ export function ShortcutsModal({ onClose }: ShortcutsModalProps) {
             <Keyboard className="w-4 h-4 text-primary/60" />
             <span className="text-sm font-semibold text-white/80">Keyboard Shortcuts</span>
           </div>
-          <button onClick={onClose} className="text-white/30 hover:text-white/70 transition-colors" aria-label="Close">
+          <button onClick={onClose} className="text-white/55 hover:text-white/70 transition-colors" aria-label="Close">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -86,17 +86,17 @@ export function ShortcutsModal({ onClose }: ShortcutsModalProps) {
         <div className="p-5 space-y-5">
           {shortcuts.map((group) => (
             <div key={group.group}>
-              <div className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-3">
+              <div className="text-[10px] font-mono text-white/55 uppercase tracking-widest mb-3">
                 {group.group}
               </div>
               <div className="space-y-2.5">
                 {group.items.map((item) => (
                   <div key={item.description} className="flex items-center justify-between gap-4">
-                    <span className="text-sm text-white/55">{item.description}</span>
+                    <span className="text-sm text-white/72">{item.description}</span>
 
                     {/* Konami gets a compact single badge */}
                     {item.keys[0] === "konami" ? (
-                      <kbd className="flex-shrink-0 px-2 py-0.5 rounded border border-white/15 bg-white/5 text-[10px] font-mono text-white/50 tracking-wider">
+                      <kbd className="flex-shrink-0 px-2 py-0.5 rounded border border-white/15 bg-white/5 text-[10px] font-mono text-white/68 tracking-wider">
                         ↑↑↓↓←→←→BA
                       </kbd>
                     ) : item.keys.length === 1 ? (
@@ -104,7 +104,7 @@ export function ShortcutsModal({ onClose }: ShortcutsModalProps) {
                     ) : (
                       <div className="flex items-center gap-1 flex-shrink-0">
                         <Kbd>{item.keys[0]}</Kbd>
-                        <span className="text-[10px] font-mono text-white/25">then</span>
+                        <span className="text-[10px] font-mono text-white/52">then</span>
                         <Kbd>{item.keys[1]}</Kbd>
                       </div>
                     )}
@@ -116,10 +116,10 @@ export function ShortcutsModal({ onClose }: ShortcutsModalProps) {
         </div>
 
         <div className="px-5 pb-4 space-y-2 text-center border-t border-white/5 pt-4">
-          <span className="text-[11px] font-mono text-white/20">
+          <span className="text-[11px] font-mono text-white/48">
             Press <Kbd>?</Kbd> or <Kbd>Esc</Kbd> to close
           </span>
-          <p className="text-[10px] font-mono text-white/12">
+          <p className="text-[10px] font-mono text-white/45">
             psst — there&apos;s also a secret 10-key combo 👀
           </p>
         </div>

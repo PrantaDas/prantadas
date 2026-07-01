@@ -106,7 +106,7 @@ export function AboutSection() {
                     <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-50" />
                   </div>
                   <div>
-                    <div className="text-xs font-mono text-white/40">status</div>
+                    <div className="text-xs font-mono text-white/62">status</div>
                     <div className="text-sm font-semibold text-emerald-400">Available</div>
                   </div>
                 </div>
@@ -121,7 +121,7 @@ export function AboutSection() {
               >
                 <div className="flex items-center gap-2">
                   <MapPin className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
-                  <span className="text-xs font-mono text-white/60">Dhaka, 🇧🇩 BD</span>
+                  <span className="text-xs font-mono text-white/74">Dhaka, 🇧🇩 BD</span>
                 </div>
               </motion.div>
 
@@ -136,7 +136,7 @@ export function AboutSection() {
                   <span className="text-[9px] text-primary">TL</span>
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono text-white/30 leading-none">Current</div>
+                  <div className="text-[10px] font-mono text-white/55 leading-none">Current</div>
                   <div className="text-xs font-semibold text-white/70 leading-tight">Team Lead</div>
                 </div>
               </motion.div>
@@ -151,7 +151,7 @@ export function AboutSection() {
                 Crafting systems that{" "}
                 <span className="gradient-text-cyan">scale</span>
               </h2>
-              <div className="space-y-4 text-white/55 leading-relaxed">
+              <div className="space-y-4 text-white/72 leading-relaxed">
                 <p>
                   I'm a backend developer based in{" "}
                   <span className="text-white/75">Dhaka, Bangladesh</span> with
@@ -172,16 +172,16 @@ export function AboutSection() {
                     <div className="w-2 h-2 rounded-full bg-[#ff5f57]" />
                     <div className="w-2 h-2 rounded-full bg-[#febc2e]" />
                     <div className="w-2 h-2 rounded-full bg-[#28c840]" />
-                    <span className="ml-2 text-[10px] font-mono text-white/20">quote.ts</span>
+                    <span className="ml-2 text-[10px] font-mono text-white/48">quote.ts</span>
                   </div>
                   <div className="px-4 py-3 font-mono text-sm leading-relaxed">
-                    <span className="text-white/25">{"// "}</span>
-                    <span className="text-white/50 italic">
+                    <span className="text-white/52">{"// "}</span>
+                    <span className="text-white/68 italic">
                       "We do this not because it is easy,
                     </span>
                     <br />
-                    <span className="text-white/25">{"//  "}</span>
-                    <span className="text-white/50 italic">
+                    <span className="text-white/52">{"//  "}</span>
+                    <span className="text-white/68 italic">
                       but because we thought it would be easy"
                     </span>
                   </div>
@@ -194,7 +194,7 @@ export function AboutSection() {
               {[
                 { icon: MapPin, text: "Dhaka, Bangladesh", href: undefined as string | undefined },
               ].map(({ icon: Icon, text, href }) => (
-                <div key={text} className="flex items-center gap-3 text-sm text-white/40">
+                <div key={text} className="flex items-center gap-3 text-sm text-white/62">
                   <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
                     <Icon className="w-3.5 h-3.5 text-primary/60" />
                   </div>
@@ -217,7 +217,7 @@ export function AboutSection() {
                   <div className="font-display text-2xl font-bold gradient-text-cyan tabular-nums">
                     <CountUp target={stat.value} suffix={stat.suffix} inView={inView} />
                   </div>
-                  <div className="text-xs text-white/40 mt-1 leading-tight">{stat.label}</div>
+                  <div className="text-xs text-white/62 mt-1 leading-tight">{stat.label}</div>
                 </div>
               ))}
             </motion.div>

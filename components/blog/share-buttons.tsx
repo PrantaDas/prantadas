@@ -42,11 +42,11 @@ export function ShareButtons({ title, slug }: ShareButtonsProps) {
 
   // Mobile: fixed icon-only squares. sm+: icon + label pills sized to content.
   const chip =
-    "inline-flex items-center justify-center gap-1.5 h-10 w-10 sm:h-auto sm:w-auto sm:px-3 sm:py-1.5 rounded-lg border border-white/8 bg-white/3 text-white/60 hover:text-white/90 hover:border-white/15 hover:bg-white/6 transition-all text-xs font-mono";
+    "inline-flex items-center justify-center gap-1.5 h-10 w-10 sm:h-auto sm:w-auto sm:px-3 sm:py-1.5 rounded-lg border border-white/8 bg-white/3 text-white/74 hover:text-white/90 hover:border-white/15 hover:bg-white/6 transition-all text-xs font-mono";
 
   return (
     <div className="mt-10 pt-6 border-t border-white/6">
-      <span className="block sm:inline text-xs font-mono text-white/50 mb-3 sm:mb-0 sm:mr-3 sm:align-middle">
+      <span className="block sm:inline text-xs font-mono text-white/68 mb-3 sm:mb-0 sm:mr-3 sm:align-middle">
         Share this article
       </span>
 

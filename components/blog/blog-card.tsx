@@ -14,7 +14,7 @@ function TagPill({ tag }: { tag: string }) {
   return (
     <Link
       href={`/blog/tag/${encodeURIComponent(tag)}`}
-      className="relative z-10 pointer-events-auto font-mono text-xs text-white/35 px-2 py-0.5 rounded bg-white/4 border border-white/5 hover:text-primary/70 hover:border-primary/20 hover:bg-primary/5 transition-colors"
+      className="relative z-10 pointer-events-auto font-mono text-xs text-white/58 px-2 py-0.5 rounded bg-white/4 border border-white/5 hover:text-primary/70 hover:border-primary/20 hover:bg-primary/5 transition-colors"
     >
       {tag}
     </Link>
@@ -57,7 +57,7 @@ export function BlogCard({ post, featured = false, viewCount, rating, className 
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-mono">
             ★ Featured
           </span>
-          <div className="flex items-center gap-3 text-xs font-mono text-white/50">
+          <div className="flex items-center gap-3 text-xs font-mono text-white/68">
             {viewCount !== undefined && (
               <span className="flex items-center gap-1">
                 <Eye className="w-3 h-3" aria-hidden="true" />
@@ -81,7 +81,7 @@ export function BlogCard({ post, featured = false, viewCount, rating, className 
           <h2 className="font-display text-xl sm:text-2xl font-bold text-white/90 group-hover:text-white mb-3 leading-snug transition-colors">
             {post.title}
           </h2>
-          <p className="text-white/50 text-sm leading-relaxed line-clamp-3">
+          <p className="text-white/68 text-sm leading-relaxed line-clamp-3">
             {post.excerpt}
           </p>
         </div>
@@ -92,7 +92,7 @@ export function BlogCard({ post, featured = false, viewCount, rating, className 
               <TagPill key={tag} tag={tag} />
             ))}
           </div>
-          <span className="flex items-center gap-1.5 text-xs text-white/55">
+          <span className="flex items-center gap-1.5 text-xs text-white/72">
             <Calendar className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
             {formattedDate}
           </span>
@@ -120,12 +120,12 @@ export function BlogCard({ post, featured = false, viewCount, rating, className 
           {post.title}
         </h3>
         <ArrowUpRight
-          className="w-4 h-4 text-white/40 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5"
+          className="w-4 h-4 text-white/62 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5"
           aria-hidden="true"
         />
       </div>
 
-      <p className="text-white/45 text-sm leading-relaxed line-clamp-2 relative z-10 pointer-events-none">
+      <p className="text-white/65 text-sm leading-relaxed line-clamp-2 relative z-10 pointer-events-none">
         {post.excerpt}
       </p>
 
@@ -135,7 +135,7 @@ export function BlogCard({ post, featured = false, viewCount, rating, className 
             <TagPill key={tag} tag={tag} />
           ))}
         </div>
-        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-white/55 font-mono">
+        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-white/72 font-mono">
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
             {formattedDate}

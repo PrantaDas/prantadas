@@ -52,9 +52,9 @@ export function BlogPostClient({
       <div className="max-w-5xl mx-auto px-6 py-16 md:py-20">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-8">
-          <ol className="flex items-center gap-2 text-sm font-mono text-white/30">
+          <ol className="flex items-center gap-2 text-sm font-mono text-white/55">
             <li>
-              <Link href="/" className="hover:text-white/60 transition-colors">
+              <Link href="/" className="hover:text-white/74 transition-colors">
                 Home
               </Link>
             </li>
@@ -62,14 +62,14 @@ export function BlogPostClient({
             <li>
               <Link
                 href="/blog"
-                className="hover:text-white/60 transition-colors"
+                className="hover:text-white/74 transition-colors"
               >
                 Blog
               </Link>
             </li>
             <li aria-hidden="true">/</li>
             <li
-              className="text-white/50 truncate max-w-[200px]"
+              className="text-white/68 truncate max-w-[200px]"
               aria-current="page"
             >
               {post.title}
@@ -104,7 +104,7 @@ export function BlogPostClient({
                 {post.title}
               </h1>
 
-              <p className="text-white/55 text-base md:text-lg leading-relaxed mb-7">
+              <p className="text-white/72 text-base md:text-lg leading-relaxed mb-7">
                 {post.description}
               </p>
 
@@ -125,13 +125,13 @@ export function BlogPostClient({
                     <div className="text-sm font-semibold text-white/80">
                       {post.author.name}
                     </div>
-                    <div className="text-xs text-white/35 font-mono">
+                    <div className="text-xs text-white/58 font-mono">
                       {post.author.location}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4 ml-auto text-xs font-mono text-white/30">
+                <div className="flex flex-wrap items-center gap-4 ml-auto text-xs font-mono text-white/55">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
                     <time dateTime={new Date(post.date).toISOString()}>
@@ -185,7 +185,7 @@ export function BlogPostClient({
                 <div className="text-xs font-mono text-primary/60 mb-2">
                   {post.author.role} · {post.author.location}
                 </div>
-                <p className="text-sm text-white/45 leading-relaxed mb-3">
+                <p className="text-sm text-white/65 leading-relaxed mb-3">
                   Backend Developer & Team Lead building scalable systems and
                   sharing engineering insights from Dhaka, Bangladesh.
                 </p>
@@ -198,7 +198,7 @@ export function BlogPostClient({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Pranta Das on GitHub"
-                    className="text-white/30 hover:text-white/70 transition-colors"
+                    className="text-white/55 hover:text-white/70 transition-colors"
                   >
                     <Github className="w-4 h-4" aria-hidden="true" />
                   </a>
@@ -207,14 +207,14 @@ export function BlogPostClient({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Pranta Das on LinkedIn"
-                    className="text-white/30 hover:text-white/70 transition-colors"
+                    className="text-white/55 hover:text-white/70 transition-colors"
                   >
                     <Linkedin className="w-4 h-4" aria-hidden="true" />
                   </a>
                   <a
                     href="mailto:prantodas043@gmail.com"
                     aria-label="Email Pranta Das"
-                    className="text-white/30 hover:text-white/70 transition-colors"
+                    className="text-white/55 hover:text-white/70 transition-colors"
                   >
                     <Mail className="w-4 h-4" aria-hidden="true" />
                   </a>
@@ -233,7 +233,7 @@ export function BlogPostClient({
                     href={`/blog/${prev.slug}`}
                     className="group flex flex-col gap-2 p-4 rounded-xl border border-white/6 hover:border-white/12 transition-colors"
                   >
-                    <span className="flex items-center gap-1.5 text-xs font-mono text-white/30 group-hover:text-white/50 transition-colors">
+                    <span className="flex items-center gap-1.5 text-xs font-mono text-white/55 group-hover:text-white/68 transition-colors">
                       <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
                       Previous
                     </span>
@@ -247,7 +247,7 @@ export function BlogPostClient({
                     href={`/blog/${next.slug}`}
                     className="group flex flex-col gap-2 p-4 rounded-xl border border-white/6 hover:border-white/12 transition-colors sm:ml-auto sm:text-right"
                   >
-                    <span className="flex items-center gap-1.5 text-xs font-mono text-white/30 group-hover:text-white/50 transition-colors sm:justify-end">
+                    <span className="flex items-center gap-1.5 text-xs font-mono text-white/55 group-hover:text-white/68 transition-colors sm:justify-end">
                       Next
                       <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                     </span>

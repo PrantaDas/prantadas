@@ -18,7 +18,7 @@ export default async function ManagePostsPage() {
           <h1 className="font-display text-2xl font-bold text-white mb-1">
             Manage Posts
           </h1>
-          <p className="text-sm text-white/35 font-mono">
+          <p className="text-sm text-white/58 font-mono">
             {posts.length} total &middot; {published} published &middot; {drafts}{" "}
             draft{drafts !== 1 ? "s" : ""}
           </p>
@@ -34,11 +34,11 @@ export default async function ManagePostsPage() {
       {posts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
           <div className="w-16 h-16 rounded-2xl border border-white/8 bg-white/3 flex items-center justify-center">
-            <FileText className="w-7 h-7 text-white/20" />
+            <FileText className="w-7 h-7 text-white/48" />
           </div>
           <div>
-            <p className="text-white/50 font-semibold mb-1">No posts yet</p>
-            <p className="text-sm text-white/25 font-mono">Create your first post to get started.</p>
+            <p className="text-white/68 font-semibold mb-1">No posts yet</p>
+            <p className="text-sm text-white/52 font-mono">Create your first post to get started.</p>
           </div>
           <Link
             href="/admin/dashboard/blog"
@@ -50,7 +50,7 @@ export default async function ManagePostsPage() {
       ) : (
         <div className="rounded-2xl border border-white/6 overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-5 py-3 bg-white/2 border-b border-white/6 text-[10px] font-mono text-white/25 uppercase tracking-widest">
+          <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-5 py-3 bg-white/2 border-b border-white/6 text-[10px] font-mono text-white/52 uppercase tracking-widest">
             <span>Title</span>
             <span className="text-right">Date</span>
             <span className="text-right">Status</span>
@@ -74,13 +74,13 @@ export default async function ManagePostsPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-mono text-white/25">
+                    <span className="text-xs font-mono text-white/52">
                       /{post.slug}
                     </span>
                     {post.tags.slice(0, 3).map((t) => (
                       <span
                         key={t}
-                        className="text-[10px] font-mono text-white/25 px-1.5 py-0.5 rounded bg-white/4 border border-white/5"
+                        className="text-[10px] font-mono text-white/52 px-1.5 py-0.5 rounded bg-white/4 border border-white/5"
                       >
                         {t}
                       </span>
@@ -89,7 +89,7 @@ export default async function ManagePostsPage() {
                 </div>
 
                 {/* Date */}
-                <span className="text-xs font-mono text-white/30 text-right flex-shrink-0">
+                <span className="text-xs font-mono text-white/55 text-right flex-shrink-0">
                   {format(new Date(post.date), "MMM d, yyyy")}
                 </span>
 
@@ -102,7 +102,7 @@ export default async function ManagePostsPage() {
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   <Link
                     href={`/admin/dashboard/blog/${post.slug}/edit`}
-                    className="p-1.5 rounded-lg text-white/20 hover:text-primary hover:bg-primary/10 transition-all"
+                    className="p-1.5 rounded-lg text-white/48 hover:text-primary hover:bg-primary/10 transition-all"
                     aria-label="Edit post"
                   >
                     <Pencil className="w-3.5 h-3.5" />
@@ -110,7 +110,7 @@ export default async function ManagePostsPage() {
                   <Link
                     href={`/blog/${post.slug}`}
                     target="_blank"
-                    className="p-1.5 rounded-lg text-white/20 hover:text-white/60 hover:bg-white/6 transition-all"
+                    className="p-1.5 rounded-lg text-white/48 hover:text-white/74 hover:bg-white/6 transition-all"
                     aria-label="View post"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />

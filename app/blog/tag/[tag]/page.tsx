@@ -79,7 +79,7 @@ export default async function TagPage({ params }: Props) {
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-white/45 hover:text-white/80 transition-colors text-sm font-mono group"
+            className="inline-flex items-center gap-2 text-white/65 hover:text-white/80 transition-colors text-sm font-mono group"
             aria-label="Back to blog"
           >
             <ArrowLeft
@@ -88,7 +88,7 @@ export default async function TagPage({ params }: Props) {
             />
             Blog
           </Link>
-          <span className="text-white/20 text-xs font-mono tracking-widest uppercase">
+          <span className="text-white/48 text-xs font-mono tracking-widest uppercase">
             Tag
           </span>
         </div>
@@ -104,7 +104,7 @@ export default async function TagPage({ params }: Props) {
           <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3 leading-tight">
             Articles tagged &ldquo;{decoded}&rdquo;
           </h1>
-          <p className="text-white/35 font-mono text-sm">
+          <p className="text-white/58 font-mono text-sm">
             {posts.length} article{posts.length !== 1 ? "s" : ""}
           </p>
         </header>
@@ -120,7 +120,7 @@ export default async function TagPage({ params }: Props) {
         <div className="mt-14 pt-8 border-t border-white/6">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-sm font-mono text-white/35 hover:text-white/65 transition-colors group"
+            className="inline-flex items-center gap-2 text-sm font-mono text-white/58 hover:text-white/65 transition-colors group"
           >
             <ArrowLeft
               className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5"

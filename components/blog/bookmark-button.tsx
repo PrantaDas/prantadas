@@ -60,7 +60,7 @@ export function BookmarkButton({ slug, title }: BookmarkButtonProps) {
           "inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-mono transition-all duration-200",
           saved
             ? "bg-amber-400/15 text-amber-400 border border-amber-400/25"
-            : "text-white/40 hover:text-white/70 hover:bg-white/5 border border-transparent",
+            : "text-white/62 hover:text-white/70 hover:bg-white/5 border border-transparent",
         )}
       >
         <AnimatePresence mode="wait" initial={false}>

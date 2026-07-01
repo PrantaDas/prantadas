@@ -85,7 +85,7 @@ const categories = ["All", "SDK", "Backend", "Bot", "Tool", "Scraper"];
 function RepoCard({ repo, index }: { repo: Repository; index: number }) {
   const [hovered, setHovered] = useState(false);
   const langClass =
-    languageColors[repo.language] ?? "text-white/40 bg-white/5 border-white/10";
+    languageColors[repo.language] ?? "text-white/62 bg-white/5 border-white/10";
   const langDot = languageDots[repo.language] ?? "bg-white/20";
   const visibleTopics = repo.topics?.slice(0, 4) ?? [];
   const extraTopics = (repo.topics?.length ?? 0) - 4;
@@ -132,7 +132,7 @@ function RepoCard({ repo, index }: { repo: Repository; index: number }) {
         </div>
 
         {/* Description */}
-        <p className="text-white/40 text-xs leading-relaxed line-clamp-2 flex-1 mb-4">
+        <p className="text-white/62 text-xs leading-relaxed line-clamp-2 flex-1 mb-4">
           {repo.description}
         </p>
 
@@ -142,13 +142,13 @@ function RepoCard({ repo, index }: { repo: Repository; index: number }) {
             {visibleTopics.map((topic) => (
               <span
                 key={topic}
-                className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/4 border border-white/8 text-white/35 hover:text-white/55 hover:border-white/15 transition-colors"
+                className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/4 border border-white/8 text-white/58 hover:text-white/72 hover:border-white/15 transition-colors"
               >
                 {topic}
               </span>
             ))}
             {extraTopics > 0 && (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/4 border border-white/8 text-white/25">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/4 border border-white/8 text-white/52">
                 +{extraTopics}
               </span>
             )}
@@ -157,7 +157,7 @@ function RepoCard({ repo, index }: { repo: Repository; index: number }) {
 
         {/* Stats */}
         <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-auto">
-          <div className="flex items-center gap-3 text-white/30 text-xs">
+          <div className="flex items-center gap-3 text-white/55 text-xs">
             <span className="flex items-center gap-1">
               <Star className="w-3 h-3" />
               {repo.stargazers_count}
@@ -224,7 +224,7 @@ function ProfessionalCard({
                 {project.category}
               </span>
               {project.is_private && (
-                <span className="text-[10px] font-mono text-white/30 border border-white/10 rounded px-2 py-0.5 flex items-center gap-1">
+                <span className="text-[10px] font-mono text-white/55 border border-white/10 rounded px-2 py-0.5 flex items-center gap-1">
                   <Lock className="w-2.5 h-2.5" /> Private
                 </span>
               )}
@@ -235,7 +235,7 @@ function ProfessionalCard({
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <div className="w-8 h-8 rounded-lg bg-white/4 border border-white/8 flex items-center justify-center">
-              <Code2 className="w-3.5 h-3.5 text-white/30" />
+              <Code2 className="w-3.5 h-3.5 text-white/55" />
             </div>
             {project.website && (
               <Link
@@ -244,14 +244,14 @@ function ProfessionalCard({
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-lg border border-white/8 hover:border-primary/30 hover:bg-primary/5 transition-all flex items-center justify-center"
               >
-                <ExternalLink className="w-3.5 h-3.5 text-white/40 hover:text-primary transition-colors" />
+                <ExternalLink className="w-3.5 h-3.5 text-white/62 hover:text-primary transition-colors" />
               </Link>
             )}
           </div>
         </div>
 
-        <p className="text-white/50 text-sm mb-3 leading-relaxed">{project.description}</p>
-        <p className="text-white/35 text-xs leading-relaxed">{project.details}</p>
+        <p className="text-white/68 text-sm mb-3 leading-relaxed">{project.description}</p>
+        <p className="text-white/58 text-xs leading-relaxed">{project.details}</p>
 
         {project.website && (
           <div className="mt-5 flex items-center gap-2 text-xs font-mono text-primary/40 border-t border-white/5 pt-4">
@@ -296,7 +296,7 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
             Featured <span className="gradient-text-cyan">Projects</span>
           </h2>
-          <p className="text-white/40 max-w-lg mx-auto">
+          <p className="text-white/62 max-w-lg mx-auto">
             Open source tools, bots, and professional systems I've engineered
           </p>
         </motion.div>
@@ -316,7 +316,7 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
                 className={`relative px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 capitalize flex items-center gap-2 ${
                   activeTab === tab
                     ? "text-background"
-                    : "text-white/40 hover:text-white/70"
+                    : "text-white/62 hover:text-white/70"
                 }`}
               >
                 {activeTab === tab && (
@@ -329,7 +329,7 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
                 <span className="relative z-10">
                   {tab === "github" ? "Open Source" : "Professional"}
                 </span>
-                <span className={`relative z-10 text-[10px] font-mono px-1.5 py-0.5 rounded-md ${activeTab === tab ? "bg-black/20 text-background/70" : "bg-white/8 text-white/30"}`}>
+                <span className={`relative z-10 text-[10px] font-mono px-1.5 py-0.5 rounded-md ${activeTab === tab ? "bg-black/20 text-background/70" : "bg-white/8 text-white/55"}`}>
                   {tab === "github" ? repositories.length : professionalProject.length}
                 </span>
               </button>
@@ -355,11 +355,11 @@ export function ProjectsSection({ repositories }: ProjectsProps) {
                     className={`px-4 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 border flex items-center gap-1.5 ${
                       activeCategory === cat
                         ? "bg-primary/15 border-primary/30 text-primary"
-                        : "border-white/8 text-white/60 hover:border-white/20 hover:text-white/80"
+                        : "border-white/8 text-white/74 hover:border-white/20 hover:text-white/80"
                     }`}
                   >
                     {cat}
-                    <span className={`text-[9px] px-1 py-0.5 rounded ${activeCategory === cat ? "bg-primary/25 text-primary" : "bg-white/10 text-white/55"}`}>
+                    <span className={`text-[9px] px-1 py-0.5 rounded ${activeCategory === cat ? "bg-primary/25 text-primary" : "bg-white/10 text-white/72"}`}>
                       {categoryCounts[cat]}
                     </span>
                   </button>

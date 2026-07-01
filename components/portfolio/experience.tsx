@@ -152,7 +152,7 @@ function TimelineItem({
             }`}
           >
             <Icon
-              className={`w-4 h-4 ${(item as any).current ? "text-primary" : "text-white/40"}`}
+              className={`w-4 h-4 ${(item as any).current ? "text-primary" : "text-white/62"}`}
             />
           </div>
         </div>
@@ -188,19 +188,19 @@ function TimelineItem({
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-mono text-white/30 whitespace-nowrap bg-white/4 border border-white/6 rounded-lg px-2.5 py-1 self-start">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-white/55 whitespace-nowrap bg-white/4 border border-white/6 rounded-lg px-2.5 py-1 self-start">
                 <Calendar className="w-3 h-3" />
                 {item.period}
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 text-xs text-white/30 mb-3">
+            <div className="flex items-center gap-1.5 text-xs text-white/55 mb-3">
               <MapPin className="w-3 h-3" />
               {item.location}
             </div>
 
             {(item as any).description && (
-              <p className="text-sm text-white/45 leading-relaxed mb-4">
+              <p className="text-sm text-white/65 leading-relaxed mb-4">
                 {(item as any).description}
               </p>
             )}
@@ -263,7 +263,7 @@ export function ExperienceSection() {
               <div className="font-display text-2xl font-bold gradient-text-cyan">
                 {stat.value}
               </div>
-              <div className="text-xs font-mono text-white/35 mt-0.5">
+              <div className="text-xs font-mono text-white/58 mt-0.5">
                 {stat.label}
               </div>
             </motion.div>
@@ -286,7 +286,7 @@ export function ExperienceSection() {
                 <span className="text-sm font-mono text-primary/70 uppercase tracking-widest">
                   Work Experience
                 </span>
-                <div className="text-xs text-white/25 font-mono">
+                <div className="text-xs text-white/52 font-mono">
                   {experience.length} positions
                 </div>
               </div>
@@ -316,7 +316,7 @@ export function ExperienceSection() {
                 <span className="text-sm font-mono text-secondary uppercase tracking-widest">
                   Education
                 </span>
-                <div className="text-xs text-white/25 font-mono">
+                <div className="text-xs text-white/52 font-mono">
                   {education.length} institutions
                 </div>
               </div>

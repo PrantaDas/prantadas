@@ -33,7 +33,7 @@ export default async function DashboardPage() {
     <div className="p-8 space-y-8">
       <div>
         <h1 className="font-display text-2xl font-bold text-white mb-1">Dashboard</h1>
-        <p className="text-sm text-white/35 font-mono">
+        <p className="text-sm text-white/58 font-mono">
           Welcome back, Pranta — {format(new Date(), "MMMM d, yyyy")}
         </p>
       </div>
@@ -46,14 +46,14 @@ export default async function DashboardPage() {
               <Icon className={`w-4 h-4 ${color}`} />
             </div>
             <div className="font-display text-2xl font-bold text-white mb-0.5">{value}</div>
-            <div className="text-xs text-white/35 font-mono">{label}</div>
+            <div className="text-xs text-white/58 font-mono">{label}</div>
           </div>
         ))}
       </div>
 
       {/* Quick actions */}
       <div>
-        <h2 className="text-xs font-mono text-white/30 uppercase tracking-widest mb-3">Quick Actions</h2>
+        <h2 className="text-xs font-mono text-white/55 uppercase tracking-widest mb-3">Quick Actions</h2>
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             { href: "/admin/dashboard/blog", icon: PenLine, label: "New Post", sub: "MDX editor" },
@@ -64,10 +64,10 @@ export default async function DashboardPage() {
           ].map(({ href, icon: Icon, label, sub }) => (
             <Link key={href} href={href}
               className="flex items-center gap-3 p-4 rounded-xl border border-white/6 bg-white/2 hover:border-primary/20 hover:bg-primary/3 transition-all group">
-              <Icon className="w-4 h-4 text-white/30 group-hover:text-primary transition-colors flex-shrink-0" />
+              <Icon className="w-4 h-4 text-white/55 group-hover:text-primary transition-colors flex-shrink-0" />
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-white/65 group-hover:text-white transition-colors">{label}</div>
-                <div className="text-xs text-white/25 font-mono">{sub}</div>
+                <div className="text-xs text-white/52 font-mono">{sub}</div>
               </div>
             </Link>
           ))}
@@ -76,9 +76,9 @@ export default async function DashboardPage() {
 
       {/* Recent comments */}
       <div>
-        <h2 className="text-xs font-mono text-white/30 uppercase tracking-widest mb-3">Recent Comments</h2>
+        <h2 className="text-xs font-mono text-white/55 uppercase tracking-widest mb-3">Recent Comments</h2>
         {recent.length === 0 ? (
-          <div className="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/2 text-white/25">
+          <div className="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/2 text-white/52">
             <MessageSquare className="w-4 h-4 flex-shrink-0" />
             <span className="text-sm font-mono">No comments yet — they'll appear here once readers engage.</span>
           </div>
@@ -92,12 +92,12 @@ export default async function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-sm font-semibold text-white/70">{c.name}</span>
-                    <span className="text-xs text-white/25 font-mono">on /{c.slug}</span>
-                    <span className="text-xs text-white/20 font-mono ml-auto">
+                    <span className="text-xs text-white/52 font-mono">on /{c.slug}</span>
+                    <span className="text-xs text-white/48 font-mono ml-auto">
                       {format(new Date(c.createdAt), "MMM d")}
                     </span>
                   </div>
-                  <p className="text-xs text-white/40 line-clamp-1">{c.message}</p>
+                  <p className="text-xs text-white/62 line-clamp-1">{c.message}</p>
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
                   {Array.from({ length: c.rating }).map((_, i) => (

@@ -26,8 +26,8 @@ export function RatingDistribution({
           <div className="text-5xl font-bold text-white leading-none mb-1">
             {rating.avg.toFixed(1)}
           </div>
-          <div className="text-sm text-white/50 font-mono mb-1.5">out of 5</div>
-          <div className="text-xs text-white/40 font-mono">
+          <div className="text-sm text-white/68 font-mono mb-1.5">out of 5</div>
+          <div className="text-xs text-white/62 font-mono">
             {rating.count} Ratings
           </div>
         </div>
