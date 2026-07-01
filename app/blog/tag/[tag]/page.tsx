@@ -27,6 +27,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `#${decoded} — Blog`,
     description: `${count} article${count > 1 ? "s" : ""} tagged with "${decoded}" by Pranta Das.`,
+    // Tag archives are thin/duplicate hubs — keep them for UX + link flow, but
+    // don't spend crawl budget indexing them. `follow` still passes equity to posts.
+    robots: {
+      index: false,
+      follow: true,
+      googleBot: { index: false, follow: true },
+    },
     openGraph: {
       title: `#${decoded} — Pranta Das Blog`,
       description: `${count} article${count > 1 ? "s" : ""} tagged with "${decoded}".`,
