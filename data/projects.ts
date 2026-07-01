@@ -1,5 +1,13 @@
 const projectsData = [
   {
+    name: "banglapay",
+    description:
+      "A unified, zero-dependency TypeScript SDK for Bangladeshi payment gateways — bKash, Nagad, and SSLCOMMERZ — behind one type-safe API with normalized responses, webhook verification, and refund/query support.",
+    category: "SDK",
+    priority: 1,
+    language: "TypeScript",
+  },
+  {
     name: "al-quran-sdk",
     description:
       "A TypeScript SDK for accessing various resources related to the Quran, including verses, chapters, audio recitations, and translations.",

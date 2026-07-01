@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllBlogPosts, getAllTags } from "@/lib/blog";
+import { getAllDocs } from "@/lib/docs";
 
 const BASE_URL = "https://prantadas.dev";
 
@@ -10,6 +11,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getAllBlogPosts().catch(() => []),
     getAllTags().catch(() => []),
   ]);
+
+  const docs = getAllDocs();
+  const docEntries: MetadataRoute.Sitemap = docs.map((doc) => ({
+    url: `${BASE_URL}/docs/${doc.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
 
   const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
@@ -51,6 +60,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    {
+      url: `${BASE_URL}/docs`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    ...docEntries,
     ...tagEntries,
     ...blogEntries,
   ];

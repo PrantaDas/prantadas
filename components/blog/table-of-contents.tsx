@@ -10,11 +10,15 @@ interface TocItem {
 }
 
 function extractToc(content: string): TocItem[] {
+  // Strip fenced code blocks first — comment lines like `# or` inside a code
+  // fence are not headings and would otherwise produce phantom/duplicate ids.
+  const withoutCode = content.replace(/```[\s\S]*?```/g, "");
   const headingRe = /^(#{1,4})\s+(.+)$/gm;
   const items: TocItem[] = [];
+  const seen = new Set<string>();
   let match: RegExpExecArray | null;
 
-  while ((match = headingRe.exec(content)) !== null) {
+  while ((match = headingRe.exec(withoutCode)) !== null) {
     const level = match[1].length;
     const text = match[2].replace(/[*_`]/g, "").trim();
     const id = text
@@ -22,6 +26,9 @@ function extractToc(content: string): TocItem[] {
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-");
+    // Guard against genuine duplicate headings collapsing to the same id.
+    if (seen.has(id)) continue;
+    seen.add(id);
     items.push({ id, text, level });
   }
   return items;

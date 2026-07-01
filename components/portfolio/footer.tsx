@@ -19,6 +19,7 @@ const navLinks = [
   { label: "Now", href: "/now" },
   { label: "Uses", href: "/uses" },
   { label: "Blog", href: "/blog" },
+  { label: "Docs", href: "/docs" },
 ];
 
 const builtWith = [

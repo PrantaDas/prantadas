@@ -13,6 +13,7 @@ import {
   Globe,
   Layers,
   Code2,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { professionalProject } from "@/data/projects";
@@ -81,6 +82,12 @@ const professionalCardAccents = [
 ];
 
 const categories = ["All", "SDK", "Backend", "Bot", "Tool", "Scraper"];
+
+// Repos that have a full docs page under /docs — keyed by repo name.
+const docsSlugs: Record<string, string> = {
+  banglapay: "banglapay",
+  "al-quran-sdk": "al-quran-sdk",
+};
 
 function RepoCard({ repo, index }: { repo: Repository; index: number }) {
   const [hovered, setHovered] = useState(false);
@@ -171,15 +178,26 @@ function RepoCard({ repo, index }: { repo: Repository; index: number }) {
               {repo.watchers_count}
             </span>
           </div>
-          <Link
-            href={repo.html_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-primary/50 hover:text-primary transition-colors font-mono group/link"
-          >
-            <Github className="w-3 h-3" />
-            <span className="group-hover/link:underline underline-offset-2">Code</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            {docsSlugs[repo.name] && (
+              <Link
+                href={`/docs/${docsSlugs[repo.name]}`}
+                className="flex items-center gap-1.5 text-xs text-primary/50 hover:text-primary transition-colors font-mono group/link"
+              >
+                <BookOpen className="w-3 h-3" />
+                <span className="group-hover/link:underline underline-offset-2">Docs</span>
+              </Link>
+            )}
+            <Link
+              href={repo.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs text-primary/50 hover:text-primary transition-colors font-mono group/link"
+            >
+              <Github className="w-3 h-3" />
+              <span className="group-hover/link:underline underline-offset-2">Code</span>
+            </Link>
+          </div>
         </div>
       </div>
     </motion.div>

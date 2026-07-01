@@ -49,20 +49,28 @@ async function getRepositories(): Promise<Repository[]> {
 
     if (!response.ok) throw new Error("Failed to fetch");
 
-    const allRepos = await response.json();
+    const allRepos: Repository[] = await response.json();
+    const repoByName = new Map(allRepos.map((r) => [r.name, r]));
 
-    const filtered = allRepos.filter((repo: Repository) =>
-      projectsData.some((p) => p.name === repo.name),
-    );
-
-    const enhanced: Repository[] = filtered.map((repo: Repository) => {
-      const info = projectsData.find((p) => p.name === repo.name);
+    // projectsData is the source of truth — every listed project renders even
+    // if the GitHub API list is stale (cached before the repo existed) or the
+    // repo is private. Live stats/topics are overlaid when the repo is found.
+    const enhanced: Repository[] = projectsData.map((p) => {
+      const repo = repoByName.get(p.name);
       return {
-        ...repo,
-        category: info?.category ?? "Other",
-        priority: info?.priority ?? 999,
-        description:
-          info?.description ?? repo.description ?? "No description available",
+        id: repo?.id ?? p.name.split("").reduce((h, c) => h + c.charCodeAt(0), 0),
+        name: p.name,
+        description: p.description ?? repo?.description ?? "No description available",
+        html_url: repo?.html_url ?? `https://github.com/Prantadas/${p.name}`,
+        stargazers_count: repo?.stargazers_count ?? 0,
+        forks_count: repo?.forks_count ?? 0,
+        watchers_count: repo?.watchers_count ?? 0,
+        language: p.language ?? repo?.language ?? "Unknown",
+        topics: repo?.topics ?? [],
+        created_at: repo?.created_at ?? new Date().toISOString(),
+        updated_at: repo?.updated_at ?? new Date().toISOString(),
+        category: p.category,
+        priority: p.priority,
       };
     });
 
