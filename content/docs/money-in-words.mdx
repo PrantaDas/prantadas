@@ -1,0 +1,273 @@
+---
+title: money-in-words
+description: Convert a numeric monetary amount plus an ISO 4217 currency code into natural English words — correct major/minor unit splitting, per-currency decimal precision, and float-safe decomposition across all 178 currencies.
+package: money-in-words
+npmUrl: https://www.npmjs.com/package/money-in-words
+repoUrl: https://github.com/PrantaDas/money-in-words
+language: TypeScript
+order: 3
+tags:
+  - currency
+  - money
+  - number-to-words
+  - iso-4217
+  - cheque
+  - invoice
+  - typescript
+---
+
+Printing an invoice, a cheque, or a legal amount-in-words line means knowing that JPY has no cents, that Bahraini dinars have three decimal places, that the plural of _loti_ is _maloti_ and of _paisa_ is _paise_ — and that `1000.1` must never become nine cents. **`money-in-words` knows all of it:** one call, one string, every ISO 4217 currency.
+
+> Change the currency code and everything else adapts — **precision, unit names, plurals, and whether a minor unit exists at all.**
+
+```ts
+toWords(1000.34, 'USD'); // "One thousand US dollars and thirty-four cents"
+toWords(1000, 'BDT');    // "One thousand taka only"
+toWords(45.5, 'JPY');    // "Forty-five yen"          — 0 decimals, no minor unit
+toWords(1.234, 'BHD');   // "One Bahraini dinar and two hundred and thirty-four fils"
+```
+
+## Why money-in-words
+
+| Trait | What it means |
+| --- | --- |
+| **Every ISO 4217 currency** | All 178 codes, vendored from the official SIX/ISO "List One". Nothing is fetched at runtime. |
+| **Real per-currency precision** | JPY and KRW take no cents. BHD, KWD and OMR take three decimals. Everything else gets exactly the digits ISO says it gets. |
+| **Float-safe by construction** | Amounts are decomposed from their exact decimal representation, never by float arithmetic. `1000.1` is always ten cents. |
+| **Correct unit names** | Singular and plural, including the irregulars: penny/pence, paisa/paise, loti/maloti, lilangeni/emalangeni, real/reais. |
+| **Zero runtime deps** | Pure TypeScript. Identical on Node 18+, Bun, Deno, and the browser. |
+| **Strict types, no `any`** | Typed error hierarchy, `readonly` data, 379 tests at 100% coverage. |
+| **Dual ESM + CJS** | Ships `.js`, `.cjs`, and generated `.d.ts` / `.d.cts`. |
+
+<Note>
+English output only — this package deliberately ships no locale infrastructure.
+</Note>
+
+## Install
+
+```bash
+npm install money-in-words
+# or
+pnpm add money-in-words
+# or
+bun add money-in-words
+```
+
+Requires **Node 18+** (or Bun / Deno). No native modules, no install scripts, no network access. The currency table is a static, frozen object compiled into the bundle — this package never makes a network request and never reads the filesystem.
+
+## Quick start
+
+```ts
+import { toWords, numberToWords } from 'money-in-words';
+
+// Currency-aware: major/minor split at the currency's own precision.
+toWords(1000.34, 'USD');
+// "One thousand US dollars and thirty-four cents"
+
+// Casing, separators, and the trailing word are all configurable.
+toWords(2_500_000, 'EUR', { caseStyle: 'upper' });
+// "TWO MILLION FIVE HUNDRED THOUSAND EUROS ONLY"
+
+toWords(-1234.56, 'GBP');
+// "Negative one thousand two hundred and thirty-four pounds sterling and fifty-six pence"
+
+// Or drop currency entirely and just spell the number.
+numberToWords(123_456);
+// "one hundred and twenty-three thousand four hundred and fifty-six"
+```
+
+CommonJS works identically:
+
+```js
+const { toWords } = require('money-in-words');
+```
+
+## Options
+
+Every option is optional; the defaults produce the strings shown above.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `caseStyle` | `'sentence' \| 'title' \| 'upper' \| 'lower'` | `'sentence'` | Capitalisation of the result. |
+| `includeCurrencyName` | `boolean` | `true` | Append unit names. `false` spells only the numerals. |
+| `minorUnitSeparator` | `string` | `'and'` | Word joining major and minor parts. `''` joins with a plain space. |
+| `zeroMinorUnitsText` | `string \| null` | `'only'` | Appended when the currency has a minor unit but the amount has none. |
+| `negativeWord` | `string` | `'negative'` | Word placed before a negative amount. |
+| `rounding` | `'truncate' \| 'round' \| 'floor' \| 'ceil'` | `'truncate'` | How extra decimal places are reduced to the currency's precision. |
+| `useAnd` | `boolean` | `true` | British `"one hundred and one"` vs American `"one hundred one"`. |
+
+<Warning>
+`zeroMinorUnitsText` applies **only** to currencies that actually have a minor unit. `toWords(1000, 'JPY')` is `"One thousand yen"` — never `"… yen only"`.
+</Warning>
+
+## API surface
+
+```ts
+function toWords(
+  amount: number,
+  currencyCode: string,
+  options?: ToWordsOptions,
+): string;
+
+function numberToWords(value: number, options?: NumberToWordsOptions): string;
+
+// Currency lookup
+function getCurrency(code: string): CurrencyInfo;          // throws on unknown
+function findCurrency(code: string): CurrencyInfo | undefined;
+function isSupportedCurrency(code: string): boolean;
+function listCurrencies(): CurrencyInfo[];
+
+// Data
+const CURRENCIES: Readonly<Record<string, CurrencyInfo>>;
+const CURRENCY_CODES: readonly string[];
+const ISO_4217_PUBLISHED: string;
+const MAX_SUPPORTED_AMOUNT: number;
+```
+
+- `currencyCode` is matched case-insensitively and trimmed — `'usd'`, `' USD '` and `'Usd'` all resolve.
+- `amount` accepts any finite number with `Math.abs(amount) < 1e15`.
+
+### numberToWords — the cardinal number engine
+
+No currency involved. A fractional part is read digit by digit after `"point"`, which is how English reads decimals aloud.
+
+```ts
+numberToWords(0);          // "zero"
+numberToWords(21);         // "twenty-one"
+numberToWords(101);        // "one hundred and one"
+numberToWords(1001);       // "one thousand and one"
+numberToWords(1_000_101);  // "one million one hundred and one"
+numberToWords(-1042);      // "negative one thousand and forty-two"
+numberToWords(3.14);       // "three point one four"
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `useAnd` | `boolean` | `true` | British `"and"` placement. |
+| `negativeWord` | `string` | `'negative'` | Prefix for negative values. |
+| `decimalWord` | `string` | `'point'` | Word introducing the fractional digits. |
+
+Grouping is driven by a plain list of scale names — `thousand`, `million`, `billion`, `trillion`, `quadrillion`, `quintillion`, `sextillion` — so extending the range means adding an entry, not rewriting the algorithm.
+
+### Currency metadata
+
+```ts
+import { getCurrency } from 'money-in-words';
+
+getCurrency('INR');
+// {
+//   code: 'INR', numericCode: '356', name: 'Indian Rupee',
+//   decimals: 2, symbol: '₹',
+//   major: { one: 'Indian rupee', other: 'Indian rupees' },
+//   minor: { one: 'paisa',        other: 'paise' },
+//   isFund: false,
+// }
+```
+
+```ts
+interface CurrencyInfo {
+  readonly code: string;                  // ISO 4217 alpha-3
+  readonly numericCode: string;           // ISO 4217 numeric, zero-padded
+  readonly name: string;                  // official ISO entity name
+  readonly decimals: number;              // 0 | 2 | 3 | 4
+  readonly symbol: string | null;
+  readonly major: CurrencyUnitNames;      // { one, other }
+  readonly minor: CurrencyUnitNames | null; // null when there is no minor unit
+  readonly isFund: boolean;               // funds, metals, X… reserved codes
+}
+```
+
+`minor` is `null` for every 0-decimal currency and for the non-tender codes — that null is what drives the `"Forty-five yen"` vs `"… only"` behaviour, rather than a hard-coded list of exceptions.
+
+### Errors
+
+Every failure throws a subclass of `MoneyInWordsError`, each carrying a machine-readable `code` — catch broadly or narrowly.
+
+| Class | `code` | Thrown when |
+| --- | --- | --- |
+| `MoneyInWordsError` | — | Base class for everything below. |
+| `InvalidAmountError` | `INVALID_AMOUNT` | Amount is `NaN`, `Infinity`, or not a number. |
+| `AmountOutOfRangeError` | `AMOUNT_OUT_OF_RANGE` | `Math.abs(amount) >= 1e15`. |
+| `InvalidCurrencyError` | `INVALID_CURRENCY` | Currency code is not in the ISO 4217 table. |
+| `InvalidOptionError` | `INVALID_OPTION` | `caseStyle` or `rounding` is not a recognised value. |
+
+```ts
+import { InvalidCurrencyError } from 'money-in-words';
+
+try {
+  toWords(1, 'XYZ');
+} catch (error) {
+  if (error instanceof InvalidCurrencyError) {
+    console.error(error.code, error.currencyCode); // "INVALID_CURRENCY" "XYZ"
+  }
+}
+```
+
+Nothing fails silently: an out-of-range amount throws rather than producing a wrong string.
+
+## Examples
+
+| Call | Result |
+| --- | --- |
+| `toWords(1000.34, 'USD')` | One thousand US dollars and thirty-four cents |
+| `toWords(1000, 'BDT')` | One thousand taka only |
+| `toWords(45.5, 'JPY')` | Forty-five yen |
+| `toWords(1.234, 'BHD')` | One Bahraini dinar and two hundred and thirty-four fils |
+| `toWords(12345.67, 'INR')` | Twelve thousand three hundred and forty-five Indian rupees and sixty-seven paise |
+| `toWords(2.5, 'GBP')` | Two pounds sterling and fifty pence |
+| `toWords(0.01, 'GBP')` | Zero pounds sterling and one penny |
+| `toWords(1000.1, 'USD')` | One thousand US dollars and ten cents |
+| `toWords(-1234.56, 'EUR')` | Negative one thousand two hundred and thirty-four euros and fifty-six cents |
+| `toWords(2, 'LSL')` | Two maloti only |
+| `toWords(45.5, 'JPY', { rounding: 'round' })` | Forty-six yen |
+| `toWords(1000.34, 'USD', { caseStyle: 'title' })` | One Thousand US Dollars And Thirty-Four Cents |
+| `toWords(1000.34, 'USD', { includeCurrencyName: false })` | One thousand and thirty-four |
+| `toWords(1000, 'BDT', { zeroMinorUnitsText: null })` | One thousand taka |
+| `toWords(101.05, 'USD', { useAnd: false })` | One hundred one US dollars and five cents |
+
+## Precision, rounding, and floats
+
+Amounts are decomposed from the number's exact shortest decimal representation (`Number.prototype.toString`), then scaled on **digit strings**. No float arithmetic ever touches the minor units, so the classic failure mode simply cannot happen:
+
+```ts
+toWords(1000.1, 'USD');    // "One thousand US dollars and ten cents"   — not nine
+toWords(0.1 + 0.2, 'USD'); // "Zero US dollars and thirty cents"
+```
+
+Digits beyond the currency's precision are **truncated by default**, which is what makes `toWords(45.5, 'JPY')` read `"Forty-five yen"`. For half-away-from-zero rounding — the usual choice for financial documents — ask for it explicitly:
+
+```ts
+toWords(45.5, 'JPY', { rounding: 'round' });   // "Forty-six yen"
+toWords(9.999, 'USD', { rounding: 'round' });  // "Ten US dollars only"
+toWords(999.999, 'USD', { rounding: 'ceil' }); // "One thousand US dollars only"
+```
+
+Carries propagate correctly across the decimal point in every mode.
+
+### Range
+
+Supported: `Math.abs(amount) < 1e15`, i.e. up to `999,999,999,999,999.xxx`. That ceiling sits below `Number.MAX_SAFE_INTEGER`, so every integer this package accepts is exactly representable as an IEEE-754 double. Anything at or beyond it throws `AmountOutOfRangeError`.
+
+## Currency support
+
+All 178 ISO 4217 codes are supported. `decimals` is the ISO minor-unit digit count: `0` for JPY/KRW and the franc-zone currencies, `2` for most, `3` for BHD/KWD/OMR, `4` for the Chilean/Uruguayan index units. A currency with no minor unit in circulation has `minor: null` — the engine reads that null directly rather than keeping a hard-coded exception list. Non-tender codes (precious metals, bond-market units, fund/index codes, and the reserved `XTS` / `XXX`) carry `isFund: true`.
+
+ISO 4217 publishes the code, numeric code, entity name, and minor-unit **digits** — not minor-unit **names**, plurals, or symbols. Those are curated and merged with the vendored official List One; the generator fails loudly if the two sources ever drift, and CI re-runs it on every push to prove the committed table still matches its source.
+
+## Development
+
+```bash
+pnpm install
+pnpm run lint       # ESLint, type-aware and strict
+pnpm run typecheck  # tsc --noEmit
+pnpm test           # vitest — 379 tests
+pnpm run coverage   # + v8 coverage, gated at 95% lines / 90% branches
+pnpm run build      # tsup → dual ESM + CJS + .d.ts in dist/
+pnpm run smoke      # exercise the built bundles on bare Node
+```
+
+CI runs all of the above on Node 22, then smoke-tests the built ESM and CJS bundles on Node 18, 20, 22 and 24.
+
+## License
+
+[MIT](https://github.com/PrantaDas/money-in-words/blob/main/LICENSE) © [Pranta Das](https://github.com/PrantaDas). Built for anyone who has ever had to print an amount in words.

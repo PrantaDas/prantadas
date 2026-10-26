@@ -9,7 +9,7 @@ const BASE_URL = "https://prantadas.dev";
 export const metadata: Metadata = {
   title: "Documentation — Open Source Packages",
   description:
-    "Guides and API references for the open-source npm packages I maintain — banglapay (Bangladeshi payment gateways) and al-quran-sdk (Quran.com API).",
+    "Guides and API references for the open-source npm packages I maintain — banglapay (Bangladeshi payment gateways), al-quran-sdk (Quran.com API), and money-in-words (amounts spelled out in every ISO 4217 currency).",
   alternates: { canonical: `${BASE_URL}/docs` },
   openGraph: {
     title: "Documentation — Pranta Das",
