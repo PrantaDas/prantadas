@@ -81,7 +81,7 @@ const professionalCardAccents = [
   "from-sky-400/20 to-transparent",
 ];
 
-const categories = ["All", "SDK", "Backend", "Bot", "Tool", "Scraper"];
+const categories = ["All", "SDK", "Library", "Backend", "Bot", "Tool", "Scraper"];
 
 // Repos that have a full docs page under /docs — keyed by repo name.
 const docsSlugs: Record<string, string> = {

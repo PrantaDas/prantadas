@@ -16,6 +16,14 @@ const projectsData = [
     language: "TypeScript",
   },
   {
+    name: "money-in-words",
+    description:
+      "A zero-dependency TypeScript library that spells monetary amounts into natural English words across all 178 ISO 4217 currencies — correct major/minor unit splitting, per-currency decimal precision, and float-safe decomposition.",
+    category: "Library",
+    priority: 1,
+    language: "TypeScript",
+  },
+  {
     name: "tRPC-starter",
     description:
       "A starter template for building applications with tRPC, providing type-safe API development.",

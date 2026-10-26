@@ -232,6 +232,9 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     makeText(
       "  ├─ al-quran-sdk     TypeScript SDK for Quran data (verses, audio, translations)",
     ),
+    makeText(
+      "  ├─ money-in-words   Spell amounts in words across 178 ISO 4217 currencies (TS)",
+    ),
     makeText("  ├─ Qbit-Go          Telegram torrent downloader bot (Go)"),
     makeText("  ├─ TelegramBot-Scaffold  Telegraf.js boilerplate starter"),
     makeText("  ├─ SeaDisc          OpenSea → Discord NFT event bot"),
