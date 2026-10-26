@@ -24,6 +24,14 @@ const projectsData = [
     language: "TypeScript",
   },
   {
+    name: "nestjs-keel",
+    description:
+      "A production-ready NestJS 12 backend template running REST, GraphQL, Socket.IO, jobs, and schedules as separate processes from one codebase — ready to split into standalone services.",
+    category: "Backend",
+    priority: 2,
+    language: "TypeScript",
+  },
+  {
     name: "tRPC-starter",
     description:
       "A starter template for building applications with tRPC, providing type-safe API development.",
