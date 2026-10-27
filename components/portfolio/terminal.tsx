@@ -241,7 +241,9 @@ const COMMANDS: Record<string, (args: string) => CommandResult> = {
     makeText("  └─ Miintfun-NFT-Buy-Bot  Web3 NFT minting bot (Python)"),
     makeText(""),
     makeText("  Professional:"),
-    makeText("  ├─ CNF Sports       Live football streaming platform"),
+    makeText("  ├─ StampEzee        Digital loyalty platform (iOS · Android · Web)"),
+    makeText("  ├─ Lighthouse Quiz  Live & daily Bible quiz app (iOS · Android)"),
+    makeText("  ├─ CNF Sports      Live football streaming platform"),
     makeText(
       "  ├─ CNF Cart         Centralized payment gateway (Stripe + Crypto)",
     ),

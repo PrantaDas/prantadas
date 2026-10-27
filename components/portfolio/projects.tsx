@@ -14,7 +14,9 @@ import {
   Layers,
   Code2,
   BookOpen,
+  ArrowRight,
 } from "lucide-react";
+import { FaApple, FaGooglePlay } from "react-icons/fa";
 import Link from "next/link";
 import { professionalProject } from "@/data/projects";
 
@@ -41,6 +43,10 @@ interface ProfessionalProject {
   details: string;
   is_private: boolean;
   website?: string;
+  slug?: string;
+  featured?: boolean;
+  appStore?: string;
+  playStore?: string;
 }
 
 interface ProjectsProps {
@@ -222,7 +228,11 @@ function ProfessionalCard({
       transition={{ duration: 0.32, delay: Math.min(index * 0.03, 0.2), ease: [0.22, 1, 0.36, 1] }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      className="group relative glass-card rounded-2xl border border-white/5 hover:border-primary/15 transition-all duration-300 overflow-hidden"
+      className={`group relative glass-card rounded-2xl border transition-all duration-300 overflow-hidden ${
+        project.featured
+          ? "md:col-span-2 border-primary/15 hover:border-primary/30"
+          : "border-white/5 hover:border-primary/15"
+      }`}
     >
       {/* Left accent bar */}
       <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b ${accent} rounded-l-2xl`} />
@@ -241,6 +251,11 @@ function ProfessionalCard({
               <span className="text-[10px] font-mono text-primary/60 uppercase tracking-wider border border-primary/15 rounded px-2 py-0.5">
                 {project.category}
               </span>
+              {project.featured && (
+                <span className="text-[10px] font-mono text-amber-300/80 border border-amber-300/20 bg-amber-300/5 rounded px-2 py-0.5 flex items-center gap-1">
+                  <Star className="w-2.5 h-2.5" /> Flagship
+                </span>
+              )}
               {project.is_private && (
                 <span className="text-[10px] font-mono text-white/55 border border-white/10 rounded px-2 py-0.5 flex items-center gap-1">
                   <Lock className="w-2.5 h-2.5" /> Private
@@ -270,6 +285,42 @@ function ProfessionalCard({
 
         <p className="text-white/68 text-sm mb-3 leading-relaxed">{project.description}</p>
         <p className="text-white/58 text-xs leading-relaxed">{project.details}</p>
+
+        {(project.slug || project.appStore || project.playStore) && (
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            {project.slug && (
+              <Link
+                href={`/work/${project.slug}`}
+                className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/25 text-primary hover:bg-primary/15 transition-all group/cs"
+              >
+                Read case study
+                <ArrowRight className="w-3 h-3 group-hover/cs:translate-x-0.5 transition-transform" />
+              </Link>
+            )}
+            {project.appStore && (
+              <Link
+                href={project.appStore}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-lg border border-white/8 text-white/72 hover:border-primary/30 hover:text-primary transition-all"
+              >
+                <FaApple className="w-3 h-3" />
+                App Store
+              </Link>
+            )}
+            {project.playStore && (
+              <Link
+                href={project.playStore}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-lg border border-white/8 text-white/72 hover:border-primary/30 hover:text-primary transition-all"
+              >
+                <FaGooglePlay className="w-3 h-3" />
+                Google Play
+              </Link>
+            )}
+          </div>
+        )}
 
         {project.website && (
           <div className="mt-5 flex items-center gap-2 text-xs font-mono text-primary/40 border-t border-white/5 pt-4">

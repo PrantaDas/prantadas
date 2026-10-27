@@ -238,6 +238,32 @@ const projectsData = [
 
 const professionalProject = [
   {
+    name: "StampEzee",
+    slug: "stampezee",
+    featured: true,
+    category: "Loyalty Platform",
+    description: "A digital loyalty platform for cafés, salons, restaurants and retail chains",
+    details:
+      "Branded digital stamp cards, EzeePoints, EzeeCodes, automated campaigns, wallet passes and gamification. I lead the backend: a NestJS monorepo split into an API, an integration gateway, a background worker and a real-time hub, with Stripe billing and push, WhatsApp, SMS and email notifications.",
+    website: "https://stampezee.com",
+    appStore: "https://apps.apple.com/us/app/stampezee-rewards/id6748948277",
+    playStore: "https://play.google.com/store/apps/details?id=com.stampezee.mobile",
+    is_private: false,
+  },
+  {
+    name: "Lighthouse Bible Quiz",
+    slug: "lighthouse-bible-quiz",
+    featured: true,
+    category: "Mobile App",
+    description: "Live and daily Bible quizzes for every age, on iOS and Android",
+    details:
+      "Monthly live quizzes with prizes, daily verses, voice recitation, VersePlay games, streaks and leaderboards. I led the v6 backend rewrite: a NestJS modular monolith running as API, socket, worker and cron processes, built for high-concurrency live quizzes.",
+    website: "https://lighthousequiz.com",
+    appStore: "https://apps.apple.com/us/app/lighthouse-bible-quiz/id1672827701",
+    playStore: "https://play.google.com/store/apps/details?id=com.lighthousequiz.app",
+    is_private: false,
+  },
+  {
     name: "CNF Sports",
     category: "Web App",
     description: "A web-based streaming platform for soccer",
